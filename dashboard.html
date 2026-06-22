@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Agentic AI &amp; MCP Vulnerability Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+  :root { color-scheme: light }
+  * { box-sizing: border-box }
+  body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fafaf9; color:#1f2937; }
+  header { padding:16px 20px; border-bottom:1px solid #e5e7eb; background:#fff; }
+  header h1 { margin:0; font-size:18px; letter-spacing:-0.01em; }
+  header .meta { color:#6b7280; font-size:12px; margin-top:4px; }
+  .tabs { display:flex; gap:6px; padding:12px 20px 0; border-bottom:1px solid #e5e7eb; background:#fff; flex-wrap:wrap; }
+  .tab { padding:8px 14px; border-radius:8px 8px 0 0; cursor:pointer; font-size:13px; color:#374151; background:transparent; border:1px solid transparent; border-bottom:none; }
+  .tab.active { background:#fafaf9; border-color:#e5e7eb; color:#111; font-weight:600; }
+  .pane { padding:16px 20px 60px; }
+  .grid { display:grid; gap:12px; }
+  .tiles { grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); }
+  .tile { background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:14px; }
+  .tile .label { color:#6b7280; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; }
+  .tile .value { font-size:24px; font-weight:600; margin-top:4px; color:#111; }
+  .tile .delta { font-size:12px; margin-top:4px; color:#059669; }
+  .tile.crit .value { color:#b91c1c; }
+  .tile.high .value { color:#c2410c; }
+  .tile.med .value { color:#a16207; }
+  .tile.low .value { color:#365314; }
+  .card { background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:14px; margin-top:16px; }
+  .card h2 { margin:0 0 10px; font-size:14px; color:#111; }
+  .filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .chip { font-size:11px; padding:4px 10px; border-radius:999px; background:#f3f4f6; color:#374151; cursor:pointer; border:1px solid #e5e7eb; }
+  .chip.active { background:#111; color:#fff; border-color:#111; }
+  table.findings { width:100%; border-collapse:collapse; font-size:12px; }
+  table.findings th, table.findings td { padding:8px 10px; border-bottom:1px solid #f1f5f9; text-align:left; vertical-align:top; }
+  table.findings th { font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:#6b7280; cursor:pointer; user-select:none; background:#f9fafb; }
+  table.findings tr:hover td { background:#f9fafb; }
+  .sev { display:inline-block; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:700; letter-spacing:0.04em; }
+  .sev-crit { background:#fee2e2; color:#991b1b; }
+  .sev-high { background:#ffedd5; color:#9a3412; }
+  .sev-med { background:#fef3c7; color:#92400e; }
+  .sev-low { background:#dcfce7; color:#166534; }
+  .new-pill { background:#111; color:#fff; font-size:9px; padding:1px 6px; border-radius:4px; margin-left:6px; vertical-align:middle; }
+  a { color:#1d4ed8; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  canvas { max-width:100%; height:240px !important; }
+  .charts { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  @media (max-width: 800px){ .charts { grid-template-columns:1fr; } }
+  .researcher-list { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:10px; }
+  .researcher { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:10px; font-size:12px; }
+  .researcher b { font-size:13px; }
+  .empty { color:#6b7280; padding:20px; text-align:center; }
+  .pulse { display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; vertical-align:middle; margin-right:6px; }
+  ul, ol { padding-left:20px; }
+  li { margin-bottom:6px; line-height:1.4; }
+  input.search { width:100%; padding:8px; border:1px solid #e5e7eb; border-radius:6px; font-size:12px; margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="pulse"></span>Agentic AI &amp; MCP Vulnerability Dashboard</h1>
+  <div class="meta">
+    Report v3.7 · Last refreshed: <b>June 16, 2026</b> · Window: June 12 → June 16 (weekly refresh; effective June 11 → 16) · Lead: US export-control suspension of Fable 5 / Mythos 5 + 11 new §8 rows ·
+    Source: <code>Agentic-AI-MCP-Security-Research-Report.md</code>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-pane="latest">Latest run (June 16 weekly)</div>
+  <div class="tab" data-pane="cumulative">Cumulative (all findings)</div>
+  <div class="tab" data-pane="themes">Themes &amp; Watchlist</div>
+  <div class="tab" data-pane="people">People &amp; Orgs</div>
+</div>
+
+<div id="pane-latest" class="pane">
+  <div class="grid tiles">
+    <div class="tile crit"><div class="label">New Critical</div><div class="value" id="t-l-crit">—</div><div class="delta">CVSS 9.0+</div></div>
+    <div class="tile high"><div class="label">New High</div><div class="value" id="t-l-high">—</div><div class="delta">CVSS 7.0–8.9</div></div>
+    <div class="tile med"><div class="label">New Medium</div><div class="value" id="t-l-med">—</div><div class="delta">CVSS 4.0–6.9</div></div>
+    <div class="tile low"><div class="label">New Low/Info</div><div class="value" id="t-l-low">—</div><div class="delta">CVSS &lt;4.0</div></div>
+    <div class="tile"><div class="label">New Tools</div><div class="value" id="t-l-tools">—</div><div class="delta">Defense + scanners</div></div>
+    <div class="tile"><div class="label">Researcher Posts</div><div class="value" id="t-l-posts">—</div><div class="delta">Tracked sources</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Headline findings — May 8 PM → May 12, 2026</h2>
+    <ol id="headlines"></ol>
+  </div>
+
+  <div class="card">
+    <h2>New vulnerabilities this cycle</h2>
+    <div class="filter-bar" id="latest-filters"></div>
+    <table class="findings" id="latest-table">
+      <thead><tr><th>Severity</th><th>ID / Title</th><th>Component</th><th>Class</th><th>Date</th><th>Notes</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>New tools released this cycle</h2>
+    <table class="findings" id="latest-tools">
+      <thead><tr><th>Tool</th><th>Maintainer</th><th>Date</th><th>What it does</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Researcher / org activity this cycle</h2>
+    <table class="findings" id="latest-posts">
+      <thead><tr><th>Source</th><th>Date</th><th>Title</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="pane-cumulative" class="pane" style="display:none">
+  <div class="grid tiles">
+    <div class="tile crit"><div class="label">All Critical</div><div class="value" id="t-c-crit">—</div></div>
+    <div class="tile high"><div class="label">All High</div><div class="value" id="t-c-high">—</div></div>
+    <div class="tile med"><div class="label">All Medium</div><div class="value" id="t-c-med">—</div></div>
+    <div class="tile low"><div class="label">All Low/Info</div><div class="value" id="t-c-low">—</div></div>
+    <div class="tile"><div class="label">Total tracked</div><div class="value" id="t-c-total">—</div></div>
+    <div class="tile"><div class="label">Tracked tools</div><div class="value" id="t-c-tools">—</div></div>
+  </div>
+
+  <div class="grid charts" style="margin-top:16px">
+    <div class="card"><h2>Severity distribution</h2><canvas id="chart-sev"></canvas></div>
+    <div class="card"><h2>Findings by month</h2><canvas id="chart-time"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h2>AI-Discovery Roster — CVE counts per AI system</h2>
+    <div style="color:#6b7280;font-size:12px;margin-bottom:8px">Tally of catalog entries credited to each AI system. Click a chip below to filter the table. Source: Section 8.99 of the report.</div>
+    <div id="ai-disc-roster" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;"></div>
+  </div>
+
+  <div class="card">
+    <h2>All vulnerabilities tracked</h2>
+    <div class="filter-bar" id="cum-filters"></div>
+    <div class="filter-bar" id="ai-disc-filters"></div>
+    <div class="filter-bar" id="refs-filters"></div>
+    <input id="cum-search" class="search" placeholder="Filter by ID, component, class, discoverer, AI system…"/>
+    <div style="max-height:600px;overflow:auto">
+      <table class="findings" id="cum-table">
+        <thead><tr><th>Sev</th><th>ID / Title</th><th>Component</th><th>Class</th><th>Discoverer</th><th>AI Discovery</th><th>Refs</th><th>Date</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="pane-themes" class="pane" style="display:none">
+  <div class="card"><h2>Cross-cutting themes (active)</h2><ol id="themes"></ol></div>
+  <div class="card"><h2>Watchlist — uncorroborated this cycle</h2><ul id="watchlist"></ul></div>
+  <div class="card"><h2>Organic research gaps (cumulative)</h2><ol id="gaps"></ol></div>
+</div>
+
+<div id="pane-people" class="pane" style="display:none">
+  <div class="card"><h2>Tracked researchers &amp; organizations</h2><div class="researcher-list" id="people-list"></div></div>
+</div>
+
+<script>
+"use strict";
+
+// ============================================================
+// DATA
+// ============================================================
+
+var LATEST = [
+  {severity:"Critical",id:"CVE-2026-47101 + CVE-2026-47102 + CVE-2026-40217",title:"LiteLLM Low-Priv -> Admin -> Host RCE Chain",component:"LiteLLM AI gateway (<= v1.83.13)",vector:"authz bypass (allowed_routes) + missing field-level authz (self-promote to proxy_admin) + Custom Code Guardrail exec() sandbox escape -> host RCE, exposes every provider key",date:"2026-06-11",discoverer:"Obsidian Security; guardrail path indep. by X41 D-Sec",ai_disc:"-",technique:"manual code review + dynamic verification / PoC (Man-in-the-Gateway forged tool calls into Claude Code)",notes:"Chain CVSS 9.9. Fixed v1.83.14-stable. DISTINCT from CVE-2026-42271 (Horizon3.ai). Theme 14.",advisory_url:"https://www.obsidiansecurity.com/blog/litellm-privilege-escalation-rce",writeup_url:"https://www.obsidiansecurity.com/blog/litellm-privilege-escalation-rce"},
+  {severity:"Critical",id:"CVE-2026-42824",title:"M365 Copilot 'SearchLeak' One-Click Data Exfiltration",component:"Microsoft 365 Copilot Enterprise Search",vector:"Parameter-to-Prompt injection (q param) + HTML-render race + CSP-bypass SSRF via Bing searchbyimage -> one click on a microsoft.com link exfils mailbox/files/MFA codes",date:"2026-06-15",discoverer:"Varonis Threat Labs (Dolev Taler)",ai_disc:"-",technique:"manual research + PoC (video demo)",notes:"Microsoft MAXIMUM/Critical. Backend mitigated; PoC only, no ITW. Themes 5/17.",advisory_url:"https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-42824",writeup_url:"https://www.varonis.com/blog/searchleak"},
+  {severity:"Critical",id:"CVE-2026-48039",title:"Meta Ads MCP Unauthenticated Tool Execution -> Access-Token Leak",component:"pipeboard-co/meta-ads-mcp <=1.0.101 (HTTP MCP transport)",vector:"AuthInjectionMiddleware.dispatch() fails to authenticate tool calls -> any network client invokes MCP tools and exfils operator Meta Marketing API token",date:"2026-06-12",discoverer:"GHSA-9gw6-46qc-99vr",ai_disc:"-",technique:"manual code review (HTTP MCP transport)",notes:"CVSS 9.1, CWE-287. Patch status 1.0.102-105 unconfirmed (no git tags). Themes 1 + 23.",advisory_url:"https://github.com/advisories/GHSA-9gw6-46qc-99vr",writeup_url:""},
+  {severity:"Critical",id:"CVE-2026-5027",title:"Langflow Unauthenticated RCE (Exploited in the Wild)",component:"Langflow (low-code AI app/agent builder)",vector:"Unauthenticated RCE; ITW exploitation w/ no patch at disclosure (VulnCheck)",date:"2026-06-11",discoverer:"VulnCheck (ITW observation)",ai_disc:"-",technique:"not disclosed (ITW telemetry)",notes:"Distinct from prior CVE-2025-3248. Track NVD for advisory + fix. Theme 14.",advisory_url:"https://thehackernews.com/2026/06/unpatched-langflow-flaw-cve-2026-5027.html",writeup_url:"https://thehackernews.com/2026/06/unpatched-langflow-flaw-cve-2026-5027.html"},
+  {severity:"Critical",id:"CVE-2026-11624",title:"Google MCP Toolbox for Databases -- Missing Origin/Host Validation -> DNS Rebinding",component:"Google MCP Toolbox for Databases (<v0.25.0)",vector:"No Origin/Host validation -> malicious web page DNS-rebinds to drive the local MCP server's DB tools",date:"2026-06-13",discoverer:"Jonathan Leitschuh (JLLeitschuh)",ai_disc:"-",technique:"configuration review",notes:"GitHub-rated Critical (CVSS pending). v0.25.0 adds --allowed-hosts/--allowed-origins (default *). Joins MCP-SDK DNS-rebinding lineage. Theme 1. Triaged in the June 14 daily scan.",advisory_url:"https://github.com/advisories/GHSA-76g7-m3xw-x9gr",writeup_url:""},
+  {severity:"High",id:"CVE-2025-67644 + CVE-2026-28277 + CVE-2026-27022",title:"LangGraph Checkpointer SQLi -> RCE Chain",component:"LangGraph checkpointer (SQLite/Redis) -- 50M+ monthly downloads",vector:"SQLi in SQLite checkpointer (7.3) + ormsgpack deser -> os.system (6.8) + RediSearch query injection (6.5); first two chain to RCE when get_state_history() exposes a user filter",date:"2026-06-11",discoverer:"Check Point Research (Yarden Porat)",ai_disc:"-",technique:"manual code review",notes:"LangSmith-hosted (PostgreSQL) NOT affected. Fixed langgraph-checkpoint-sqlite 3.0.1+/langgraph 1.0.10+. Theme 1/14.",advisory_url:"https://research.checkpoint.com/2026/from-sqli-to-rce-exploiting-langgraphs-checkpointer/",writeup_url:"https://research.checkpoint.com/2026/from-sqli-to-rce-exploiting-langgraphs-checkpointer/"},
+  {severity:"High",id:"Agentjacking (no CVE)",title:"Coding-Agent RCE via Poisoned Trusted Tool Output (Sentry-DSN -> MCP)",component:"Sentry MCP server -> Claude Code / Cursor / Codex",vector:"Attacker POSTs a Sentry error via public write-only DSN; MCP server relays it as TRUSTED output w/ fake ## Resolution npx command -> agent runs it with dev privileges",date:"2026-06-09",discoverer:"Tenet Security (Bobrov, Sternberg, Poran)",ai_disc:"-",technique:"prompt-injection demo + dynamic verification (real-world campaign)",notes:"Escalated to High per no-CVSS rule. 85% success; 2,388 orgs w/ injectable DSNs; 100+ confirmed execs incl. Fortune 500. Sentry declined fix. Anchors Theme 26.",advisory_url:"https://tenetsecurity.ai/blog/agentjacking-coding-agents-with-fake-sentry-errors/",writeup_url:"https://tenetsecurity.ai/blog/agentjacking-coding-agents-with-fake-sentry-errors/"},
+  {severity:"High",id:"OpenClaw 7-CVE cluster (CVE-2026-53836/-53821/-53831/-53823/-53832/-53834/-53825)",title:"OpenClaw Gateway Authorization / Identity Cluster",component:"OpenClaw Gateway",vector:"PowerShell allowlist bypass via flag aliases (8.8) + WS client-declared operator scopes pre-pairing (8.8) + system.run shell-metachar bypass (8.3) + allowFrom Slack-display-name binding (8.1) + forged trusted-proxy headers (7.7) + QQBot slash-cmd allowFrom skip (7.5) + memory-wiki arbitrary file read (6.5)",date:"2026-06-13",discoverer:"GHSA (OpenClaw maintainers)",ai_disc:"-",technique:"manual code review (config/identity boundaries)",notes:"Formalizes the 'Claw Chain' lineage. Agent-platform default-allow on policy/identity + agent-memory file-read. Themes 3/6/18/23.",advisory_url:"https://github.com/advisories/GHSA-ffhm-8fwq-7q27",writeup_url:""},
+  {severity:"High",id:"CVE-2026-7787",title:"IBM Langflow OSS Broken Access Control (BOLA/IDOR)",component:"Langflow OSS 1.0.0-1.9.1",vector:"Authenticated user reads/modifies other users' resources",date:"2026-06-12",discoverer:"GHSA-gfrh-qj3c-qwrr",ai_disc:"-",technique:"manual code review",notes:"CVSS 7.5. Distinct from ITW unauth-RCE CVE-2026-5027. Theme 14.",advisory_url:"https://github.com/advisories/GHSA-gfrh-qj3c-qwrr",writeup_url:""},
+  {severity:"High",id:"CVE-2026-5497",title:"vLLM Out-of-Memory Denial of Service",component:"vLLM >=0.8.0 (inference server)",vector:"Remote attacker triggers OOM -> DoS on the inference server",date:"2026-06-12",discoverer:"GHSA-wcwg-c5fc-9vrc",ai_disc:"-",technique:"reported via GHSA",notes:"CVSS 7.5. AI-infra availability surface; pairs with GPU inference-server class (Theme 24b) + Theme 14.",advisory_url:"https://github.com/advisories/GHSA-wcwg-c5fc-9vrc",writeup_url:""},
+  {severity:"High",id:"Broken OAuth in AI clients (no CVE)",title:"Systemic MCP Transport-Auth Weakness Across AI Clients",component:"Major AI clients implementing remote MCP (OAuth 2.1 + PKCE)",vector:"Nov-2025 MCP authz spec is secure only if clients implement the refresh_token grant; most vendors haven't -> insecure long-lived-token patterns",date:"2026-06-12",discoverer:"community research (r/netsec)",ai_disc:"-",technique:"configuration review across multiple clients",notes:"Systemic class, no CVE. MCP transport-auth weakness spanning the AI-client ecosystem. Theme 1.",advisory_url:"https://www.reddit.com/r/netsec/comments/1u3xm0y/major_ai_clients_shipping_with_broken_oauth/",writeup_url:"https://www.reddit.com/r/netsec/comments/1u3xm0y/major_ai_clients_shipping_with_broken_oauth/"}
+];
+
+var LATEST_TOOLS = [
+  {tool:"Microsoft -- 'Information-flow control: moving toward secure, autonomous agents'",maintainer:"Microsoft",date:"2026-06-16",description:"IFC-based defensive architecture for autonomous agents -- tracks data provenance through an agent's reasoning so untrusted inputs cannot silently reach privileged sinks. Clearest articulation yet of capability/flow-based authz as the structural answer to prompt injection. Theme 8; pairs with the 'Verifier Tax' safety-success tradeoff finding.",advisory_url:"https://commandline.microsoft.com/information-flow-control-moving-toward-secure-autonomous-agents/"},
+  {tool:"OWASP GenAI -- 'State of Agentic AI Security & Governance' v2.01",maintainer:"OWASP GenAI Security Project",date:"2026-06-11",description:"Shifts from plausible threats to a catalog of real CVEs/advisories. CODING AGENTS ARE THE EPICENTER: 28 of 53 tracked agentic projects are coding agents (n8n 57 advisories, Claude Code 22, AutoGPT 15). Prompt injection maps to 6/10 OWASP Agentic Top 10. Regulatory clocks tightening (DORA 4h, NIS2 24h, NY RAISE 72h). Themes 5/11.",advisory_url:"https://www.helpnetsecurity.com/2026/06/11/owasp-prompt-injection-ai-security-failures/"},
+  {tool:"Cisco DefenseClaw -- On-Prem AI SOC Workflow (Black Hat Asia recap)",maintainer:"Cisco AI Defense",date:"2026-06-15",description:"Private on-prem AI-SOC workflow run in the BH Asia NOC: Ollama + NVIDIA GPU, Open WebUI, FastAPI inspection proxy w/ Cisco AI Defense, OpenClaw orchestration, DefenseClaw audit, Splunk via HEC, six MCP integrations. Lesson: agentic workflows need an auditable trail, not just inspection. Theme 12.",advisory_url:"https://blogs.cisco.com/security/bhasia-2026-defenseclaw"},
+  {tool:"Sysdig x Anthropic -- Claude compliance events -> security signals",maintainer:"Sysdig + Anthropic",date:"2026-06-12",description:"Runtime defense for the 'Anthropic API key as one of the most powerful credentials in the building' blast radius -- turns Claude compliance/audit events into detections. Pairs with Sysdig's June 15 'jailbreaking LLMs with CTF framing and how to catch them' detection writeup. Theme 4/12.",advisory_url:"https://webflow.sysdig.com/blog/sysdig-and-anthropic-turning-claude-compliance-events-into-real-security-signals"},
+  {tool:"Snyk VulnBench JS 1.0 -- 'Can LLMs Find the Same Bugs Twice?'",maintainer:"Snyk",date:"2026-06-14",description:"Reproducibility benchmark for LLM vuln-finding on JavaScript -- measures whether models re-find the same bugs across runs (a stability metric for AI VR). Feeds Theme 16 and the AI-VR measurement gap. arXiv preprint (verify ID).",advisory_url:"https://snyk.io/"},
+  {tool:"OpenACA -- OSS scanner for AI agent stacks (MCPs/skills/plugins)",maintainer:"open-agent-security (community)",date:"2026-06-16",description:"WATCHLIST -- subagent could not confirm the repo at github.com/open-agent-security/openaca. Show-HN scanner positioned to cover MCPs/skills/plugins; not yet a confirmed defensive primitive. Theme 12.",advisory_url:"https://github.com/open-agent-security/openaca"},
+  {tool:"NakshGuard -- on-prem proxy that stops AI-agent loops",maintainer:"Pujan Mirani (community)",date:"2026-06-16",description:"OSS on-prem proxy that detects and breaks runaway AI-agent loops (cost + availability containment). Early-stage personal project; agent runtime containment (Theme 8/12).",advisory_url:"https://github.com/PujanMirani/NakshGuard"}
+];
+
+var LATEST_POSTS = [
+  {source:"Anthropic",date:"2026-06-12",title:"Statement on the US government directive to suspend access to Fable 5 and Mythos 5 (foreign-national export-control directive -> global shutdown; other Claude models unaffected)",advisory_url:"https://www.anthropic.com/news/fable-mythos-access"},
+  {source:"Joshua Saxe (Substack)",date:"2026-06-13",title:"Banning Mythos represents a basic misunderstanding of AI cybersecurity -- LLMs are dual-use substrates that benefit defenders more",advisory_url:"https://joshuasaxe181906.substack.com/p/banning-mythos-represents-a-basic"},
+  {source:"Snyk (Stephen Thoemmes)",date:"2026-06-14",title:"When a Government Pulls an AI Model: what the Fable 5 / Mythos 5 suspension means -- model redundancy is now a resilience requirement",advisory_url:"https://snyk.io/blog/fable-mythos-suspension-security-takeaways/"},
+  {source:"The Register",date:"2026-06-15",title:"Feds freaked over Fable 5 after simple 'fix this code' prompt, not jailbreak, says researcher (Katie Moussouris)",advisory_url:"https://www.theregister.com/security/2026/06/15/feds-freaked-over-fable-5-after-simple-fix-this-code-prompt-not-jailbreak-says-researcher/5255827"},
+  {source:"Obsidian Security",date:"2026-06-11",title:"LiteLLM privilege escalation -> host RCE chain (CVE-2026-47101/-47102/-40217, chain CVSS 9.9; Man-in-the-Gateway PoC)",advisory_url:"https://www.obsidiansecurity.com/blog/litellm-privilege-escalation-rce"},
+  {source:"Varonis Threat Labs",date:"2026-06-15",title:"SearchLeak -- one-click M365 Copilot data exfiltration (CVE-2026-42824, Microsoft MAXIMUM)",advisory_url:"https://www.varonis.com/blog/searchleak"},
+  {source:"Tenet Security",date:"2026-06-09",title:"Agentjacking -- tricking AI coding agents into running malicious code via poisoned Sentry error output",advisory_url:"https://tenetsecurity.ai/blog/agentjacking-coding-agents-with-fake-sentry-errors/"},
+  {source:"Check Point Research",date:"2026-06-11",title:"From SQLi to RCE: exploiting LangGraph's checkpointer (CVE-2025-67644/-28277/-27022)",advisory_url:"https://research.checkpoint.com/2026/from-sqli-to-rce-exploiting-langgraphs-checkpointer/"},
+  {source:"The Hacker News",date:"2026-06-11",title:"Unpatched Langflow flaw CVE-2026-5027 exploited in the wild (VulnCheck)",advisory_url:"https://thehackernews.com/2026/06/unpatched-langflow-flaw-cve-2026-5027.html"},
+  {source:"Microsoft",date:"2026-06-16",title:"Information-flow control: moving toward secure, autonomous agents",advisory_url:"https://commandline.microsoft.com/information-flow-control-moving-toward-secure-autonomous-agents/"},
+  {source:"clearbluejar (John McIntosh) [RE-tooling sweep]",date:"2026-06-04",title:"System Over Model, Tested: Reproducing Mythos's FreeBSD find on local open-weight models (gpt-oss-20b, gemma-4-31b-it); false positives cut 30->5 via a system stage",advisory_url:"https://clearbluejar.github.io/posts/system-over-model-tested-mythos-freebsd-local-openweight/"},
+  {source:"Cisco Talos (David Zimmer) [RE-tooling sweep]",date:"2026-06-18",title:"Scripting the disassembler: Local agentic reverse engineering through vbdec's live command interface",advisory_url:"https://blog.talosintelligence.com/rss/"}
+];
+
+var HEADLINES = [
+  "<b>LEAD -- US export-control directive forces Anthropic to suspend Fable 5 + Mythos 5 worldwide (June 12)</b> -- a directive nominally targeting foreign-national access became a global shutdown of two models (other Claude models unaffected). Trigger = a reported 'jailbreak' that reviewer Katie Moussouris (Luta Security) says is the prompt 'fix this code' (routine defensive code review); paper authored by Amazon; admin (David Sacks) calls it a refused-to-fix bypass -> [attribution:disputed]. New Theme 25.",
+  "<b>Joshua Saxe (tracked) rebuts the Mythos ban (June 13)</b> -- 'Banning Mythos represents a basic misunderstanding of AI cybersecurity': LLMs are dual-use substrates that, on current evidence, benefit defenders more; draws the 1990s crypto-wars / Metasploit parallel. Snyk's defender takeaway: model redundancy is now a resilience requirement. freefable.org open letter (Alex Stamos, ~100 signers).",
+  "<b>LiteLLM low-priv -> admin -> host RCE chain (June 11, Obsidian Security)</b> -- CVE-2026-47101/-47102/-40217, chain CVSS 9.9: authz bypass + self-promote to proxy_admin + Custom Code Guardrail exec() sandbox escape -> host RCE exposing every provider key. 'Man-in-the-Gateway' PoC injects forged tool calls into Claude Code. Distinct from CVE-2026-42271. Theme 14.",
+  "<b>M365 Copilot 'SearchLeak' one-click exfiltration (June 15, Varonis)</b> -- CVE-2026-42824 (Microsoft MAXIMUM): P2P injection + HTML-render race + Bing-searchbyimage SSRF; one click on a legit microsoft.com link exfils mailbox/files/MFA codes. Themes 5/17.",
+  "<b>Agentjacking -- coding-agent RCE via poisoned trusted tool output (June 9, Tenet Security)</b> -- attacker writes a Sentry error via a public DSN; the Sentry MCP server relays it as TRUSTED output w/ a fake Resolution npx command -> Claude Code/Cursor/Codex execute it. 85% success, 2,388 exposed orgs; Sentry declined to fix. New attack class -- anchors Theme 26 (trusted-context poisoning).",
+  "<b>LangGraph SQLi -> RCE chain (June 11, Check Point)</b> -- CVE-2025-67644/-28277/-27022 in the checkpointer persistence layer (50M+ monthly downloads); LangSmith-hosted PostgreSQL deployments NOT affected. + Langflow ITW RCE CVE-2026-5027, Meta Ads MCP token leak CVE-2026-48039 (9.1), OpenClaw 7-CVE cluster.",
+  "<b>OWASP GenAI 'State of Agentic AI Security & Governance' v2.01 (June 11)</b> -- coding agents are the epicenter: 28 of 53 tracked agentic projects (n8n 57 advisories, Claude Code 22); prompt injection maps to 6/10 OWASP Agentic Top 10. Themes 5/11.",
+  "<b>11 new S8 rows this cycle (5 Critical, 6 High), all human/no-AI.</b> (5th Critical: CVE-2026-11624 Google MCP Toolbox for Databases DNS-rebinding, Jonathan Leitschuh -- triaged in the June 14 daily scan, promoted here.) Two new themes: Theme 25 (export-control recall) + Theme 26 (trusted-context poisoning). New tracked orgs: Obsidian Security, Tenet Security, Varonis Threat Labs, Check Point Research, Luta Security.",
+  "<b>Rejected / out-of-scope:</b> 'Royal MCP <=1.4.2' (CVE-2026-40775) is a WordPress plugin, NOT Model Context Protocol -- excluded. Chrome/WebGPU GPU-process OOB (CVE-2026-12030 cluster) = browser web-renderer, Theme 24 trend-watch only. depthfirst FFmpeg 21-zero-day is June 6 (out of window; already cataloged v3.4).",
+  "<b>Operational status:</b> feed cache fresh (2026-06-16 14:58 UTC, 180 in-window items). Window June 12->16 (effective June 11->16 to catch items the targeted June 12 GPUBreach pull skipped). Monthly enrichment pass NOT triggered (not the first weekly of the month)."
+];
+
+var CUMULATIVE_PRE = [
+  {severity:"Critical",id:"CVE-2026-47101/-47102/-40217",component:"LiteLLM AI gateway",vector:"low-priv -> admin -> Custom Code Guardrail exec() sandbox escape -> host RCE (chain CVSS 9.9)",discoverer:"Obsidian Security; X41 D-Sec (guardrail)",date:"2026-06-11",ai_disc:"-",advisory_url:"https://www.obsidiansecurity.com/blog/litellm-privilege-escalation-rce",writeup_url:"https://www.obsidiansecurity.com/blog/litellm-privilege-escalation-rce"},
+  {severity:"Critical",id:"CVE-2026-42824",component:"M365 Copilot Enterprise Search",vector:"P2P injection + HTML-render race + Bing SSRF -> one-click exfil of mail/files/MFA (Microsoft MAXIMUM)",discoverer:"Varonis Threat Labs (Dolev Taler)",date:"2026-06-15",ai_disc:"-",advisory_url:"https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-42824",writeup_url:"https://www.varonis.com/blog/searchleak"},
+  {severity:"Critical",id:"CVE-2026-48039",component:"Meta Ads MCP (HTTP transport)",vector:"AuthInjectionMiddleware fails to authenticate tool calls -> Meta access-token leak (CVSS 9.1)",discoverer:"GHSA-9gw6-46qc-99vr",date:"2026-06-12",ai_disc:"-",advisory_url:"https://github.com/advisories/GHSA-9gw6-46qc-99vr",writeup_url:""},
+  {severity:"Critical",id:"CVE-2026-5027",component:"Langflow (AI app/agent builder)",vector:"Unauthenticated RCE, exploited in the wild (VulnCheck)",discoverer:"VulnCheck (ITW)",date:"2026-06-11",ai_disc:"-",advisory_url:"https://thehackernews.com/2026/06/unpatched-langflow-flaw-cve-2026-5027.html",writeup_url:"https://thehackernews.com/2026/06/unpatched-langflow-flaw-cve-2026-5027.html"},
+  {severity:"Critical",id:"CVE-2026-11624",component:"Google MCP Toolbox for Databases (<v0.25.0)",vector:"Missing Origin/Host validation -> DNS rebinding drives local MCP DB tools",discoverer:"Jonathan Leitschuh",date:"2026-06-13",ai_disc:"-",advisory_url:"https://github.com/advisories/GHSA-76g7-m3xw-x9gr",writeup_url:""},
+  {severity:"High",id:"CVE-2025-67644/-28277/-27022",component:"LangGraph checkpointer",vector:"SQLi + ormsgpack deser + RediSearch injection -> RCE chain via get_state_history()",discoverer:"Check Point Research (Yarden Porat)",date:"2026-06-11",ai_disc:"-",advisory_url:"https://research.checkpoint.com/2026/from-sqli-to-rce-exploiting-langgraphs-checkpointer/",writeup_url:"https://research.checkpoint.com/2026/from-sqli-to-rce-exploiting-langgraphs-checkpointer/"},
+  {severity:"High",id:"Agentjacking (no CVE)",component:"Sentry MCP server -> Claude Code/Cursor/Codex",vector:"poisoned trusted tool output (public Sentry DSN) -> agent runs planted npx command (85% success, 2,388 orgs)",discoverer:"Tenet Security",date:"2026-06-09",ai_disc:"-",advisory_url:"https://tenetsecurity.ai/blog/agentjacking-coding-agents-with-fake-sentry-errors/",writeup_url:"https://tenetsecurity.ai/blog/agentjacking-coding-agents-with-fake-sentry-errors/"},
+  {severity:"High",id:"OpenClaw 7-CVE cluster (CVE-2026-53836/-53821/-53831/-53823/-53832/-53834/-53825)",component:"OpenClaw Gateway",vector:"allowlist bypasses + WS operator-scope trust + forged proxy headers + memory-wiki arbitrary read",discoverer:"GHSA (OpenClaw maintainers)",date:"2026-06-13",ai_disc:"-",advisory_url:"https://github.com/advisories/GHSA-ffhm-8fwq-7q27",writeup_url:""},
+  {severity:"High",id:"CVE-2026-7787",component:"IBM Langflow OSS 1.0.0-1.9.1",vector:"Broken access control (BOLA/IDOR) -- read/modify other users' resources (CVSS 7.5)",discoverer:"GHSA-gfrh-qj3c-qwrr",date:"2026-06-12",ai_disc:"-",advisory_url:"https://github.com/advisories/GHSA-gfrh-qj3c-qwrr",writeup_url:""},
+  {severity:"High",id:"CVE-2026-5497",component:"vLLM >=0.8.0",vector:"Remote OOM -> denial of service on the inference server (CVSS 7.5)",discoverer:"GHSA-wcwg-c5fc-9vrc",date:"2026-06-12",ai_disc:"-",advisory_url:"https://github.com/advisories/GHSA-wcwg-c5fc-9vrc",writeup_url:""},
+  {severity:"High",id:"Broken OAuth in AI clients (no CVE)",component:"Major AI clients (remote MCP)",vector:"OAuth 2.1+PKCE refresh_token grant unimplemented -> insecure long-lived-token patterns",discoverer:"community (r/netsec)",date:"2026-06-12",ai_disc:"-",advisory_url:"https://www.reddit.com/r/netsec/comments/1u3xm0y/major_ai_clients_shipping_with_broken_oauth/",writeup_url:"https://www.reddit.com/r/netsec/comments/1u3xm0y/major_ai_clients_shipping_with_broken_oauth/"},
+  {severity:"High",id:"GPUBreach (no CVE; June 12 capture)",component:"NVIDIA GPU (GDDR6) + driver",vector:"GDDR6 Rowhammer -> GPU page-table corruption -> arbitrary GPU R/W -> root shell with IOMMU enabled; leaks cuPQC keys + LLM weights",discoverer:"U Toronto SITH Lab (Saileshwar et al.; IEEE S&P 2026)",date:"2026-06-12",ai_disc:"-",advisory_url:"https://gpubreach.ca/",writeup_url:"https://github.com/sith-lab/gpubreach"},
+  {severity:"Critical",id:"CVE-2026-42271 (+CVE-2026-48710 chain) -- CISA KEV",component:"LiteLLM AI gateway",vector:"MCP-preview command injection -> chained unauth RCE (CVSS 10.0)",discoverer:"jaydns; chain by Horizon3.ai",date:"2026-06-08",ai_disc:"-",advisory_url:"https://github.com/BerriAI/litellm/security/advisories/GHSA-v4p8-mg3p-g94g",writeup_url:"https://horizon3.ai/attack-research/vulnerabilities/cve-2026-42271-chained-with-cve-2026-48710/"},
+  {severity:"Critical",id:"CVE-2025-23266 NVIDIAScape",component:"NVIDIA Container Toolkit",vector:"OCI hook container escape (~37% cloud envs)",discoverer:"Wiz Research",date:"2025-07",ai_disc:"-",advisory_url:"",writeup_url:"https://www.wiz.io/blog"},
+  {severity:"Critical",id:"CVE-2025-23319/-23320/-23334 Triton chain",component:"NVIDIA Triton Inference Server",vector:"Info leak -> shmem R/W -> unauth RCE",discoverer:"Wiz Research",date:"2025-08",ai_disc:"-",advisory_url:"",writeup_url:"https://www.wiz.io/blog"},
+  {severity:"Critical",id:"CVE-2026-22778",component:"vLLM",vector:"Heap overflow via malicious video URL -> unauth RCE (CVSS 9.8)",discoverer:"Orca Security",date:"2026-02",ai_disc:"-",advisory_url:"https://github.com/advisories",writeup_url:""},
+  {severity:"Critical",id:"CVE-2026-47708",component:"stata-mcp",vector:"log_file_name command injection (CVSS 9.8)",discoverer:"GHSA",date:"2026-06-04",ai_disc:"-",advisory_url:"https://github.com/advisories",writeup_url:""},
+  {severity:"Critical",id:"CVE-2026-32625",component:"LibreChat MCP",vector:"${VAR} env-var interpolation -> secrets exfil to attacker MCP URL (CVSS 9.6)",discoverer:"GHSA",date:"2026-06-02",ai_disc:"-",advisory_url:"https://github.com/advisories",writeup_url:""},
+  {severity:"Critical",id:"depthfirst FFmpeg 21 zero-days (CVE-2026-39210..-39218 + 12)",component:"FFmpeg",vector:"AI-discovered heap/stack overflows (~$48/vuln)",discoverer:"depthfirst",date:"2026-06-06",ai_disc:"depthfirst",advisory_url:"https://github.com/advisories",writeup_url:""},
+  {severity:"High",id:"Claude Code GitHub Action prompt-injection",component:"claude-code-action <1.0.94",vector:"Malicious issue -> repo hijack / supply-chain RCE",discoverer:"RyotaK (GMO Flatt Security)",date:"2026-06-04",ai_disc:"-",advisory_url:"https://flatt.tech/research/posts/poisoning-claude-code-one-github-issue-to-break-the-supply-chain/",writeup_url:"https://www.microsoft.com/en-us/security/blog/2026/06/05/securing-ci-cd-in-agentic-world-claude-code-github-action-case/"},
+  {severity:"High",id:"CVE-2026-48710 BadHost",component:"Starlette (FastAPI/vLLM/LiteLLM/MCP)",vector:"Host-header re-parse path-auth bypass (CVSS 6.5 / functional-Critical)",discoverer:"Eric Sesterhenn / X41 D-Sec",date:"2026-06-01",ai_disc:"-",advisory_url:"https://ostif.org/disclosing-the-badhost-vulnerability-in-starlette/",writeup_url:"https://github.com/x41sec/poc/tree/master/starlette-host-header"},
+  {severity:"High",id:"CVE-2026-39987 marimo (in-the-wild LLM-agent kill chain)",component:"marimo notebook",vector:"Pre-auth WebSocket RCE -> agent-driven post-exploitation (CISA KEV)",discoverer:"Sysdig TRT (in-the-wild)",date:"2026-06-04",ai_disc:"-",advisory_url:"https://www.sysdig.com/blog/ai-agent-at-the-wheel-how-an-attacker-used-llms-to-move-from-a-cve-to-an-internal-database-in-4-pivots",writeup_url:"https://www.sysdig.com/blog/agentic-threat-actor-hits-the-orchestration-plane-ai-agent-driven-container-escape"},
+  {severity:"High",id:"CVE-2026-47419",component:"PraisonAI platform <0.1.4",vector:"Cross-workspace IDOR on Agent endpoints (CVSS 8.3)",discoverer:"reporter withheld (GHSA)",date:"2026-06-05",ai_disc:"-",advisory_url:"https://github.com/advisories/GHSA-7p8g-6c6g-h9w7",writeup_url:""},
+  {severity:"High",id:"GHSA-wx3m-whqv-xv47 skillctl",component:"skillctl 0.1.0/0.1.1",vector:"Path traversal + symlink-follow -> skill-supply-chain file exfil",discoverer:"GHSA",date:"2026-06-05",ai_disc:"-",advisory_url:"https://github.com/advisories/GHSA-wx3m-whqv-xv47",writeup_url:""},
+  {severity:"Critical",id:"CVE-2026-47416",component:"PraisonAI platform <0.1.4 (workspaces API)",vector:"Broken authz -> member self-promotes to owner (CVSS 9.6)",discoverer:"offset + 0xEr3n",date:"2026-06-01",ai_disc:"-",advisory_url:"https://github.com/MervinPraison/PraisonAI/security/advisories",writeup_url:""},
+  {severity:"High",id:"CVE-2026-35435",component:"Azure AI Foundry",vector:"Improper access control / EoP (CVSS 8.6)",discoverer:"Microsoft (internal)",date:"2026-05-31",ai_disc:"-",advisory_url:"https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-35435",writeup_url:""},
+  {severity:"High",id:"GHSA-63gr-g7jc-v8rg",component:"@agenticmail/mcp (npm)",vector:"Missing auth on privileged MCP tool calls",discoverer:"sondt99",date:"2026-06-01",ai_disc:"-",advisory_url:"https://github.com/advisories/GHSA-63gr-g7jc-v8rg",writeup_url:""},
+  {severity:"Medium",id:"CVE-2023-4969 LeftoverLocals",component:"AMD/Apple/Qualcomm/Imagination GPUs",vector:"Cross-process GPU local-memory leak (~181 MB per 7B LLM query)",discoverer:"Trail of Bits",date:"2024-01",ai_disc:"-",advisory_url:"",writeup_url:"https://blog.trailofbits.com/"},
+  {severity:"Critical",id:"MCP STDIO Architectural RCE",component:"MCP protocol",vector:"Design flaw / RCE",discoverer:"OX Security",date:"2026-04",advisory_url:"",writeup_url:"https://www.ox.security/blog/the-mother-of-all-ai-supply-chains-critical-systemic-vulnerability-at-the-core-of-the-mcp/"},
+  {severity:"Critical",id:"FENRIR AI Infra Zero-Days (21 CVEs)",component:"NVIDIA/Tencent/MLflow/MCP",vector:"AI-discovered RCE batch",discoverer:"TrendAI",date:"2025",ai_disc:"ÆSIR/FENRIR",advisory_url:"",writeup_url:"https://www.trendmicro.com/en_us/research/26/a/aesir.html"},
+  {severity:"Critical",id:"OpenSSL Zero-Days (12)",component:"OpenSSL",vector:"AI-discovered",discoverer:"AISLE",date:"2026-01",ai_disc:"AISLE",advisory_url:"",writeup_url:"https://aisle.com/blog"},
+  {severity:"Critical",id:"CVE-2025-6965 (SQLite zero-day interdicted)",component:"SQLite",vector:"AI-discovered + pre-exploitation interdiction",discoverer:"Google Big Sleep",date:"2026-04-22",ai_disc:"Big Sleep",advisory_url:"https://nvd.nist.gov/vuln/detail/CVE-2025-6965",writeup_url:"https://security.googleblog.com/"},
+  {severity:"Critical",id:"Daybreak Patch Wednesday Cluster (26 CVEs)",component:"Frontier-AI Patch Wednesday targets",vector:"AI-discovered (per Palo Alto Unit 42)",discoverer:"OpenAI Daybreak (GPT-5.5-Cyber/Mythos/Opus 4.7)",date:"2026-05-13",ai_disc:"Daybreak",advisory_url:"https://openai.com/news/",writeup_url:"https://unit42.paloaltonetworks.com/"},
+  {severity:"Critical",id:"Prompt Injection -> RCE (3 agents)",component:"Multiple agents",vector:"Argument injection",discoverer:"Trail of Bits",date:"2025-10",advisory_url:"",writeup_url:""},
+  {severity:"Critical",id:"LangChain doc-RCE (~80%)",component:"LangChain",vector:"Document -> RCE",discoverer:"Mindgard",date:"2025",advisory_url:"",writeup_url:""},
+  {severity:"Critical",id:"CVE-2026-34953",component:"PraisonAI",vector:"OAuth bypass (CVSS 9.1)",discoverer:"YeranG30",date:"2026-04-01",advisory_url:"https://github.com/advisories/GHSA-98f9-fqg5-hvq5",writeup_url:""},
+  {severity:"Critical",id:"CVE-2026-27825",component:"mcp-atlassian",vector:"Arbitrary file write -> RCE",discoverer:"yotampe-pluto",date:"2026-03-10",advisory_url:"https://github.com/advisories/GHSA-xjgw-4wvw-rgm4",writeup_url:""},
+  {severity:"High",id:"MCP Line Jumping",component:"MCP",vector:"Pre-invocation injection",discoverer:"Trail of Bits",date:"2025-04",advisory_url:"",writeup_url:"https://blog.trailofbits.com/2025/04/21/mcp-line-jumping/"},
+  {severity:"High",id:"MCP Conversation History Theft",component:"MCP",vector:"Tool desc exfil",discoverer:"Trail of Bits",date:"2025-04",advisory_url:"",writeup_url:""},
+  {severity:"High",id:"MCP Insecure Credential Storage",component:"MCP impls",vector:"Credential exposure",discoverer:"Trail of Bits",date:"2025-04",advisory_url:"",writeup_url:""},
+  {severity:"High",id:"Promptware",component:"Multi-agent",vector:"Lateral movement / C2",discoverer:"Rehberger",date:"2026-03",advisory_url:"",writeup_url:"https://embracethered.com/blog"},
+  {severity:"High",id:"IDE 25 Vuln Patterns",component:"Cursor/Copilot/Claude Code/Kiro/JetBrains",vector:"Mixed",discoverer:"Mindgard",date:"2025",advisory_url:"",writeup_url:"https://github.com/Mindgard/ai-ide-vuln-patterns"},
+  {severity:"High",id:"KYC Pipeline Exploitation",component:"KYC agents",vector:"Doc-injected steering",discoverer:"TrendAI",date:"2026-03",advisory_url:"",writeup_url:""},
+  {severity:"High",id:"Image Scaling Attacks",component:"Gemini CLI / Vertex AI Studio",vector:"Visual prompt injection",discoverer:"Trail of Bits",date:"2025-08",advisory_url:"",writeup_url:"https://blog.trailofbits.com/"},
+  {severity:"High",id:"Agentic Browser Isolation Gaps",component:"Agentic browsers",vector:"Cross-tool chain",discoverer:"Trail of Bits",date:"2026-01",advisory_url:"",writeup_url:""},
+  {severity:"High",id:"Samsung Bixby AI Vuln",component:"Samsung Bixby",vector:"Promp2Pwn",discoverer:"Interrupt Labs",date:"2026-03",ai_disc:"Promp2Pwn",advisory_url:"",writeup_url:"https://www.pwn2own.com/"},
+  {severity:"High",id:"Calendar-Invite Hijack",component:"Gemini Workspace agent",vector:"Indirect injection",discoverer:"Google",date:"2026-03",advisory_url:"",writeup_url:""},
+  {severity:"High",id:"CVE-2026-30617",component:"LangChain-ChatChat 0.3.1",vector:"MCP STDIO RCE",discoverer:"unreviewed",date:"2026-04-15",advisory_url:"https://github.com/advisories/GHSA-w94v-hq49-38vh",writeup_url:""},
+  {severity:"High",id:"CVE-2026-30624",component:"Agent Zero 0.9.8",vector:"External MCP RCE",discoverer:"unreviewed",date:"2026-04-15",advisory_url:"https://github.com/advisories/GHSA-rppc-c4xv-v29h",writeup_url:""},
+  {severity:"High",id:"GHSA-cvrr-qhgw-2mm6",component:"Flowise",vector:"Param override -> RCE",discoverer:"retpoline",date:"2026-04-16",advisory_url:"https://github.com/advisories/GHSA-cvrr-qhgw-2mm6",writeup_url:""},
+  {severity:"High",id:"CVE-2026-39884",component:"mcp-server-kubernetes",vector:"kubectl arg injection",discoverer:"TharVid",date:"2026-04-14",advisory_url:"https://github.com/advisories/GHSA-4xqg-gf5c-ghwq",writeup_url:""},
+  {severity:"High",id:"CVE-2026-35568",component:"Java MCP SDK",vector:"DNS rebinding",discoverer:"JLLeitschuh",date:"2026-04-07",advisory_url:"https://github.com/advisories/GHSA-8jxr-pr72-r468",writeup_url:""},
+  {severity:"High",id:"CVE-2026-27124",component:"FastMCP",vector:"OAuth confused deputy",discoverer:"an7y",date:"2026-03-31",advisory_url:"https://github.com/advisories/GHSA-rww4-4w9c-7733",writeup_url:""},
+  {severity:"High",id:"CVE-2026-27826",component:"mcp-atlassian",vector:"SSRF via headers",discoverer:"yotampe-pluto",date:"2026-03-10",advisory_url:"https://github.com/advisories/GHSA-7r34-79r5-rcc9",writeup_url:""},
+  {severity:"High",id:"CVE-2026-33980",component:"Azure Data Explorer MCP",vector:"KQL injection",discoverer:"romain-deperne",date:"2026-03-27",advisory_url:"https://github.com/advisories/GHSA-vphc-468g-8rfp",writeup_url:""},
+  {severity:"High",id:"CVE-2026-35394",component:"@mobilenext/mobile-mcp",vector:"Android intent abuse",discoverer:"manthanghasadiya",date:"2026-04-04",advisory_url:"https://github.com/advisories/GHSA-5qhv-x9j4-c3vm",writeup_url:""},
+  {severity:"High",id:"GHSA-647h-p824-99w7",component:"@grackle-ai/mcp",vector:"Workspace auth bypass",discoverer:"withheld",date:"2026-03-25",advisory_url:"https://github.com/advisories/GHSA-647h-p824-99w7",writeup_url:""},
+  {severity:"High",id:"CVE-2026-29783",component:"@github/copilot CLI",vector:"Shell expansion RCE",discoverer:"withheld",date:"2026-03-06",advisory_url:"https://github.com/advisories/GHSA-g8r9-g2v8-jv6f",writeup_url:""},
+  {severity:"Medium",id:"ANSI Terminal Code Deception",component:"MCP",vector:"Hidden prompts",discoverer:"Trail of Bits",date:"2025-04",advisory_url:"",writeup_url:""},
+  {severity:"Medium",id:"Hidden Audio Jailbreaks",component:"STT pipelines",vector:"Audio prompt injection",discoverer:"Mindgard",date:"2025",advisory_url:"",writeup_url:""},
+  {severity:"Medium",id:"System Prompt Extraction (HF)",component:"Gemma-7B-IT",vector:"Prompt extraction",discoverer:"Mindgard",date:"2025",advisory_url:"",writeup_url:""},
+  {severity:"Medium",id:"Invisible Unicode in IDEs",component:"IDE agents",vector:"Hidden instructions",discoverer:"Mindgard",date:"2025",advisory_url:"",writeup_url:""},
+  {severity:"Medium",id:"LLM CodeGen Unreliability",component:"All LLMs",vector:"Determinism gap",discoverer:"Trail of Bits",date:"2025-12",advisory_url:"",writeup_url:""},
+  {severity:"Medium",id:"CVE-2026-40159",component:"PraisonAI",vector:"Env-var exposure",discoverer:"l3tchupkt",date:"2026-04-10",advisory_url:"https://github.com/advisories/GHSA-pj2r-f9mw-vrcq",writeup_url:""},
+  {severity:"Medium",id:"CVE-2026-30856",component:"WeKnora",vector:"Tool-name collision",discoverer:"aleister1102",date:"2026-03-06",advisory_url:"https://github.com/advisories/GHSA-67q9-58vj-32qx",writeup_url:""},
+  {severity:"Medium",id:"CVE-2026-5607",component:"mcp-browser-agent",vector:"Undisclosed",discoverer:"withheld",date:"2026-04-05",advisory_url:"https://github.com/advisories/GHSA-p486-6v3x-xw9f",writeup_url:""},
+  {severity:"Low",id:"Shadow MCP Server Exposure",component:"Custom agents",vector:"Discovery / exposure",discoverer:"Zenity",date:"2026-03",advisory_url:"",writeup_url:""},
+  {severity:"Low",id:"AI Notetaker Manipulation",component:"AI notetakers",vector:"Governance gap",discoverer:"Joe Sullivan",date:"2026-03",advisory_url:"",writeup_url:""},
+  {severity:"Low",id:"EtherRAT — AI-assisted C2",component:"Node.js fileless",vector:"Smart-contract C2",discoverer:"Sysdig",date:"2026-03",advisory_url:"",writeup_url:""},
+  {severity:"Low",id:"CVE-2026-5379",component:"MCP agents",vector:"Cert info leak",discoverer:"vendor",date:"2026-04-07",advisory_url:"https://github.com/advisories/GHSA-pqp2-x3gp-9g37",writeup_url:""},
+  {severity:"Low",id:"CVE-2026-5374",component:"MCP agents",vector:"Asset info leak",discoverer:"vendor",date:"2026-04-07",advisory_url:"https://github.com/advisories/GHSA-9359-vm49-5gpx",writeup_url:""},
+  // --- Promoted from v2.3 LATEST run (Apr 17 -> May 8 morning) ---
+  {severity:"Critical",id:"TrustFall",component:"Claude Code, Cursor, Copilot CLI, Gemini CLI",vector:"MCP auto-approve / RCE",discoverer:"Adversa AI",date:"2026-05-07",advisory_url:"",writeup_url:"https://adversa.ai/blog/trustfall-coding-agent-security-flaw-rce-claude-cursor-gemini-cli-copilot/"},
+  {severity:"Critical",id:"CVE-2026-30615",component:"Windsurf 1.9544.26+",vector:"Zero-click MCP RCE via malicious HTML + auto-MCP-server registration",discoverer:"OX Security (Moshe Siman Tov Bustan, Mustafa Naamnih, Nir Zadok, Roni Bar)",technique:"prompt-injection demo + dynamic analysis + cross-IDE comparison testing",date:"2026-04-15",advisory_url:"https://github.com/advisories/GHSA-wj2m-jvpr-64cq",writeup_url:"https://www.ox.security/blog/mcp-supply-chain-advisory-rce-vulnerabilities-across-the-ai-ecosystem/"},
+  {severity:"Critical",id:"CVE-2026-42208",component:"LiteLLM 1.81.16-1.83.6",vector:"SQLi (CVSS 9.3); pre-auth via Bearer interpolation",discoverer:"jaydns (GHSA publisher); analyzed by Bishop Fox; ITW by Sysdig TRT",technique:"manual code review + Sysdig honeypot telemetry",date:"2026-04-19",advisory_url:"https://github.com/advisories/GHSA-r75f-5x8p-qvmc",writeup_url:"https://www.sysdig.com/blog/cve-2026-42208-targeted-sql-injection-against-litellms-authentication-path-discovered-36-hours-following-vulnerability-disclosure"},
+  {severity:"Critical",id:"CVE-2026-41264",component:"Flowise CSV_Agents",vector:"PI -> sandbox-less Python eval (incomplete-disallowlist bypass)",discoverer:"Trend Micro Zero Day Initiative (ZDI)",technique:"manual review + prompt-injection demo via ZDI internal harness",date:"2026-04-23",advisory_url:"https://github.com/advisories/GHSA-3hjv-c53m-58jj",writeup_url:"https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-3hjv-c53m-58jj"},
+  {severity:"Critical",id:"CVE-2026-41265",component:"Flowise Airtable_Agents",vector:"PI -> sandbox-less Python eval (same root as -41264)",discoverer:"Trend Micro Zero Day Initiative (ZDI)",technique:"manual review + prompt-injection demo via ZDI internal harness",date:"2026-04-23",advisory_url:"https://github.com/advisories/GHSA-3hjv-c53m-58jj",writeup_url:"https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-3hjv-c53m-58jj"},
+  {severity:"Critical",id:"CVE-2026-2275 / 2287",component:"CrewAI",vector:"Sandbox escape / RCE",discoverer:"CERT/CC",date:"2026-03-29",advisory_url:"https://kb.cert.org/vuls/id/221883",writeup_url:""},
+  {severity:"Critical",id:"Big Sleep / CVE-2025-6965",component:"SQLite",vector:"AI-discovered + interdicted",discoverer:"Google Big Sleep",date:"2026-04-22",advisory_url:"https://nvd.nist.gov/vuln/detail/CVE-2025-6965",writeup_url:"https://security.googleblog.com/"},
+  {severity:"High",id:"Approve Once, Exploit Forever",component:"Claude Code, Codex CLI, Gemini CLI",vector:"Permission UX flaw",discoverer:"Mindgard",date:"2026-05-05",advisory_url:"",writeup_url:"https://mindgard.ai/blog/approve-once-exploit-forever-the-trust-persistence-problem-in-ai-coding-agents"},
+  {severity:"High",id:"CVE-2026-24299",component:"Microsoft 365 Copilot",vector:"Cross-tenant data exfil",discoverer:"Rehberger",date:"2026-05-04",advisory_url:"",writeup_url:"https://embracethered.com/blog/posts/2026/copirate-365/"},
+  {severity:"High",id:"CVE-2026-33626",component:"LMDeploy <= 0.12.0",vector:"SSRF in load_image() (CVSS 7.5)",discoverer:"Igor Stepansky (Orca Security)",technique:"manual review + dynamic verification (callback-server PoC); Sysdig honeypot",date:"2026-04-21",advisory_url:"https://github.com/advisories/GHSA-6w67-hwm5-92mq",writeup_url:"https://www.sysdig.com/blog/cve-2026-33626-how-attackers-exploited-lmdeploy-llm-inference-engines-in-12-hours"},
+  {severity:"High",id:"CVE-2026-32871",component:"FastMCP",vector:"OpenAPI path traversal -> SSRF",discoverer:"FastMCP advisory",date:"2026-04",advisory_url:"https://www.endorlabs.com/vulnerability/cve-2026-32871",writeup_url:""},
+  {severity:"High",id:"CVE-2025-69196",component:"FastMCP",vector:"OAuth resource confusion",discoverer:"FastMCP advisory",date:"2026-04",advisory_url:"https://github.com/PrefectHQ/fastmcp/security/advisories/GHSA-5h2m-4q8j-pqpj",writeup_url:""},
+  {severity:"High",id:"CVE-2026-2286",component:"CrewAI",vector:"RAG SSRF",discoverer:"CERT/CC",date:"2026-03-29",advisory_url:"https://kb.cert.org/vuls/id/221883",writeup_url:""},
+  {severity:"High",id:"CVE-2026-2285",component:"CrewAI",vector:"JSON loader file read",discoverer:"CERT/CC",date:"2026-03-29",advisory_url:"https://kb.cert.org/vuls/id/221883",writeup_url:""},
+  {severity:"High",id:"CVE-2026-35030",component:"LiteLLM",vector:"JWT cache token collision",discoverer:"LiteLLM advisory",date:"2026-04-03",advisory_url:"https://nvd.nist.gov/vuln/detail/CVE-2026-35030",writeup_url:""},
+  {severity:"Medium",id:"CVE-2026-41358",component:"OpenClaw < 2026.4.2",vector:"Slack PI / data exfil",discoverer:"OpenClaw advisory",date:"2026-04",advisory_url:"https://cvereports.com/reports/CVE-2026-41358",writeup_url:""},
+  {severity:"Low",id:"CVE-2026-7396",component:"hermes-agent 0.8.0",vector:"Path traversal",discoverer:"Tenable",date:"2026-04",advisory_url:"https://www.tenable.com/cve/CVE-2026-7396",writeup_url:""},
+  // --- Promoted from v2.4 LATEST run (May 8 PM intra-day delta) ---
+  {severity:"Critical",id:"CVE-2026-26030",component:"Microsoft Semantic Kernel Python",vector:"eval()'d lambda filter -> prompt-to-RCE",discoverer:"Microsoft Security",date:"2026-05-07",advisory_url:"https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-26030",writeup_url:"https://www.microsoft.com/en-us/security/blog/2026/05/07/prompts-become-shells-rce-vulnerabilities-ai-agent-frameworks/"},
+  {severity:"Critical",id:"CVE-2026-25592",component:"Microsoft Semantic Kernel .NET <1.71.0",vector:"DownloadFileAsync sandbox escape",discoverer:"Microsoft Security",date:"2026-05-07",advisory_url:"https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-25592",writeup_url:"https://www.microsoft.com/en-us/security/blog/2026/05/07/prompts-become-shells-rce-vulnerabilities-ai-agent-frameworks/"},
+  {severity:"High",id:"CVE-2026-44336",component:"PraisonAI MCP server",vector:"Path traversal -> .pth Python file injection RCE",discoverer:"Curly-Haired-Baboon (GitHub)",technique:"manual review + dynamic verification (in-process + HTTP-stream PoC with marker file)",date:"2026-05-08",advisory_url:"https://github.com/advisories/GHSA-9mqq-jqxf-grvw",writeup_url:"https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-9mqq-jqxf-grvw"},
+  {severity:"High",id:"CVE-2026-42271",component:"LiteLLM MCP preview endpoints",vector:"Config injection -> RCE (unauth on /mcp-rest/test/connection)",discoverer:"jaydns (GitHub)",technique:"manual code review (authz gap)",date:"2026-05-08",advisory_url:"https://github.com/advisories/GHSA-v4p8-mg3p-g94g",writeup_url:"https://github.com/BerriAI/litellm/security/advisories/GHSA-v4p8-mg3p-g94g"},
+  {severity:"High",id:"CVE-2026-42449",component:"n8n-MCP",vector:"SSRF via IPv4-mapped IPv6 validator bypass",discoverer:"czlonkowski/n8n-mcp maintainer (internal)",technique:"manual code review of SSRFProtection.validateUrlSync()",date:"2026-05-07",advisory_url:"https://github.com/czlonkowski/n8n-mcp/security/advisories",writeup_url:""},
+  // --- Promoted from v2.5 LATEST run (May 8 PM -> May 12) ---
+  {severity:"Critical",id:"CVE-2026-43899",component:"DeepChat <v1.0.4-beta.1",vector:"Electron pop-up bypass -> shell.openExternal RCE (CVSS 9.6)",discoverer:"zerob13 (maintainer publisher); reporter not publicly named",technique:"manual review (incomplete-fix review) + dynamic verification (mock OpenAI server)",date:"2026-05-11",advisory_url:"https://github.com/advisories/GHSA-cp8j-jx7q-7r5f",writeup_url:"https://blog.securelayer7.net/deepchat-openexternal-rce-via-xss-in-electron/"},
+  {severity:"Critical",id:"CVE-2026-43900",component:"DeepChat <v1.0.4-beta.1",vector:"SVG entity DOM XSS (CVSS 9.3)",discoverer:"YLChen-007 (Reporter, GHSA); advisory by zerob13",technique:"manual review (HTML-entity-decoding bypass) + dynamic verification (mock OpenAI server)",date:"2026-05-11",advisory_url:"https://github.com/advisories/GHSA-7r59-67v3-3mgp",writeup_url:"https://www.sentrium.co.uk/labs/deepchat-ai-agent-xss-to-rce-via-mermaid-and-electron-ipc"},
+  {severity:"High",id:"GHSA-56c3-vfp2-5qqj / CVE-2026-44430",component:"modelcontextprotocol/registry v1.7.6",vector:"SSRF via 6to4/NAT64/site-local IPv6 encoding (CVSS 8.5)",discoverer:"MCP Registry maintainers (internal)",technique:"manual code review of HTTP-namespace verification + blocklist",date:"2026-05-08",advisory_url:"https://github.com/modelcontextprotocol/registry/security/advisories/GHSA-56c3-vfp2-5qqj",writeup_url:""},
+  {severity:"High",id:"CVE-2026-41705",component:"Spring AI 1.0.x MilvusVectorStore",vector:"Filter-expression injection (CVSS 8.6)",discoverer:"sharlongwen (Spring credit)",technique:"manual code review (doDelete unsanitized doc-ID concatenation)",date:"2026-05-09",advisory_url:"https://spring.io/security/cve-2026-41705/",writeup_url:"https://spring.io/blog/2026/05/08/spring-ai-1-0-7-1-1-6-2-0-0-M6-available-now/"},
+  {severity:"High",id:"CVE-2026-41712",component:"Spring AI 1.0.x/1.1.x ChatMemory",vector:"Default conversation ID -> cross-user leak",discoverer:"Spring AI team (internal)",technique:"manual code review (default-scope review of ChatMemory advisor)",date:"2026-05-08",advisory_url:"https://spring.io/security/cve-2026-41712/",writeup_url:"https://spring.io/blog/2026/05/08/spring-ai-1-0-7-1-1-6-2-0-0-M6-available-now/"},
+  {severity:"High",id:"CVE-2026-41713",component:"Spring AI PromptChatMemoryAdvisor",vector:"Memory-poisoning prompt injection",discoverer:"Spring AI team (internal)",technique:"manual review + prompt-injection demo",date:"2026-05-08",advisory_url:"https://spring.io/security/cve-2026-41713/",writeup_url:"https://spring.io/blog/2026/05/08/spring-ai-1-0-7-1-1-6-2-0-0-M6-available-now/"},
+  // --- Promoted from v2.6 LATEST run (May 12 -> May 19) ---
+  {severity:"Critical",id:"CVE-2026-41094",component:"Microsoft AI Data Formulator",vector:"LLM-backed parser -> RCE",discoverer:"Microsoft MDASH",ai_disc:"MDASH",date:"2026-05-12",advisory_url:"https://www.microsoft.com/en-us/security/blog/2026/05/12/defense-at-ai-speed-microsofts-new-multi-model-agentic-security-system-tops-leading-industry-benchmark/",writeup_url:"https://www.microsoft.com/en-us/security/blog/2026/05/12/defense-at-ai-speed-microsofts-new-multi-model-agentic-security-system-tops-leading-industry-benchmark/"},
+  {severity:"Critical",id:"CVE-2026-41610",component:"VS Code workspace trust",vector:"Silent task/debug exec on malicious repo open",discoverer:"Microsoft MDASH",ai_disc:"MDASH",date:"2026-05-12",advisory_url:"https://windowsnews.ai/article/microsoft-patches-critical-vs-code-security-bypass-cve-2026-41610-in-may-2026-patch-tuesday.417888",writeup_url:"https://www.microsoft.com/en-us/security/blog/2026/05/12/defense-at-ai-speed-microsofts-new-multi-model-agentic-security-system-tops-leading-industry-benchmark/"},
+  {severity:"Critical",id:"CVE-2026-41611",component:"VS Code",vector:"Unauthenticated arbitrary code exec",discoverer:"Microsoft MDASH",ai_disc:"MDASH",date:"2026-05-12",advisory_url:"https://windowsnews.ai/article/cve-2026-41611-microsoft-vs-code-rce-and-why-developer-tool-patching-matters.417890",writeup_url:"https://www.microsoft.com/en-us/security/blog/2026/05/12/defense-at-ai-speed-microsofts-new-multi-model-agentic-security-system-tops-leading-industry-benchmark/"},
+  {severity:"Critical",id:"CVE-2026-43992",component:"JunoClaw (agentic crypto-wallet)",vector:"Plaintext BIP-39 seed in logs (CVSS 9.8)",discoverer:"Ffern Institute (audit); advisory by VairagyaNodes with Cascade/Windsurf AI coding-agent assistance",technique:"manual audit (tool-schema review)",date:"2026-05-12",advisory_url:"https://github.com/advisories/GHSA-j75q-8xvm-6c48",writeup_url:"https://github.com/Dragonmonk111/junoclaw/security/advisories/GHSA-j75q-8xvm-6c48"},
+  {severity:"Critical",id:"CVE-2026-33032",component:"nginx-ui MCP endpoint",vector:"Unauthenticated full system takeover (CVSS 9.8)",discoverer:"Yotam Perkal (Pluto Security)",technique:"manual review (auth-asymmetry between /mcp and /mcp_message; empty-IP-allowlist fail-open)",date:"2026-05-14",advisory_url:"https://github.com/advisories/GHSA-h6c2-x2m2-mwhf",writeup_url:"https://pluto.security/blog/mcp-bug-nginx-security-vulnerability-cvss-9-8/"},
+  {severity:"Critical",id:"Microsoft MDASH Patch Tuesday Cluster",component:"Microsoft Patch Tuesday May 2026",vector:"16 AI-discovered CVEs / 4 Critical RCEs",discoverer:"Microsoft MDASH",ai_disc:"MDASH",date:"2026-05-12",advisory_url:"https://www.microsoft.com/en-us/security/blog/2026/05/12/defense-at-ai-speed-microsofts-new-multi-model-agentic-security-system-tops-leading-industry-benchmark/",writeup_url:"https://www.secureinseconds.com/blog/2026-05-15-microsoft-mdash-ai-vulnerability-hunter"},
+  {severity:"Critical",id:"CVE-2026-44112",component:"OpenClaw OpenShell sandbox",vector:"TOCTOU -> file writes outside mount root",discoverer:"Cyera Research",date:"2026-05-12",advisory_url:"https://www.cyera.com/blog/claw-chain-cyera-research-unveil-four-chainable-vulnerabilities-in-openclaw",writeup_url:"https://www.cyera.com/blog/claw-chain-cyera-research-unveil-four-chainable-vulnerabilities-in-openclaw"},
+  {severity:"Critical",id:"CVE-2026-44211",component:"Cline Kanban (AI coding agent)",vector:"Cross-origin WS hijack -> RCE (CVSS 9.7)",discoverer:"Oasis Security (TheRealSpencer)",technique:"manual review + dynamic analysis (browser-based cross-origin WS PoC)",date:"2026-05-07",advisory_url:"https://github.com/cline/cline/security/advisories",writeup_url:"https://www.oasis.security/blog/cline-kanban-websocket-hijack"},
+  {severity:"High",id:"CVE-2026-41109",component:"GitHub Copilot + VS Code core",vector:"IPC abuse -> silent suggestion-inject + src exfil",discoverer:"Microsoft MDASH",ai_disc:"MDASH",date:"2026-05-12",advisory_url:"https://windowsnews.ai/article/cve-2026-41109-copilot-and-vs-code-security-feature-bypass-in-the-dev-workflow.417882",writeup_url:"https://www.microsoft.com/en-us/security/blog/2026/05/12/defense-at-ai-speed-microsofts-new-multi-model-agentic-security-system-tops-leading-industry-benchmark/"},
+  {severity:"High",id:"CVE-2026-44338",component:"PraisonAI 2.5.6-4.6.33 Flask API",vector:"Missing auth on /agents + /chat (Sysdig <4h exploit)",discoverer:"Shmulik Cohen (discovery); Sysdig TRT (ITW obs)",technique:"configuration review + Sysdig honeypot + Falco-style runtime telemetry",date:"2026-05-11",advisory_url:"https://github.com/advisories/GHSA-6rmh-7xcm-cpxj",writeup_url:"https://www.sysdig.com/blog/cve-2026-44338-praisonai-authentication-bypass-in-under-4-hours-and-the-growing-trend-of-rapid-exploitation"},
+  {severity:"High",id:"CVE-2026-44115",component:"OpenClaw command-exec gap",vector:"Heredoc unquoted -> env var / credential leak",discoverer:"Cyera Research",date:"2026-05-12",advisory_url:"https://www.cyera.com/blog/claw-chain-cyera-research-unveil-four-chainable-vulnerabilities-in-openclaw",writeup_url:"https://www.cyera.com/blog/claw-chain-cyera-research-unveil-four-chainable-vulnerabilities-in-openclaw"},
+  {severity:"High",id:"CVE-2026-44118",component:"OpenClaw auth/session",vector:"Client-controlled senderIsOwner -> priv esc",discoverer:"Cyera Research",date:"2026-05-12",advisory_url:"https://www.cyera.com/blog/claw-chain-cyera-research-unveil-four-chainable-vulnerabilities-in-openclaw",writeup_url:"https://www.cyera.com/blog/claw-chain-cyera-research-unveil-four-chainable-vulnerabilities-in-openclaw"},
+  {severity:"High",id:"CVE-2026-44113",component:"OpenClaw sandbox boundary",vector:"TOCTOU -> read outside sandbox",discoverer:"Cyera Research",date:"2026-05-12",advisory_url:"https://www.cyera.com/blog/claw-chain-cyera-research-unveil-four-chainable-vulnerabilities-in-openclaw",writeup_url:"https://www.cyera.com/blog/claw-chain-cyera-research-unveil-four-chainable-vulnerabilities-in-openclaw"},
+  {severity:"High",id:"CVE-2025-66335",component:"Apache Doris MCP",vector:"MCP-DB connector flaw",discoverer:"bug hunter via The Register",date:"2026-05-13",advisory_url:"https://www.theregister.com/security/2026/05/13/bug-hunter-tracks-down-three-serious-mcp-database-flaws-one-left-unpatched/",writeup_url:"https://www.theregister.com/security/2026/05/13/bug-hunter-tracks-down-three-serious-mcp-database-flaws-one-left-unpatched/"},
+  {severity:"High",id:"Alibaba RDS MCP Flaw",component:"Alibaba RDS MCP",vector:"MCP-DB connector flaw (CVE pending)",discoverer:"bug hunter via The Register",date:"2026-05-13",advisory_url:"https://www.theregister.com/security/2026/05/13/bug-hunter-tracks-down-three-serious-mcp-database-flaws-one-left-unpatched/",writeup_url:"https://www.theregister.com/security/2026/05/13/bug-hunter-tracks-down-three-serious-mcp-database-flaws-one-left-unpatched/"},
+  {severity:"High",id:"Apache Pinot MCP Flaw (UNPATCHED)",component:"Apache Pinot MCP",vector:"MCP-DB connector flaw — unpatched at disclosure",discoverer:"bug hunter via The Register",date:"2026-05-13",advisory_url:"https://www.theregister.com/security/2026/05/13/bug-hunter-tracks-down-three-serious-mcp-database-flaws-one-left-unpatched/",writeup_url:"https://www.theregister.com/security/2026/05/13/bug-hunter-tracks-down-three-serious-mcp-database-flaws-one-left-unpatched/"},
+  {severity:"Medium",id:"CVE-2026-41100",component:"M365 Copilot for Android",vector:"UI impersonation -> prompt capture",discoverer:"Microsoft MDASH",ai_disc:"MDASH",date:"2026-05-12",advisory_url:"https://msrc.microsoft.com/",writeup_url:"https://www.microsoft.com/en-us/security/blog/2026/05/12/defense-at-ai-speed-microsofts-new-multi-model-agentic-security-system-tops-leading-industry-benchmark/"},
+  // --- Promoted from v2.9 LATEST run (May 26 weekly) ---
+  {severity:"Critical",id:"Anthropic Glasswing -- Initial Update Cluster (10,000+ H/C)",component:"Cross-partner Glasswing program (Cloudflare/Mozilla/wolfSSL/PAN/MS + ~46 more)",vector:"Claude Mythos Preview AI vuln-discovery; 90.6% TP rate on 1,752 reviewed",discoverer:"Anthropic Glasswing",date:"2026-05-22",ai_disc:"Glasswing",advisory_url:"https://www.anthropic.com/research/glasswing-initial-update",writeup_url:"https://www.anthropic.com/research/glasswing-initial-update"},
+  {severity:"High",id:"CVE-2026-46701",component:"Network-AI npm <5.4.5 (MCP server)",vector:"Empty default secret + ACAO:* -> any web page invokes all 22 MCP tools",discoverer:"Network-AI advisory",date:"2026-05-21",advisory_url:"https://advisories.gitlab.com/npm/network-ai/CVE-2026-46701/",writeup_url:"https://advisories.gitlab.com/npm/network-ai/CVE-2026-46701/"},
+  {severity:"High",id:"GHSA-7jm2-g593-4qrc",component:"OpenClaw <2026.4.20 (agent gateway / sandbox policy / hook routing / MCP server config)",vector:"Agent-gateway config-mutation cluster + SSRF policy bypass via prompt-injected owner-only gateway tool",discoverer:"OpenClaw advisory",date:"2026-05-21",advisory_url:"https://github.com/advisories/GHSA-7jm2-g593-4qrc",writeup_url:"https://github.com/advisories/GHSA-7jm2-g593-4qrc"},
+  {severity:"High",id:"CVE-2026-42926",component:"NGINX OSS 1.29.4-1.30.0",vector:"HTTP/2 frame injection / desync; FIRST vendor-confirmed CN-AI-attributed CVE (AiPy)",discoverer:"AiPy + Hcamael (F5 K000161019)",date:"2026-05-20",ai_disc:"AiPy",advisory_url:"https://nvd.nist.gov/vuln/detail/CVE-2026-42926",writeup_url:"https://my.f5.com/manage/s/article/K000161019"}
+];
+
+var CUMULATIVE = CUMULATIVE_PRE.map(function(r){ return Object.assign({}, r, {isNew:false}); });
+LATEST.forEach(function(l){
+  CUMULATIVE.push({
+    severity:l.severity, id:l.id, component:l.component, vector:l.vector,
+    discoverer:l.discoverer, date:l.date,
+    ai_disc:l.ai_disc || "—",
+    advisory_url:l.advisory_url || "",
+    writeup_url:l.writeup_url || "",
+    isNew:true
+  });
+});
+
+var THEMES = [
+  "MCP Is the New Attack Surface -- STDIO RCE, OAuth confused deputies, arg injection, DNS rebinding, KQL/SQL injection, namespace collision now empirically validated as a CVE trendline. <b>NEW (v2.6):</b> MCP-database-server connectors (Apache Doris/Alibaba RDS/Apache Pinot, May 13) + ops/admin-tool MCP endpoints (nginx-ui CVE-2026-33032, CVSS 9.8) are the next sub-classes; the MCP attack surface is expanding outward from AI-native code into ops/admin/data tooling.",
+  "Coding-Agent Permission UX Is the Dominant Vulnerability Layer (2026) -- TrustFall + Approve Once Exploit Forever + Mindgard's config-as-code (10+ AI IDEs) + Cline cross-origin WS hijack (CVE-2026-44211) + VS Code workspace-trust bypass (CVE-2026-41610) show default-Yes prompts, persistent trust grants, auto-executed config files, and IDE base-layer flaws stack together.",
+  "Framework-Level Default-Config CVE Clusters -- Microsoft Semantic Kernel triple (May 7) + Spring AI triple (May 8-9). Enterprise AI SDKs are a primary CVE-generating layer.",
+  "Microsoft MDASH-Class Single-Vendor AI-Discovered Clusters -- 16 patched CVEs / 4 Critical RCEs / 1 Patch Tuesday. New scale benchmark for productionized AI-vuln-discovery harness output.",
+  "Agent Memory/Logging as Credential-Disclosure Primitive -- JunoClaw CVE-2026-43992 (BIP-39 mnemonic plaintext log) + PraisonAI CVE-2026-40159 (env-var leak) + Spring AI CVE-2026-41712 (ChatMemory cross-user) = systemic pattern of default-on agent memory + logging acting as passive secret-disclosure layer.",
+  "Agent-Memory Poisoning as Distinct PI Class -- Spring AI CVE-2026-41713 plants payload in conversation memory; subsequent turns re-attack the agent.",
+  "Vector-DB Filter-Expression Injection -- Spring AI CVE-2026-41705. Sibling to SQLi/KQLi but adapted to the agent retrieval layer.",
+  "IPv6 URL-Validator Bypass as Stable Catalog Class -- 3 advisories in 11 days (n8n-MCP / LMDeploy / MCP Registry).",
+  "Electron / Native-Wrapper for AI Chat = Unanalyzed RCE Primitive -- DeepChat double-disclosure (43899/43900).",
+  "Mobile-AI-Agent Attack Surface Emergence -- first Mobile-AI-agent CVE in MDASH cluster (CVE-2026-41100); pair with mobile-mcp Android intent CVE (-35394).",
+  "AI-Discovered Vulnerabilities Are Now Operational -- Big Sleep, AISLE 180+, AESIR/FENRIR 21 patched. <b>Three frontier-vendor programs operational:</b> Anthropic Glasswing + OpenAI Daybreak + Microsoft MDASH. <b>UPDATED v3.0:</b> Glasswing IBM X-Force coalition expansion + Claude Security (Opus 4.7) enterprise public beta -- 75/530 disclosed H/C patched (~14%).",
+  "Automated Exploitation of AI-Infra CVEs Now Runs at <b>&lt;4h</b> -- PraisonAI 3h44m beats LiteLLM 36h, LMDeploy 12.5h, Langflow 20h. Exposure is now decoupled from CVSS as predictor of in-the-wild risk.",
+  "Skill Ecosystems Are Now Scanned at Scale -- Tencent (50k), Snyk*Tessl (15k), Snyk*Vercel (skills.sh), Cisco AI Defense IDE scanner.",
+  "Multi-Agent Lateral Spread Has a Measured Rate -- 48% co-agent infection from a single PI incident.",
+  "Defense Tooling Has Productionized -- Microsoft Agent 365 + Agent Governance Toolkit + MDASH, Giskard Guards, GitHub Secret Scanning for MCP, ETH ToolFuzz, OpenAI Daybreak. <b>UPDATED v3.0:</b> OWASP Agent Memory Guard + DNS-AID + Noma Agent Access Control + Trust3 AI 'Field guide to continuous agent discovery' form the new agent-inventory + agent-IAM layer.",
+  "Trust-Persistence + Auto-Approval = New Class -- separate from prompt injection. Single approval grants persistent capability.",
+  "AI Gateway as High-Value Target -- LiteLLM SQLi + JWT-cache collision + MCP preview RCE.",
+  "Multi-Modal Attack Surfaces Continue -- audio jailbreaks, image scaling, Android intents, document-RCE.",
+  "Formal Verification &amp; Capability Auth Re-emerging -- ARGUS defense, EPO-Safe specs, 1-bit danger signals.",
+  "Practitioner Conferences &gt; Academic Conferences -- [un]prompted, Black Hat AI Summit (100+ Briefings 2026), RSA Innovation Sandbox.",
+  "<b>AI Vuln-Discovery Cost-Curve Economics</b> -- TrendAI / AgentForge: ~$20 per H/C vuln (300+ WordPress 0-days/72h). <b>UPDATED v3.0:</b> Pair with Cisco 'Proprietary Problems' 88.30% multi-turn ASR (May 27) = two-sided economics-of-AI-attack narrative.",
+  "<b>Patch-Pace Is the New Bottleneck</b> -- Anthropic explicitly reframes the Glasswing constraint from 'find' to 'patch'. Mozilla 10x release-cadence jump. <b>UPDATED v3.0:</b> 75/530 disclosed H/C patched (~14% completion) confirms patch-pace gap is widening.",
+  "<b>Democratization of AI Vuln-Discovery -- Frontier Vendor -> OSS Workflows</b> -- Hadrian OpenHack (MIT, Claude Code/Codex/Cursor) commoditizes the MDASH/Glasswing methodology.",
+  "<b>Geographic Diversification of AI-Discovery</b> -- AiPy (Knownsec, CN) joins Big Sleep / AISLE / AESIR / MDASH / Daybreak / Glasswing on the AI-Discovery roster. First vendor-confirmed Chinese-AI-attributed CVE (NGINX CVE-2026-42926).",
+  "<b>Frontier-Vendor MFA Hardening at the Top Model Tier (NEW v3.0)</b> -- OpenAI's June 1 2026 mandate of hardware-backed passkeys for Trusted Access for Cyber (TAC) users with access to its most-permissive frontier models. First major frontier vendor to hardware-bind MFA at the top tier. Open: Anthropic/MS/Google follow for Opus 4.7 / Gemini-Cyber equivalents?",
+  "<b>Agent-Platform Tenancy Boundaries as a Catalog Class (NEW v3.0)</b> -- CVE-2026-47416 (PraisonAI workspace privesc, CVSS 9.6) + GHSA-63gr-g7jc-v8rg (@agenticmail/mcp missing auth) + CVE-2026-35435 (Azure AI Foundry EoP, CVSS 8.6) + May 29-30 PraisonAI tenancy cluster (cross-workspace IDOR / activity-log cross-tenant read / SSRF bypass) = 4 same-class CVEs in 4 days. Agent platforms ship with default-allow on tenancy boundaries. <b>UPDATED v3.5:</b> Compass Security's Entra Agent ID audit (June 9) extends this to the identity layer -- blueprint-credential blast radius + two attack chains to Global Admin / cross-tenant credential injection.",
+  "<b>GPU as the AI Attack-Surface Substrate (NEW v3.4)</b> -- the hardware layer underneath every AI workload is now a CVE-generating surface. Four classes confirmed: container-toolkit escape (CVE-2025-23266 NVIDIAScape, ~37% cloud envs), AI inference-server takeover (Triton/vLLM RCE chains, CVSS 9.8), kernel-mode driver UAF/OOB/privesc (NVIDIA/AMD), GPU memory disclosure / side-channel (CVE-2023-4969 LeftoverLocals cross-tenant LLM-token eavesdropping; AMD VRAM uncleared). MIG > MPS but not default-on; the GPU substrate now matches MCP + agent-platform tenancy in CVE cadence.",
+  "<b>AI-Infra CVEs Reaching CISA KEV (NEW v3.5)</b> -- LiteLLM CVE-2026-42271 is the FIRST AI-gateway CVE in this catalog added to the CISA Known Exploited Vulnerabilities list (June 8), chained by Horizon3.ai with BadHost (CVE-2026-48710) for unauth RCE at CVSS 10.0. Confirms Theme 14: exposure is decoupled from base CVSS, and chaining two High/Medium AI-infra bugs reaches functional-Critical. (marimo CVE-2026-39987 also KEV-listed.)",
+  "<b>Export-Control / Regulatory Recall of Cyber-Capable Frontier Models (NEW v3.7)</b> -- the June 12 2026 US export-control directive forcing Anthropic to suspend Fable 5 + Mythos 5 worldwide (foreign-national-access mechanism -> global shutdown; other Claude models unaffected) is the first government use of export authority to pull a deployed frontier model over a cyber capability. Trigger = a reported 'jailbreak' Katie Moussouris (Luta Security) calls the prompt 'fix this code' (routine defensive code review); paper authored by Amazon; admin (David Sacks) calls it a refused-to-fix bypass -> [attribution:disputed]. Joshua Saxe rebuttal + freefable.org open letter (Alex Stamos). Snyk: model redundancy is now a resilience requirement. Collides with Theme 16 (banned Mythos is Glasswing's vuln-discovery model) + Theme 22.",
+  "<b>Trusted-Context Poisoning -- Tool Output, Memory & Telemetry as the Agent Injection Surface (NEW v3.7)</b> -- the agent's TRUSTED inputs, not the user prompt, are the injection channel. Agentjacking (Tenet Security): attacker writes a Sentry error via a public DSN, the Sentry MCP server relays it as trusted tool output, the coding agent runs a planted npx command (85% success / 2,388 orgs; Sentry declined to fix). Generalizes MCP line-jumping from tool metadata to tool runtime output + upstream data. Corroborating: FragFuse (memory-fragmentation access-control bypass), CmdNeedle (agent command denylists are structurally incomplete), OWASP v2.01 (postmark-mcp clean-then-malicious; PI maps to 6/10 Agentic Top-10). Defense: information-flow control (Microsoft), attested-TEE LLM routers. Pair Themes 1/5/13/18."
+];
+
+var WATCHLIST = [
+  "<b>Verified-and-rejected this cycle (NEW v3.7)</b> -- 'Royal MCP <=1.4.2' (GHSA-45gp-ghq2-mh75 / CVE-2026-40775) is a WordPress plugin, NOT Model Context Protocol -- out of scope (confirmed by daily scan + subagent). Chrome/WebGPU GPU-process OOB (CVE-2026-12030 cluster, GHSA-2m3r-7r37-rw4c) = browser web-renderer, Theme 24 trend-watch only, not an AI workload.",
+  "<b>OpenACA repo unconfirmed (NEW v3.7)</b> -- OSS 'scanner for AI agent stacks (MCPs/skills/plugins)' surfaced via Show HN (June 16); the supplemental subagent could not confirm the repo at github.com/open-agent-security/openaca. Verify the canonical repo/maintainer or drop next cycle; not yet a confirmed defensive primitive.",
+  "<b>Help Net '66,000 CVEs in 2026' forecast (NEW v3.7)</b> -- 'AI vulnerability discovery is pushing 2026 CVEs toward 66,000' (June 15). Relevant Theme 2/16 cost-curve datapoint; full text not fetched, underlying forecast source not pinned. Fetch + attribute next cycle.",
+  "<b>Snyk VulnBench JS 1.0 arXiv ID (NEW v3.7)</b> -- 'Can LLMs Find the Same Bugs Twice?' surfaced as an arXiv preprint (~June 14); confirm the primary arXiv ID and whether a public benchmark repo/leaderboard ships before external citation.",
+  "<b>Fable 5 / Mythos 5 restoration status + appeal (NEW v3.7)</b> -- Anthropic states it is 'working to restore access.' Track whether/when access is restored, any formal regulatory determination, and the appeal path. Triggering 'research paper' is Amazon-authored and non-public; closest public artifact is Moussouris's Luta Security write-up.",
+  "<b>OpenClaw 7-CVE cluster NVD CVSS finalization (NEW v3.7)</b> -- per-CVE scores (8.8/8.8/8.3/8.1/7.7/7.5/6.5) taken from GHSA via the daily scan; confirm NVD CVSS vectors when they populate.",
+  "<b>Verified-and-rejected (June 9, carried)</b> -- CVE-2026-9277 shell-quote (GHSA primary May 22, out of window; High/CVSS 8.1 not Critical; no AI/MCP claim) and the nebula-mesh cluster (Slack-Nebula VPN dashboard, false-positive 'agent' keyword match). Feed-triage keyword filter should auto-suppress.",
+  "<b>Six unfindable arXiv titles (NEW v3.5)</b> -- Context-Fractured Decomposition Attacks / Document-Authored Control-Signal Impersonation / The Injection Paradox / Brain-Prompt Injection / SecureClaw / Oversight Has a Capacity. No primary arXiv record at any date despite 2606.x being indexed. Likely hallucinated; do not cite.",
+  "<b>CVE-2026-42271 in-the-wild mechanics (NEW v3.5)</b> -- CISA KEV cites active-exploitation evidence but THN notes exploitation method undisclosed; unclear whether observed attacks use the full BadHost chain. Verify TTPs/attribution when a telemetry writeup lands.",
+  "<b>Glasswing 530/75 patch ratio</b> -- TechTimes coverage of IBM X-Force expansion reports this figure; primary Anthropic post for IBM expansion not yet confirmed. Reconcile vs. cumulative coalition baseline next cycle.",
+  "<b>OpenAI passkey mandate -- exact tier scope (NEW)</b> -- TAC-only vs. broader frontier-model access. Verify against OpenAI primary announcement.",
+  "<b>CVE-2026-35435 -- Azure AI Foundry root cause (NEW)</b> -- CVSS 8.6 confirmed; underlying root cause (RBAC vs. token-scope vs. multi-tenant data-plane) not enumerated in MSRC summary.",
+  "<b>PraisonAI tenancy cluster -- primary GHSA timestamps (NEW)</b> -- three advisories (GHSA-6H6V-6M7W-7VXX, GHSA-27P4-PJQV-WHGJ, GHSA-Q9PW-VMHH-384G) in May 29-30 corridor.",
+  "<b>DNS-AID LF governance scope (NEW)</b> -- Infoblox-seeded with LF governance; precise working-group home (CNCF? LF AI&Data?) not specified.",
+  "<b>'4 in 10 AI agents headed for demotion' (NEW)</b> -- The Register coverage of Gartner; underlying report paywalled.",
+  "<b>AiPy / Knownsec org-affiliation</b> -- F5 advisory confirms AiPy + Hcamael; Knownsec ownership inferred. Carried.",
+  "<b>TrendAI / AgentForge $20-per-vuln</b> -- primary CHT/Trend Micro paper not yet published. Carried.",
+  "<b>Cloudflare / Mozilla / wolfSSL per-CVE Glasswing attribution</b> -- partner-published findings expected this June cycle but did not yet land.",
+  "<b>CVE-2026-42302 (FastGPT agent-sandbox RCE)</b> -- 4 consecutive cycles in S15; no primary NVD/GHSA.",
+  "<b>GHSA-vw82-7fv8-r6gp (Obot MCP Gateway auth bypass)</b> -- promote to S8 next cycle.",
+  "<b>arxiv 2603-2605 range IDs</b> -- 2605.17634 verified (now in S13 Gap #13). Re-check the rest.",
+  "<b>Adversa IICL 60% GPT-5.4 bypass</b> -- pending second independent eval.",
+  "<b>Geordie AI RSA 2026 award</b> -- verify against rsaconference.com.",
+  "<b>Cyera Claw Chain Part 2</b> -- 7 cycles overdue; flagged for removal next cycle.",
+  "DEF CON Singapore (Apr 28-30 2026) -- verify against defcon.org."
+];
+
+var GAPS = [
+  "MCP advisory trendline / 'npm-audit moment' analysis — quantify CVE cadence, vendor response times, exploitation latency.",
+  "STDIO transport formal threat model — draft a TLA+ or capability-based formalization.",
+  "Coding-agent permission-UX taxonomy — categorize default-Yes, persistent-trust, one-off-approval, full-mode patterns.",
+  "Multi-agent containment architectures — replicate the 48% infection-rate finding and benchmark architectures.",
+  "Skill-ecosystem supply chain — replicate Tencent's 50k-skill scan with public methodology.",
+  "AI-gateway threat model — LiteLLM-class targets need a dedicated research thread.",
+  "Mechanistic interpretability for agent deception detection — Starseer's glass-box line.",
+  "Binary-only AI VR for closed-source AI hardware/firmware — Apple Neural Engine, Qualcomm AI, Rabbit R1, Humane Pin.",
+  "Audio + image multi-modal attack composition — under-explored compared to text-only PI.",
+  "AI-infra exploitation latency benchmarking — formalize the &lt;36h finding into a tracked metric.",
+  "OAuth confused-deputy systematics in MCP — generalize from FastMCP/PraisonAI patterns.",
+  "TrustFall / cross-agent containment — design defaults for .mcp.json ingestion by IDEs."
+];
+
+var PEOPLE = [
+  {name:"Joshua Saxe",org:"Independent (stealth, ex-Meta)",site:"joshuasaxe181906.substack.com"},
+  {name:"Trail of Bits",org:"AI-native security firm",site:"blog.trailofbits.com"},
+  {name:"[un]prompted Conf",org:"Practitioner conf (Gadi Evron)",site:"unpromptedcon.org"},
+  {name:"Mindgard",org:"AI red teaming (Lancaster spinout)",site:"mindgard.ai"},
+  {name:"OX Security",org:"Supply chain + MCP",site:"ox.security"},
+  {name:"Johann Rehberger",org:"Red Team Director",site:"embracethered.com"},
+  {name:"Nicholas Carlini",org:"Anthropic",site:"nicholas.carlini.com"},
+  {name:"Kai Greshake",org:"Prompt-injection pioneer",site:"github.com/greshake/llm-security"},
+  {name:"Leon Derczynski / Garak",org:"NVIDIA",site:"github.com/NVIDIA/garak"},
+  {name:"Gadi Evron / Knostic",org:"AI access control",site:"knostic.ai"},
+  {name:"XBOW (Brendan Dolan-Gavitt)",org:"Autonomous exploitation",site:"xbow.com"},
+  {name:"AISLE (Krivka, Vlcek)",org:"AI zero-day discovery (180+ CVEs)",site:"aisle.com"},
+  {name:"Trend Micro AESIR / FENRIR",org:"Productionized AI vuln-discovery funnel",site:"trendmicro.com"},
+  {name:"Adversa AI",org:"TrustFall, IICL, monthly digests",site:"adversa.ai"},
+  {name:"ETH Zurich SRI",org:"ToolFuzz (LLM-agent tool fuzzing)",site:"github.com/eth-sri"},
+  {name:"Tessl",org:"Skill registry security (Snyk partner)",site:"tessl.io"},
+  {name:"Geordie AI",org:"Agent governance (RSA 2026 — watchlist)",site:""},
+  {name:"Sysdig",org:"AI-infra exploit telemetry (<4h PraisonAI)",site:"sysdig.com"},
+  {name:"Cyera Research",org:"OpenClaw 'Claw Chain' disclosure (added May 2026)",site:"cyera.com/blog"},
+  {name:"Enclave AI (Yanir Tsarimi)",org:"Azure SRE Agent disclosure CVE-2026-32173 (added May 2026)",site:"enclave.ai/blog"},
+  {name:"Microsoft MDASH",org:"Multi-model agentic AI vuln-discovery harness (16 CVEs May 2026 Patch Tuesday)",site:"microsoft.com/security/blog"},
+  {name:"OpenAI Daybreak",org:"Frontier-AI vuln-discovery (GPT-5.5-Cyber + Codex Security)",site:"openai.com/news"},
+  {name:"Palo Alto Unit 42",org:"Defender's Guide to Frontier AI Impact (monthly)",site:"unit42.paloaltonetworks.com"},
+  {name:"Protect AI",org:"LLM Guard, ModelScan, Vulnhuntr (now PANW)",site:"protectai.com"},
+  {name:"Tencent AI-Infra-Guard / Zhuque Lab",org:"Full-stack red teaming, 50k skill scan",site:"github.com/Tencent/AI-Infra-Guard"},
+  {name:"Giskard AI",org:"LLM agent eval; Guards EU-sovereign guardrails",site:"giskard.ai"},
+  {name:"Starseer (Carl Hurd)",org:"Mechanistic interpretability for agent security",site:"starseer.ai"},
+  {name:"Perplexity Security (Kyle Polley)",org:"BrowseSafe (browser agent defense)",site:"perplexity.ai"},
+  {name:"Microsoft AI Red Team",org:"PyRIT, BinaryShield, Agent 365, Agent Governance Toolkit",site:"github.com/microsoft/PyRIT"},
+  {name:"Cisco AI Defense",org:"MCP Scanner + IDE Agent Security Scanner",site:"blogs.cisco.com/ai"},
+  {name:"Snyk",org:"Agent Scan; Tessl + Vercel skill-ecosystem partnerships",site:"snyk.io"},
+  {name:"Salesforce",org:"Agentforce behavioral baselines",site:"salesforce.com"},
+  {name:"Anthropic Project Glasswing",org:"Claude Mythos Preview -- 10,000+ H/C across ~50 partners, 90.6% TP rate; UPDATE May 31 2026: IBM X-Force coalition + Claude Security (Opus 4.7) enterprise public beta + 75/530 patched",site:"anthropic.com/research/glasswing-initial-update"},
+  {name:"AiPy / Knownsec ('Octopus Brother')",org:"First vendor-confirmed Chinese AI vuln-discovery agent — NGINX CVE-2026-42926 (May 2026)",site:""},
+  {name:"TrendAI / CHT Security (AgentForge)",org:"AI vuln-discovery pipeline distinct from ÆSIR/FENRIR; 300+ WordPress 0-days at ~$20/vuln (May 2026)",site:"helpnetsecurity.com/2026/05/22/ai-wordpress-plugin-vulnerabilities/"},
+  {name:"Hadrian Security",org:"MIT-licensed OpenHack AI vuln-research workflow for Claude Code/Codex/Cursor (May 2026)",site:"github.com/hadriansecurity/openhack"},
+  {name:"Trust3 AI",org:"MCP defensive platform — single-purpose tokens, MCP content firewall, A2A inspection (launched May 2026; field guide May 31 2026)",site:"trust3.ai"},
+  {name:"Noma Security",org:"Agent access control + governance for AI agents and MCP servers (launched June 2 2026)",site:"noma.security"},
+  {name:"Operant AI",org:"Endpoint AI defense (shadow AI / coding agents / MCP servers / tools / plugins)",site:"operant.ai"},
+  {name:"Qevlar",org:"AI agents for SOC + VM correlation (launched May 28 2026)",site:"qevlar.com"},
+  {name:"OWASP Agent Memory Guard",org:"Reference impl for ASI06 Memory Poisoning (OWASP Top 10 for Agentic Apps)",site:"genai.owasp.org"},
+  {name:"DNS-AID (Infoblox / Linux Foundation)",org:"DNS-based AI agent + MCP server discovery (June 1 2026)",site:""},
+  {name:"Cisco AI Threat Intelligence",org:"'Proprietary Problems' (May 27 2026) -- 88.30% multi-turn ASR across 15 closed flagship models",site:"blogs.cisco.com/ai"},
+  {name:"Agent Threat Rules (ATR -- Adam Lin / community)",org:"MIT-licensed open YAML detection rule format for agent threats; 400+ rules; 10/10 OWASP Agentic + 78/85 SAFE-MCP",site:"github.com/Agent-Threat-Rule/agent-threat-rules"},
+  {name:"AIRQ (Eugene Neelou)",org:"Independent agent-security capability index -- Q2 2026: 100 production agents, 11% pass, 98% lethal trifecta",site:""},
+  {name:"Microsoft Execution Container (MXC) SDK",org:"OS-level agent containment SDK (Build 2026); pairs with Agent 365 + Windows 365 for Agents",site:"microsoft.com/security"},
+  {name:"Compass Security (Christian Feuchter)",org:"Entra Agent ID security audit (June 9 2026) + open-source EntraFalcon (17 Agent ID checks)",site:"blog.compass-security.com"},
+  {name:"MetaMask / Consensys",org:"Agent Wallet (June 8 2026) -- self-custodial AI-agent wallet with default-on, non-opt-out Guard Mode",site:"metamask.io/news"},
+  {name:"Gururaj Saileshwar / SITH Lab (U Toronto)",org:"Hardware/GPU security -- GPUBreach (GDDR6 Rowhammer -> root w/ IOMMU on); first academic hardware-security group in the roster (added June 12 2026)",site:"gururaj-s.github.io"},
+  {name:"Obsidian Security",org:"AI-gateway / SaaS-identity attack research -- LiteLLM low-priv->admin->host RCE chain (CVE-2026-47101/-47102/-40217); 'Man-in-the-Gateway' PoC (added June 2026)",site:"obsidiansecurity.com/blog"},
+  {name:"Tenet Security (Bobrov, Sternberg, Poran)",org:"AI coding-agent attack research -- coined 'Agentjacking' (Sentry-DSN trusted-output -> agent RCE); anchor for Theme 26 (added June 2026)",site:"tenetsecurity.ai/blog"},
+  {name:"Varonis Threat Labs (Dolev Taler)",org:"M365/Copilot data-exfiltration research -- 'SearchLeak' one-click exfil (CVE-2026-42824, Microsoft MAXIMUM) (added June 2026)",site:"varonis.com/blog"},
+  {name:"Check Point Research (Yarden Porat)",org:"AI-framework vuln research -- LangGraph checkpointer SQLi->RCE chain (CVE-2025-67644/-28277/-27022) (added June 2026)",site:"research.checkpoint.com"},
+  {name:"Luta Security (Katie Moussouris)",org:"Vulnerability-disclosure policy -- central independent voice on the Fable 5 / Mythos 5 export-control episode; anchor for Theme 25 (added June 2026)",site:"lutasecurity.com"},
+  {name:"John McIntosh (clearbluejar)",org:"AI-assisted / agentic reverse engineering -- ghidriff + pyghidra-mcp + GhidraMCP-with-local-LLMs; reproduced Mythos/AISLE FreeBSD find on open-weight models (2026-06-04). REcon 2026 agentic-RE workshop (added June 2026)",site:"clearbluejar.github.io"},
+  {name:"Cisco Talos (RE/VR: Laulheret, Zimmer)",org:"Vuln research + reverse engineering -- Philippe Laulheret (ReVault/ControlVault3 firmware, ClipSp driver; AI-skeptic RE/VR) + David Zimmer (local agentic RE via vbdec, 2026-06-18). Talos blog feed now in daily scan (added June 2026)",site:"blog.talosintelligence.com"}
+];
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function sevClass(s){
+  if (s==="Critical") return "sev-crit";
+  if (s==="High") return "sev-high";
+  if (s==="Medium") return "sev-med";
+  if (s==="Low") return "sev-low";
+  return "sev-low";
+}
+function sevOrder(s){ return {Critical:0,High:1,Medium:2,Low:3}[s] || 4; }
+function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function safe(fn, label){
+  try { fn(); } catch(e) {
+    console.error("Dashboard error in " + label + ":", e);
+    var el = document.createElement("div");
+    el.style.cssText = "background:#fee;border:1px solid #f99;color:#900;padding:8px;font-size:11px;font-family:monospace;margin:4px 0;border-radius:4px";
+    el.textContent = "[" + label + "] " + (e && e.message || e);
+    document.body.appendChild(el);
+  }
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+
+function init(){
+  // Tab switching
+  safe(function(){
+    var tabs = document.querySelectorAll(".tab");
+    for (var i=0;i<tabs.length;i++){
+      (function(t){
+        t.addEventListener("click", function(){
+          for (var j=0;j<tabs.length;j++) tabs[j].classList.remove("active");
+          t.classList.add("active");
+          var panes = document.querySelectorAll(".pane");
+          for (var k=0;k<panes.length;k++) panes[k].style.display = "none";
+          var p = document.getElementById("pane-"+t.getAttribute("data-pane"));
+          if (p) p.style.display = "";
+        });
+      })(tabs[i]);
+    }
+  }, "tabs");
+
+  // Latest tiles
+  safe(function(){
+    var lcrit=0, lhigh=0, lmed=0, llow=0;
+    for (var i=0;i<LATEST.length;i++){
+      var s = LATEST[i].severity;
+      if (s==="Critical") lcrit++;
+      else if (s==="High") lhigh++;
+      else if (s==="Medium") lmed++;
+      else llow++;
+    }
+    document.getElementById("t-l-crit").textContent = lcrit;
+    document.getElementById("t-l-high").textContent = lhigh;
+    document.getElementById("t-l-med").textContent = lmed;
+    document.getElementById("t-l-low").textContent = llow;
+    document.getElementById("t-l-tools").textContent = LATEST_TOOLS.length;
+    document.getElementById("t-l-posts").textContent = LATEST_POSTS.length;
+  }, "latest tiles");
+
+  // Headlines
+  safe(function(){
+    var html = "";
+    for (var i=0;i<HEADLINES.length;i++){
+      html += "<li>" + HEADLINES[i] + "</li>";
+    }
+    document.getElementById("headlines").innerHTML = html;
+  }, "headlines");
+
+  // Latest filters
+  var latestFilter = "All";
+  safe(function(){
+    var sevs = ["All","Critical","High","Medium","Low"];
+    var lf = document.getElementById("latest-filters");
+    for (var i=0;i<sevs.length;i++){
+      (function(s){
+        var c = document.createElement("div");
+        c.className = "chip" + (s==="All"?" active":"");
+        c.textContent = s;
+        c.addEventListener("click", function(){
+          latestFilter = s;
+          var chips = document.querySelectorAll("#latest-filters .chip");
+          for (var j=0;j<chips.length;j++) chips[j].classList.remove("active");
+          c.classList.add("active");
+          renderLatestTable();
+        });
+        lf.appendChild(c);
+      })(sevs[i]);
+    }
+  }, "latest filters");
+
+  function renderLatestTable(){
+    safe(function(){
+      var tb = document.querySelector("#latest-table tbody");
+      var rows = LATEST.filter(function(r){ return latestFilter==="All" || r.severity===latestFilter; })
+        .sort(function(a,b){
+          var so = sevOrder(a.severity)-sevOrder(b.severity);
+          if (so !== 0) return so;
+          return (b.date||"").localeCompare(a.date||"");
+        });
+      var html = "";
+      for (var i=0;i<rows.length;i++){
+        var r = rows[i];
+        var primaryLink = r.advisory_url || r.writeup_url || r.link || "#";
+        var notesText = r.notes || "";
+        if (r.discoverer) notesText = "Found by: " + r.discoverer + (notesText ? " — " + notesText : "");
+        if (r.technique) notesText = notesText + (notesText ? " | " : "") + "Technique: " + r.technique;
+        if (r.writeup_url && r.writeup_url !== r.advisory_url) {
+          notesText += ' [<a href="'+escHtml(r.writeup_url)+'" target="_blank">writeup</a>]';
+        }
+        html += '<tr>'
+          + '<td><span class="sev '+sevClass(r.severity)+'">'+escHtml(r.severity)+'</span></td>'
+          + '<td><a href="'+escHtml(primaryLink)+'" target="_blank">'+escHtml(r.id)+'</a><br><span style="color:#6b7280">'+escHtml(r.title||"")+'</span></td>'
+          + '<td>'+escHtml(r.component||"")+'</td>'
+          + '<td>'+escHtml(r.vector||"")+'</td>'
+          + '<td>'+escHtml(r.date||"")+'</td>'
+          + '<td style="color:#374151">'+notesText+'</td>'
+          + '</tr>';
+      }
+      if (!html) html = '<tr><td colspan="6" class="empty">No findings match the current filter.</td></tr>';
+      tb.innerHTML = html;
+    }, "latest table");
+  }
+  renderLatestTable();
+
+  // Latest tools
+  safe(function(){
+    var html = "";
+    for (var i=0;i<LATEST_TOOLS.length;i++){
+      var t = LATEST_TOOLS[i];
+      // Backwards-compat: accept either new schema (tool/maintainer/description/advisory_url) or legacy (name/by/desc/link)
+      var name = t.tool || t.name || "";
+      var by   = t.maintainer || t.by || "";
+      var date = t.date || "";
+      var desc = t.description || t.desc || "";
+      var link = t.advisory_url || t.link || "";
+      html += '<tr><td><a href="'+escHtml(link)+'" target="_blank">'+escHtml(name)+'</a></td><td>'+escHtml(by)+'</td><td>'+escHtml(date)+'</td><td>'+escHtml(desc)+'</td></tr>';
+    }
+    document.querySelector("#latest-tools tbody").innerHTML = html;
+  }, "latest tools");
+
+  // Latest posts
+  safe(function(){
+    var html = "";
+    for (var i=0;i<LATEST_POSTS.length;i++){
+      var p = LATEST_POSTS[i];
+      var source = p.source || "";
+      var date   = p.date || "";
+      var title  = p.title || "";
+      var link   = p.advisory_url || p.link || "";
+      html += '<tr><td>'+escHtml(source)+'</td><td>'+escHtml(date)+'</td><td><a href="'+escHtml(link)+'" target="_blank">'+escHtml(title)+'</a></td></tr>';
+    }
+    document.querySelector("#latest-posts tbody").innerHTML = html;
+  }, "latest posts");
+
+  // Cumulative tiles
+  safe(function(){
+    var ccrit=0, chigh=0, cmed=0, clow=0;
+    for (var i=0;i<CUMULATIVE.length;i++){
+      var s = CUMULATIVE[i].severity;
+      if (s==="Critical") ccrit++;
+      else if (s==="High") chigh++;
+      else if (s==="Medium") cmed++;
+      else clow++;
+    }
+    document.getElementById("t-c-crit").textContent = ccrit;
+    document.getElementById("t-c-high").textContent = chigh;
+    document.getElementById("t-c-med").textContent = cmed;
+    document.getElementById("t-c-low").textContent = clow;
+    document.getElementById("t-c-total").textContent = CUMULATIVE.length;
+    document.getElementById("t-c-tools").textContent = LATEST_TOOLS.length + 30;
+  }, "cumulative tiles");
+
+  // Cumulative filters + table
+  var cumFilter = "All";
+  var aiDiscFilter = "All";
+  safe(function(){
+    var sevs = ["All","Critical","High","Medium","Low"];
+    var cf = document.getElementById("cum-filters");
+    for (var i=0;i<sevs.length;i++){
+      (function(s){
+        var c = document.createElement("div");
+        c.className = "chip" + (s==="All"?" active":"");
+        c.textContent = s;
+        c.addEventListener("click", function(){
+          cumFilter = s;
+          var chips = document.querySelectorAll("#cum-filters .chip");
+          for (var j=0;j<chips.length;j++) chips[j].classList.remove("active");
+          c.classList.add("active");
+          renderCumulativeTable();
+        });
+        cf.appendChild(c);
+      })(sevs[i]);
+    }
+    document.getElementById("cum-search").addEventListener("input", renderCumulativeTable);
+  }, "cumulative filters");
+
+  // AI-Discovery filter chips
+  safe(function(){
+    // Compute distinct AI Discovery values from CUMULATIVE (treat missing/empty/'—' as Human)
+    var seen = {};
+    for (var i=0;i<CUMULATIVE.length;i++){
+      var v = CUMULATIVE[i].ai_disc;
+      if (!v || v === "—") v = "Human";
+      seen[v] = (seen[v]||0) + 1;
+    }
+    // Build list: All first, then by count descending
+    var entries = Object.keys(seen).map(function(k){ return [k, seen[k]]; });
+    entries.sort(function(a,b){ return b[1] - a[1]; });
+    var values = ["All"].concat(entries.map(function(e){ return e[0]; }));
+    var f = document.getElementById("ai-disc-filters");
+    var label = document.createElement("div");
+    label.style.cssText = "font-size:11px;color:#6b7280;align-self:center;margin-right:4px;text-transform:uppercase;letter-spacing:0.04em;";
+    label.textContent = "AI Discovery:";
+    f.appendChild(label);
+    for (var j=0;j<values.length;j++){
+      (function(s){
+        var c = document.createElement("div");
+        c.className = "chip" + (s==="All"?" active":"");
+        var count = s==="All" ? CUMULATIVE.length : (seen[s]||0);
+        c.textContent = s + " (" + count + ")";
+        c.addEventListener("click", function(){
+          aiDiscFilter = s;
+          var chips = document.querySelectorAll("#ai-disc-filters .chip");
+          for (var k=0;k<chips.length;k++) chips[k].classList.remove("active");
+          c.classList.add("active");
+          renderCumulativeTable();
+        });
+        f.appendChild(c);
+      })(values[j]);
+    }
+  }, "ai-discovery filters");
+
+  // AI-Discovery roster panel (counts per system)
+  safe(function(){
+    var counts = {};
+    var sevByAi = {};
+    for (var i=0;i<CUMULATIVE.length;i++){
+      var v = CUMULATIVE[i].ai_disc;
+      if (!v || v === "—") continue; // Roster shows AI-discovered only
+      counts[v] = (counts[v]||0) + 1;
+      sevByAi[v] = sevByAi[v] || {Critical:0,High:0,Medium:0,Low:0};
+      sevByAi[v][CUMULATIVE[i].severity] = (sevByAi[v][CUMULATIVE[i].severity]||0) + 1;
+    }
+    var entries = Object.keys(counts).map(function(k){ return [k, counts[k]]; });
+    entries.sort(function(a,b){ return b[1] - a[1]; });
+    var html = "";
+    for (var i=0;i<entries.length;i++){
+      var sys = entries[i][0];
+      var c = entries[i][1];
+      var s = sevByAi[sys];
+      html += '<div class="tile" style="padding:10px"><div class="label">'+escHtml(sys)+'</div><div class="value" style="font-size:18px">'+c+'</div>'
+        + '<div style="font-size:10px;color:#6b7280;margin-top:4px">'
+        + (s.Critical?'<span style="color:#b91c1c">'+s.Critical+' Crit</span> · ':'')
+        + (s.High?'<span style="color:#c2410c">'+s.High+' High</span> · ':'')
+        + (s.Medium?'<span style="color:#a16207">'+s.Medium+' Med</span>':'')
+        + (s.Low?' · <span style="color:#365314">'+s.Low+' Low</span>':'')
+        + '</div></div>';
+    }
+    if (!html) html = '<div class="empty" style="grid-column:1/-1">No AI-discovered findings tagged yet.</div>';
+    document.getElementById("ai-disc-roster").innerHTML = html;
+  }, "ai-discovery roster panel");
+
+  // References (Advisory / Writeup / PoC) filter chips
+  var refsFilter = "All";
+  safe(function(){
+    var withWriteup = 0, withAdvisory = 0, withNeither = 0;
+    for (var i=0;i<CUMULATIVE.length;i++){
+      var r = CUMULATIVE[i];
+      if (r.writeup_url) withWriteup++;
+      if (r.advisory_url) withAdvisory++;
+      if (!r.writeup_url && !r.advisory_url) withNeither++;
+    }
+    var opts = [
+      ["All", CUMULATIVE.length],
+      ["Has writeup", withWriteup],
+      ["Has advisory", withAdvisory],
+      ["No links", withNeither]
+    ];
+    var f = document.getElementById("refs-filters");
+    var lab = document.createElement("div");
+    lab.style.cssText = "font-size:11px;color:#6b7280;align-self:center;margin-right:4px;text-transform:uppercase;letter-spacing:0.04em;";
+    lab.textContent = "References:";
+    f.appendChild(lab);
+    for (var j=0;j<opts.length;j++){
+      (function(label, count){
+        var c = document.createElement("div");
+        c.className = "chip" + (label==="All"?" active":"");
+        c.textContent = label + " (" + count + ")";
+        c.addEventListener("click", function(){
+          refsFilter = label;
+          var chips = document.querySelectorAll("#refs-filters .chip");
+          for (var k=0;k<chips.length;k++) chips[k].classList.remove("active");
+          c.classList.add("active");
+          renderCumulativeTable();
+        });
+        f.appendChild(c);
+      })(opts[j][0], opts[j][1]);
+    }
+  }, "refs filters");
+
+  function renderCumulativeTable(){
+    safe(function(){
+      var tb = document.querySelector("#cum-table tbody");
+      var q = (document.getElementById("cum-search").value || "").toLowerCase();
+      var rows = CUMULATIVE.filter(function(r){
+        if (cumFilter !== "All" && r.severity !== cumFilter) return false;
+        var aiVal = r.ai_disc || "—";
+        if (aiVal === "—") aiVal = "Human";
+        if (aiDiscFilter !== "All" && aiVal !== aiDiscFilter) return false;
+        if (refsFilter === "Has writeup" && !r.writeup_url) return false;
+        if (refsFilter === "Has advisory" && !r.advisory_url) return false;
+        if (refsFilter === "No links" && (r.writeup_url || r.advisory_url)) return false;
+        if (q && !((r.id+" "+r.component+" "+r.vector+" "+r.discoverer+" "+aiVal).toLowerCase().indexOf(q) >= 0)) return false;
+        return true;
+      }).sort(function(a,b){
+        var so = sevOrder(a.severity)-sevOrder(b.severity);
+        if (so !== 0) return so;
+        return (b.date||"").localeCompare(a.date||"");
+      });
+      var html = "";
+      for (var i=0;i<rows.length;i++){
+        var r = rows[i];
+        var ai = r.ai_disc && r.ai_disc !== "—" ? r.ai_disc : "—";
+        var aiCell = ai === "—" ? '<span style="color:#9ca3af">—</span>' : '<span style="background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600">'+escHtml(ai)+'</span>';
+        // Refs cell — show Adv + PoC links as compact chips
+        var refsHtml = "";
+        if (r.advisory_url) {
+          refsHtml += '<a href="'+escHtml(r.advisory_url)+'" target="_blank" rel="noopener" style="background:#e0e7ff;color:#3730a3;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;text-decoration:none;margin-right:3px" title="'+escHtml(r.advisory_url)+'">Adv</a>';
+        }
+        if (r.writeup_url) {
+          refsHtml += '<a href="'+escHtml(r.writeup_url)+'" target="_blank" rel="noopener" style="background:#fef3c7;color:#854d0e;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;text-decoration:none" title="'+escHtml(r.writeup_url)+'">PoC</a>';
+        }
+        if (!refsHtml) refsHtml = '<span style="color:#9ca3af">—</span>';
+        html += '<tr>'
+          + '<td><span class="sev '+sevClass(r.severity)+'">'+escHtml(r.severity)+'</span></td>'
+          + '<td>'+escHtml(r.id)+(r.isNew?'<span class="new-pill">NEW</span>':'')+'</td>'
+          + '<td>'+escHtml(r.component||"")+'</td>'
+          + '<td>'+escHtml(r.vector||"")+'</td>'
+          + '<td>'+escHtml(r.discoverer||"")+'</td>'
+          + '<td>'+aiCell+'</td>'
+          + '<td style="white-space:nowrap">'+refsHtml+'</td>'
+          + '<td>'+escHtml(r.date||"")+'</td>'
+          + '</tr>';
+      }
+      if (!html) html = '<tr><td colspan="8" class="empty">No findings match.</td></tr>';
+      tb.innerHTML = html;
+    }, "cumulative table");
+  }
+  renderCumulativeTable();
+
+  // Themes pane
+  safe(function(){
+    var h = "";
+    for (var i=0;i<THEMES.length;i++) h += "<li>" + THEMES[i] + "</li>";
+    document.getElementById("themes").innerHTML = h;
+
+    h = "";
+    for (var j=0;j<WATCHLIST.length;j++) h += "<li>" + WATCHLIST[j] + "</li>";
+    document.getElementById("watchlist").innerHTML = h;
+
+    h = "";
+    for (var k=0;k<GAPS.length;k++) h += "<li>" + GAPS[k] + "</li>";
+    document.getElementById("gaps").innerHTML = h;
+  }, "themes pane");
+
+  // People pane
+  safe(function(){
+    var h = "";
+    for (var i=0;i<PEOPLE.length;i++){
+      var p = PEOPLE[i];
+      h += '<div class="researcher"><b>'+escHtml(p.name)+'</b><br>'
+         + '<span style="color:#6b7280">'+escHtml(p.org)+'</span>';
+      if (p.site){
+        h += '<br><a href="https://'+escHtml(p.site)+'" target="_blank">'+escHtml(p.site)+'</a>';
+      }
+      h += '</div>';
+    }
+    document.getElementById("people-list").innerHTML = h;
+  }, "people pane");
+
+  // Charts
+  safe(function(){
+    if (typeof Chart === "undefined") return;
+    var ccrit=0, chigh=0, cmed=0, clow=0;
+    for (var i=0;i<CUMULATIVE.length;i++){
+      var s = CUMULATIVE[i].severity;
+      if (s==="Critical") ccrit++;
+      else if (s==="High") chigh++;
+      else if (s==="Medium") cmed++;
+      else clow++;
+    }
+    var ctx1 = document.getElementById("chart-sev");
+    if (ctx1) {
+      new Chart(ctx1, {
+        type: "doughnut",
+        data: {
+          labels: ["Critical","High","Medium","Low/Info"],
+          datasets: [{ data:[ccrit,chigh,cmed,clow], backgroundColor:["#b91c1c","#c2410c","#a16207","#365314"] }]
+        },
+        options: { plugins:{legend:{position:"bottom",labels:{font:{size:11}}}}, maintainAspectRatio:false }
+      });
+    }
+
+    var buckets = {};
+    for (var j=0;j<CUMULATIVE.length;j++){
+      var d = CUMULATIVE[j].date || "";
+      var m = d.length >= 7 ? d.substring(0,7) : (d.length===4 ? d+"-01" : "");
+      if (!m) continue;
+      if (!buckets[m]) buckets[m] = {Critical:0,High:0,Medium:0,Low:0};
+      var key = CUMULATIVE[j].severity;
+      if (buckets[m][key] !== undefined) buckets[m][key]++;
+    }
+    var months = Object.keys(buckets).sort();
+    var sevList = ["Critical","High","Medium","Low"];
+    var colors = ["#b91c1c","#c2410c","#a16207","#365314"];
+    var datasets = [];
+    for (var x=0;x<sevList.length;x++){
+      var d2 = [];
+      for (var y=0;y<months.length;y++) d2.push(buckets[months[y]][sevList[x]]||0);
+      datasets.push({ label: sevList[x], data: d2, backgroundColor: colors[x] });
+    }
+    var ctx2 = document.getElementById("chart-time");
+    if (ctx2) {
+      new Chart(ctx2, {
+        type: "bar",
+        data: { labels: months, datasets: datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: { x: { stacked: true }, y: { stacked: true, ticks: { stepSize: 1 } } },
+          plugins: { legend: { position:"bottom", labels:{font:{size:11}} } }
+        }
+      });
+    }
+  }, "charts");
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
+
+</body>
+</html>

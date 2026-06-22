@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>AI Vuln — This Week</title>
+<style>
+  :root { color-scheme: light }
+  * { box-sizing: border-box }
+  body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background:#fafaf9; color:#1f2937; }
+  header { padding:14px 20px; border-bottom:1px solid #e5e7eb; background:#fff; }
+  header h1 { margin:0; font-size:17px; }
+  header .meta { color:#6b7280; font-size:12px; margin-top:4px; display:flex; gap:14px; flex-wrap:wrap; }
+  .pane { padding:14px 20px 50px; }
+  .grid { display:grid; gap:10px; }
+  .tiles { grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); }
+  .tile { background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px; }
+  .tile .label { color:#6b7280; font-size:10px; text-transform:uppercase; letter-spacing:0.04em; }
+  .tile .value { font-size:22px; font-weight:600; margin-top:4px; color:#111; }
+  .tile .delta { font-size:11px; margin-top:4px; color:#6b7280; }
+  .tile.crit .value { color:#b91c1c; }
+  .tile.high .value { color:#c2410c; }
+  .tile.med .value { color:#a16207; }
+  .tile.fresh .value { color:#059669; }
+  .tile.stale .value { color:#b91c1c; }
+  .card { background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px; margin-top:14px; }
+  .card h2 { margin:0 0 8px; font-size:13px; color:#111; }
+  .card h2 .badge { font-size:10px; padding:2px 8px; border-radius:6px; background:#f3f4f6; color:#374151; margin-left:6px; vertical-align:middle; font-weight:500; letter-spacing:0; text-transform:none; }
+  table.findings { width:100%; border-collapse:collapse; font-size:12px; }
+  table.findings th, table.findings td { padding:7px 10px; border-bottom:1px solid #f1f5f9; text-align:left; vertical-align:top; }
+  table.findings th { font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:#6b7280; background:#f9fafb; }
+  .sev { display:inline-block; padding:2px 7px; border-radius:5px; font-size:9px; font-weight:700; letter-spacing:0.03em; }
+  .sev-crit { background:#fee2e2; color:#991b1b; }
+  .sev-high { background:#ffedd5; color:#9a3412; }
+  .sev-med { background:#fef3c7; color:#92400e; }
+  .sev-low { background:#dcfce7; color:#166534; }
+  a { color:#1d4ed8; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .empty { color:#6b7280; padding:14px; text-align:center; font-size:12px; }
+  .pulse { display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; vertical-align:middle; margin-right:6px; }
+  ul.daily-list { list-style:none; padding:0; margin:0; }
+  ul.daily-list li { padding:6px 0; border-bottom:1px solid #f1f5f9; font-size:12px; display:flex; justify-content:space-between; gap:10px; }
+  ul.daily-list li:last-child { border-bottom:none; }
+  ul.daily-list .day-date { color:#374151; font-weight:600; min-width:90px; }
+  ul.daily-list .day-counts { color:#6b7280; font-size:11px; }
+  ul.daily-list .day-status-clean { color:#059669; }
+  .alert-link { font-size:11px; color:#b91c1c; }
+  .footer-note { font-size:11px; color:#6b7280; margin-top:14px; padding:0 4px; }
+  .filterbar { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .filterbar .flabel { font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:#9ca3af; margin-right:2px; }
+  .chip { font-size:11px; padding:4px 10px; border-radius:999px; border:1px solid #e5e7eb; background:#fff; color:#374151; cursor:pointer; user-select:none; white-space:nowrap; }
+  .chip:hover { border-color:#cbd5e1; }
+  .chip.active { background:#1d4ed8; color:#fff; border-color:#1d4ed8; }
+  .chip .cnt { opacity:0.6; margin-left:4px; font-variant-numeric:tabular-nums; }
+  .chip.toggle { margin-left:6px; }
+  .chip.toggle.active { background:#7c3aed; color:#fff; border-color:#7c3aed; }
+  .ai-badge { display:inline-block; margin-left:6px; font-size:9px; font-weight:700; padding:1px 5px; border-radius:4px; background:#ede9fe; color:#6d28d9; vertical-align:middle; }
+  .cat-tag { display:inline-block; font-size:10px; padding:2px 7px; border-radius:5px; background:#f1f5f9; color:#334155; white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="pulse"></span>AI Vuln — This Week</h1>
+  <div class="meta">
+    <span>Week: <b id="hdr-week">—</b></span>
+    <span>Last updated: <b id="hdr-updated">—</b></span>
+    <span>Cache age: <b id="hdr-cache">—</b></span>
+    <span><a href="#" id="hdr-fullboard">→ Full historical dashboard</a></span>
+  </div>
+</header>
+
+<div class="pane">
+
+  <div class="grid tiles">
+    <div class="tile crit"><div class="label">Critical this week</div><div class="value" id="t-crit">—</div><div class="delta">CVSS 9.0+</div></div>
+    <div class="tile high"><div class="label">High this week</div><div class="value" id="t-high">—</div><div class="delta">CVSS 7.0–8.9</div></div>
+    <div class="tile med"><div class="label">Medium this week</div><div class="value" id="t-med">—</div><div class="delta">CVSS 4.0–6.9</div></div>
+    <div class="tile"><div class="label">Total findings</div><div class="value" id="t-total">—</div><div class="delta">all severities</div></div>
+    <div class="tile"><div class="label">Daily scans run</div><div class="value" id="t-scans">—</div><div class="delta">this week</div></div>
+    <div class="tile fresh" id="t-cache-tile"><div class="label">Cache</div><div class="value" id="t-cache">—</div><div class="delta">feed freshness</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Daily scan log <span class="badge" id="badge-scans">—</span></h2>
+    <ul class="daily-list" id="daily-list"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Findings this week <span class="badge" id="badge-findings">—</span></h2>
+    <div class="filterbar" id="filterbar"></div>
+    <table class="findings" id="findings-table">
+      <thead><tr><th>Date</th><th>Sev</th><th>Class</th><th>ID / Title</th><th>Component</th><th>Source</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card" id="alerts-card" style="display:none">
+    <h2>Critical alerts posted this week</h2>
+    <ul id="alerts-list" style="padding-left:18px;font-size:12px"></ul>
+  </div>
+
+  <div class="footer-note">
+    This view shows only findings since the most recent weekly refresh. Each Tuesday at 11 AM the weekly task consumes the daily-scan log into the full historical dashboard, then resets this view for the new week. Daily scan runs at 7:30 AM every day.
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+// ============================================================
+// DATA — replaced by daily / weekly scheduled tasks
+// ============================================================
+
+// Window of the current week — RESET on weekly run for new cycle
+var WEEK_START = "2026-06-16";       // YYYY-MM-DD (start of new cycle = today)
+var WEEK_END   = "2026-06-23";       // next weekly-run date (resets this view)
+var LAST_UPDATED = "2026-06-22 13:58 UTC";
+var CACHE_AGE_HOURS = 9.48;          // Daily scan 2026-06-22: feeds-latest.jsonl mtime Jun 22 04:28 UTC (~9.5h, STALE). Populator advanced overnight (cache carries 06-22 items) but STOPPED again at 04:28 UTC - same intermittent pattern as 06-18/06-20 (recovered briefly 06-21). CLEAN DAY: 0 Critical / 0 High in-scope; 31 items in window but the 8 High-CVSS advisories are off-topic (partition/backup/ISO utilities). Subagent fallback triggered (stale + <3 Crit/High) - returned zero net-new in window. Daily scans accumulate over the June 16->23 window.
+
+// One entry per daily scan run — reset for new cycle
+var DAILY_SCANS = [
+  {date:"2026-06-17", criticals:5, highs:7, others:73, status:"critical", note:"AI-infra auth-bypass wave (vLLM + LiteLLM share the same Starlette url_path auth-gate class) + n8n MCP unauth browser-control CVSS 10 + Crawl4AI/Langflow unauth RCE. Highs = on-theme groupings; ~8 non-AI highs filtered out."},
+  {date:"2026-06-18", criticals:4, highs:3, others:70, status:"critical", note:"Cache STALE ~19h (populator down through the day); subagent fallback blocked by a safety filter, direct WebSearch fallback found nothing net-new in-window. The 4 Crit are 06-17 GHSA disclosures the prior morning run missed: NVIDIA GEN3C unauth RCE 9.8, picklescan deny-list bypass 9.8, OpenHuman agent allowlist bypass 9.6, Langflow unauth file-upload 9.3. ~9 non-AI web/WordPress highs/crits filtered out."},
+  {date:"2026-06-19", criticals:21, highs:42, others:97, status:"critical", note:"Cache STALE ~9h (populator did not refresh through the morning); subagent fallback gap-check clean. Dominated by ONE PraisonAI coordinated disclosure: 47 advisories (14 Critical + 33 High) - pervasive default-open posture (unauth Jobs/AgentOS/MCP endpoints, hardcoded JWT secret dev-secret-change-me, codeMode sandbox-escape RCE, allowlist/approval bypass via shell chaining). Plus Crawl4AI unauth RCE 10.0, gemini-mcp-tool RCE, googleapis/mcp-toolbox auth bypass, M365 Copilot missing-auth, netlicensing-mcp path traversal. Counts are on-theme; ~4 non-AI web highs/crits filtered out."},
+  {date:"2026-06-20", criticals:0, highs:0, others:0, status:"clean", note:"CLEAN (degraded). Cache STALE ~37.8h - feed populator appears DOWN (no advance since Jun 19 02:35 UTC; staleness escalated 9h->19h->37.8h over the week). All 10 cache items dated 06-19 were already logged in the 06-19 scan (PraisonAI cluster, M365 Copilot missing-auth, pgAdmin AI-Assistant bypass + stored-XSS, AutoJack); no 06-20 items in cache. Subagent gap-check (06-18..20, primary-source/strict-date) clean: zero net-new Critical/High. AutoJack re-confirmed as already-logged + human-found (not AI-discovered). 3 high-value items flagged just-outside-window for the 06-23 weekly backfill: Mastra npm supply-chain compromise (DPRK, 06-17), MDASH 'Beyond the benchmark' update (06-17), Aztec Connect ZK-bridge exploit $2.19M (06-14/15)."},
+  {date:"2026-06-21", criticals:2, highs:1, others:14, status:"critical", note:"Cache HEALTHY (~0.09h) - feed populator RECOVERED after the ~38h outage flagged 06-20; now refreshing with 17 items in the 24h window (06-20 + 06-21). 2 Critical: Flowise <2.1.4 overrideConfig RCE + vm2 sandbox escape (CVE-2024-58351, 9.8 - default-on, no-allow-list config injection on frontend + Prediction API) and Secret Network Axelar bridge infinite-mint exploit $4.67M (no-CVE, escalated; ~$770K still in attacker wallet, Axelar declined freeze). 1 High: vLLM >=0.10.2 <0.13.0 missing sparse-tensor validation in multimodal embeddings (CVE-2026-56340, 8.8 - DoS + potential OOB memory corruption, continues CVE-2025-62164). Others = 8 non-AI Windows-utility/WordPress CVEs filtered + Decrypt 'Fable 5 goes dark' (Theme 25 context) + 5 Zcash-forum non-vuln. Drive alert posted."},
+  {date:"2026-06-22", criticals:0, highs:0, others:7, status:"clean", note:"CLEAN DAY. Cache STALE ~9.5h - populator advanced overnight (cache carries 06-22 items) but STOPPED again at 04:28 UTC; same intermittent pattern as 06-18/06-20. 31 items in window (19 dated 06-21 + 12 dated 06-22) but the 8 High-CVSS advisories are all off-topic (Capgo Capacitor plugin + EaseUS/AOMEI/IM-Magic/UltraISO partition/backup/ISO utilities) - filtered out, zero in-scope Critical/High. Subagent fallback TRIGGERED (stale + <3 Crit/High): both lanes (CVE/framework + AI-discovery/crypto-ZK/academic-hardware), window 06-20..22, primary-source - returned ZERO net-new in window (freshest in-scope items are 06-18/19, already logged). Others(7) = non-vuln research/tooling/context: Zcash ZCG batch-verification soundness-fuzzing grant (crypto-ZK lane), superserve 'agents can use keys they can't read' (Theme 18/26 defense), Promptblock PI-in-GitHub-issues detector (Theme 26 defense), DeepMind 'Securing the Future of AI Agents', microVM-vs-agent-security commentary (Theme 8/13), Lyapunov agent-stability monitor (Theme 4), Rochester MIPS timing-leak (hardware lane - no-CVSS escalation considered & declined). REcon 2026 concluded 06-21; recordings pending (S15 watchlist). No Drive alert."}
+];
+
+// All findings logged this week (across daily scans) — reset for new cycle
+// Schema: {date, severity, id, title, component, source_name, url, category, ai_discovered, ai_system, note}
+// category vocab: see CATEGORIES below. ai_discovered:true flags frontier-AI / AI-agent-discovered vulns.
+var ITEMS = [
+  {date:"2026-06-17", severity:"Critical", id:"CVE-2026-54309", title:"n8n @n8n/mcp-browser: MCP HTTP transport exposes unauthenticated browser-control sessions", component:"n8n / @n8n/mcp-browser", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-qrx8-25qr-5r7v", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 10.0 (feed-labeled high; escalated per CVSS>=9 rule). Any network client or any website the user visits can open an MCP session and drive navigation/JS-eval where the AI Browser Bridge is active. Theme 1+23."},
+  {date:"2026-06-17", severity:"Critical", id:"GHSA-365w-hqf6-vxfg", title:"Crawl4AI Docker API: arbitrary file write + SSRF + auth bypass + XSS + JS execution", component:"Crawl4AI (Docker server)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-365w-hqf6-vxfg", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 9.8. output_path arbitrary FS write (CWE-22) on /screenshot,/pdf + SSRF/auth-bypass/XSS/JS-exec across crawl/extract/webhook/monitor. Theme 14."},
+  {date:"2026-06-17", severity:"Critical", id:"CVE-2026-48519", title:"Langflow: unauthenticated RCE in Shareable Playground / Public Flows", component:"Langflow", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-v5ff-9q35-q26f", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.6. Sharing a flow exposes /api/v1/build_public_tmp which executes any public flow by ID for unauth users -> RCE. Theme 23."},
+  {date:"2026-06-17", severity:"Critical", id:"CVE-2026-48746", title:"vLLM: OpenAI-API authentication bypass", component:"vLLM", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-94f4-hr76-p5j6", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 9.1. Starlette url_path reconstruction bypasses AuthenticationMiddleware -> API usable without VLLM_API_KEY. Found in @x41sec source-code audit. Theme 14."},
+  {date:"2026-06-17", severity:"Critical", id:"CVE-2026-49468", title:"LiteLLM: authentication bypass via Host-header injection", component:"LiteLLM (proxy)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-4xpc-pv4p-pm3w", category:"AI infra", ai_discovered:false, ai_system:"", note:"get_request_route() derives route from request.url.path (Starlette rebuilds from Host); crafted Host bypasses the auth gate. Most deploys not affected. SAME class as vLLM CVE-2026-48746. Theme 14."},
+  {date:"2026-06-17", severity:"High", id:"CVE-2026-33760", title:"Langflow: IDOR/BOLA in Monitor API (missing ownership enforcement on 7 endpoints)", component:"Langflow", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-9c59-2mvc-vfr8", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 8.8. Pairs with the critical Langflow RCE."},
+  {date:"2026-06-17", severity:"High", id:"GHSA-f989-c77f-r2cq", title:"Crawl4AI Docker: LLM credential exfiltration (+ SSRF filter bypass CVE-2026-53754)", component:"Crawl4AI (Docker server)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-f989-c77f-r2cq", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 8.2. request base_url + env: token resolution leaks LLM creds. SSRF bypass via IPv6 transition forms NAT64/6to4/v4-mapped (CVE-2026-53754, 7.5). Same Crawl4AI cluster."},
+  {date:"2026-06-17", severity:"High", id:"CVE-2026-24155", title:"NVIDIA NeMo Framework: code injection (+ CVE-2026-24228 Linux flaw)", component:"NVIDIA NeMo", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-xp23-6mrm-wqh3", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 7.8 each. Code injection -> exec/privesc/info-disclosure/data-tamper. AI-framework substrate (Theme 24-adjacent)."},
+  {date:"2026-06-17", severity:"High", id:"CVE-2026-41523", title:"vLLM: security-check bypass via assert in activation-function loading -> arbitrary code execution", component:"vLLM", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-q8gq-377p-jq3r", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 7.5. Second vLLM issue in window (distinct from the critical auth bypass)."},
+  {date:"2026-06-17", severity:"High", id:"CVE-2026-54302", title:"n8n: Stored XSS in Chat Trigger node", component:"n8n", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-42h7-m79w-wvg5", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 7.6."},
+  {date:"2026-06-17", severity:"High", id:"CVE-2026-54321", title:"Daytona: public sandbox previews reachable up to 1h after being made private", component:"Daytona", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-ww63-pv5x-vfc8", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 7.0. Agent dev-sandbox exposure window."},
+  {date:"2026-06-17", severity:"High", id:"CVE-2026-53849 (+5)", title:"OpenClaw: new 6-CVE cluster — privesc / inline-eval bypass / allowlist bypass / path traversal", component:"OpenClaw", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-p44v-rx83-vjp4", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS up to 8.1: CVE-2026-53849/-53855/-53857/-53864/-53866 (8.1), -53865 (7.1). Distinct from the 06-13/14 OpenClaw batch — a second wave. Theme 23."},
+  {date:"2026-06-17", severity:"High", id:"arXiv 2606.18198", title:"Seeing Is Not Screening: Multimodal Hidden Instruction Attacks on Agent Skill Scanners", component:"Agent skill scanners (research)", source_name:"arXiv", url:"https://arxiv.org/abs/2606.18198", category:"Skills / plugins", ai_discovered:false, ai_system:"", note:"No-CVE; escalated to High per blind-spot rule. Instructions hidden in images bypass text/manifest/source scanners yet stay recoverable by the multimodal agent. Theme 15+26+10."},
+  {date:"2026-06-18", severity:"Critical", id:"CVE-2026-53805", title:"NVIDIA Spatial Intelligence Lab (SIL) GEN3C: unauthenticated remote code execution", component:"NVIDIA GEN3C", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-478c-rj3v-9229", category:"Model / multimodal", ai_discovered:false, ai_system:"", note:"CVSS 9.8. Disclosed 06-17 (caught today; cache stale). Unauth RCE in a generative-3D model's serving code. NVIDIA AI substrate."},
+  {date:"2026-06-18", severity:"Critical", id:"CVE-2025-71320", title:"picklescan <0.0.33: incomplete deny-list (pydoc.locate bypass) -> malicious-pickle scan bypass", component:"picklescan", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-6v84-v468-3c7f", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 9.8. Disclosed 06-17. picklescan is the scanner HF & others use to vet model pickles; deny-list gap lets crafted pickles pass as clean -> model supply-chain bypass. Theme 15."},
+  {date:"2026-06-18", severity:"Critical", id:"CVE-2026-55743", title:"OpenHuman desktop agent <=0.54.0: shell-tool command allowlist bypass in SecurityPolicy", component:"OpenHuman (desktop agent)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-34j2-gcwp-vrv5", category:"Agent core", ai_discovered:false, ai_system:"", note:"CVSS 9.6. Disclosed 06-17. Allowlist bypass on the agent's shell tool. Direct Theme 26 (CmdNeedle - agent command allow/denylists structurally incomplete) + Theme 13."},
+  {date:"2026-06-18", severity:"Critical", id:"CVE-2026-55450", title:"Langflow: unauthenticated file upload -> DoS (space exhaustion) + information leak", component:"Langflow", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-x223-p2gf-v735", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.3. Disclosed 06-17. Third Langflow CVE in 2 days (distinct from 06-17 unauth-RCE -48519 and IDOR -33760); consistent unauth-default pattern. Theme 23."},
+  {date:"2026-06-18", severity:"High", id:"CVE-2026-55405", title:"LangChain4j: SQL injection via metadata filters (langchain4j-mariadb / langchain4j-pgvector)", component:"LangChain4j", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-2mfg-cc43-9pcj", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 7.6. Disclosed 06-17. Vector-store metadata-filter -> SQL sink; same class as Check Point LangGraph checkpointer SQLi."},
+  {date:"2026-06-18", severity:"High", id:"CVE-2026-53869", title:"Hermes Agent <0.16.0: DNS-rebinding in WebSocket endpoints", component:"Hermes Agent (coding agent)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-4pqm-j46f-795x", category:"Coding agent / IDE", ai_discovered:false, ai_system:"", note:"CVSS 7.5. Disclosed 06-17. Missing origin/Host validation on the agent WS transport -> a malicious site the user visits can drive the local agent. Theme 1."},
+  {date:"2026-06-18", severity:"High", id:"PhantomSkill (arXiv)", title:"PhantomSkill: Malicious Code Injection in Agent Skill Ecosystems (VulMask)", component:"Agent skill ecosystems (research)", source_name:"arXiv", url:"https://arxiv.org/list/cs.CR/recent", category:"Skills / plugins", ai_discovered:false, ai_system:"", note:"No-CVE; escalated to High per blind-spot rule. Hides malice in a skill's auxiliary resources (not its text); VulMask rewrites overt malicious scripts into vulnerability-shaped impls activated only by attacker triggers -> defeats description/manifest review. Theme 15+26."},
+  {date:"2026-06-19", severity:"Critical", id:"PraisonAI cluster (47 advisories)", title:"PraisonAI coordinated disclosure - 14 Critical + 33 High (unauth RCE, codeMode sandbox escape, default JWT secret, MCP no-auth, path traversal, SSRF, fail-open approvals)", component:"PraisonAI / praisonai-platform / praisonaiagents", source_name:"GitHub Security Advisories", url:"https://github.com/advisories?query=praisonai", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"Largest single-project agent-framework disclosure logged in this project. Pervasive default-open posture across the platform. Representative rows below. Theme 23 (agent-platform tenancy) + Theme 26 (CmdNeedle allowlist incompleteness) + Theme 13."},
+  {date:"2026-06-19", severity:"Critical", id:"GHSA-vmmj-pfw7-fjwp", title:"PraisonAI codeMode sandbox escape via Function constructor (RCE)", component:"PraisonAI (npm, codeMode tool)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-vmmj-pfw7-fjwp", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.9. Function-constructor escape from the codeMode JS sandbox -> host RCE. Paired GHSA-p69m-4f92-2v84 (9.8, Python codeMode sandbox escape)."},
+  {date:"2026-06-19", severity:"Critical", id:"GHSA-cwj8-7gp2-ggcw", title:"praisonai-platform: default JWT signing secret dev-secret-change-me enables token forgery", component:"praisonai-platform", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-cwj8-7gp2-ggcw", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.8. Hardcoded JWT secret -> forge any user/admin token. GHSA-f38v-77qj-h4jq: 0.1.4 still boots on the same secret (incomplete fix). Theme 18+23."},
+  {date:"2026-06-19", severity:"Critical", id:"GHSA-4869-x4pr-q22x", title:"PraisonAI: unauthenticated RCE via Jobs API + approval bypass", component:"PraisonAI (Jobs API)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-4869-x4pr-q22x", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.8. Jobs API exposes agent-execution endpoints with no auth (GHSA-fq2m-6wqh-x44g) and approval can be bypassed -> unauth RCE. Theme 23."},
+  {date:"2026-06-19", severity:"Critical", id:"GHSA-j4f3-55x4-r6q2", title:"PraisonAI MCPServer exposes unauthenticated HTTP tools/call", component:"PraisonAI MCPServer (npm)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-j4f3-55x4-r6q2", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 9.8. Any network client can call MCP tools with no auth. GHSA-x227-pf99-vffg: MCP SSE transport binds 0.0.0.0 with no auth and no Origin validation; bundled SecurityConfig never wired in. Theme 1+23."},
+  {date:"2026-06-19", severity:"Critical", id:"GHSA-29w3-p9w9-wc47", title:"PraisonAI: arbitrary file read/write via multiedit tool without path validation", component:"PraisonAI (multiedit tool)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-29w3-p9w9-wc47", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.1. No path validation on the agent file tool -> read/write outside workspace. Companion to multiple PraisonAI path-traversal/LFI highs in the same disclosure."},
+  {date:"2026-06-19", severity:"Critical", id:"GHSA-r253-r9jw-qg44", title:"Crawl4AI: unauthenticated RCE via Chromium launch-argument injection in browser_config.extra_args", component:"Crawl4AI", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-r253-r9jw-qg44", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 10.0. Distinct from the 06-17 Crawl4AI Docker cluster: extra_args lets an attacker pass arbitrary Chromium launch flags -> RCE. Theme 14."},
+  {date:"2026-06-19", severity:"Critical", id:"CVE-2026-0755", title:"gemini-mcp-tool: OS command injection + @file exfiltration via prompt quoting", component:"gemini-mcp-tool (MCP server)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-4h5r-5jm8-jxjm", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 9.8. Unsafe prompt quoting -> shell injection + @file read/exfil through the MCP tool. Theme 1+26 (tool-output / arg injection)."},
+  {date:"2026-06-19", severity:"Critical", id:"CVE-2026-11717 / -11718", title:"googleapis/mcp-toolbox: authentication bypass in opaque-token validation (validateOpaqueToken / OAuth introspection)", component:"Google MCP Toolbox", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-8fcc-w5hv-4gxv", category:"MCP", ai_discovered:false, ai_system:"", note:"Two CVEs. validateOpaqueToken mishandles RFC-7662 introspection responses -> auth bypass. Google-maintained MCP server. Paired CVE-2026-11719 (High, GHSA-5gf6-gc35-xjpc): authenticated authz bypass via missing scope enforcement on older protocol handlers. Theme 1."},
+  {date:"2026-06-19", severity:"Critical", id:"GHSA-hxpf-9xvq-wph8", title:"netlicensing-mcp: REST path traversal bypasses token redaction", component:"netlicensing-mcp (MCP server)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-hxpf-9xvq-wph8", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 9.6. Path traversal on the REST surface bypasses token redaction -> credential disclosure. Theme 1+18."},
+  {date:"2026-06-19", severity:"Critical", id:"CVE-2026-54130", title:"M365 Copilot: missing authentication for critical function", component:"Microsoft 365 Copilot", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-9cqp-hgpj-49wr", category:"Agent core", ai_discovered:false, ai_system:"", note:"CVSS 9.8. Unauthenticated attacker reaches a critical Copilot function. Follows the Varonis SearchLeak (CVE-2026-42824) M365 Copilot exfil line. Theme 7+23."},
+  {date:"2026-06-19", severity:"Critical", id:"CVE-2026-12045", title:"pgAdmin 4 AI Assistant: read-only transaction bypass", component:"pgAdmin 4 (AI Assistant)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-95q2-vx3p-f723", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 9.0. Attacker who can influence the AI Assistant escapes the read-only transaction guard -> state-changing SQL. AI-feature-abuse class (cf. SpecterOps SQL Server 2025 AI features). pgAdmin stored-XSS CVE-2026-12048 (9.3) same advisory batch, non-AI."},
+  {date:"2026-06-19", severity:"High", id:"CVE-2026-55887", title:"Docker MCP Gateway: argument injection via OCI image label YAML", component:"Docker MCP Gateway", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-r2xf-7jw5-pjg6", category:"MCP", ai_discovered:false, ai_system:"", note:"Malicious OCI image label injects args into the docker run command line built by the MCP Gateway. Theme 1+26 (trusted-context poisoning via upstream image metadata)."},
+  {date:"2026-06-19", severity:"High", id:"GHSA-fq4x-789w-jg5h", title:"AgenticMail: unauthenticated inbound mail triggers bypassPermissions resume of operator Claude Code session (bridge-wake)", component:"AgenticMail", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-fq4x-789w-jg5h", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"Inbound (untrusted) email wakes a Claude Code session in bypassPermissions mode -> attacker-driven agent actions. Paired GHSA-hjwc-26pj-v3pm: cross-agent task authorization bypass. Theme 26 (trusted-context poisoning) + Theme 6 (cross-agent)."},
+  {date:"2026-06-19", severity:"High", id:"CVE-2026-46580 / -44688", title:"Eclipse Theia <1.71.0: AI chat agent processes workspace .prompttemplate / file content unsafely", component:"Eclipse Theia (AI chat agent)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-m973-pr9r-hp2w", category:"Coding agent / IDE", ai_discovered:false, ai_system:"", note:"Two CVEs. Files matching .prompts/*.prompttemplate and processed file/workspace content reach the AI chat agent -> indirect prompt injection from repo contents. CVE-2026-44688: GHSA-3jww-hxqj-wfq2. Theme 5+26."},
+  {date:"2026-06-19", severity:"High", id:"CVE-2026-53843", title:"OpenClaw: pairing-scoped device session could restore revoked node-token authority", component:"OpenClaw", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-q99w-vh6v-q3v7", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 8.8. Revoked node token regains authority via a pairing-scoped session -> revocation bypass. Continues the OpenClaw CVE stream (06-13/14 + 06-17 clusters). Theme 23."},
+  {date:"2026-06-19", severity:"High", id:"CVE-2026-54695", title:"Pipecat: telephony /ws unauthenticated call-control abuse via attacker-supplied call SID", component:"Pipecat (voice agent)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-j8cv-x86q-rj85", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 7.5. Unauthenticated WebSocket call-control on a voice-agent framework -> hijack/redirect calls. Voice/multimodal agent attack surface (Theme 10)."},
+  {date:"2026-06-19", severity:"High", id:"AutoJack (Microsoft)", title:"AutoJack: a single malicious web page can RCE the host running an AI browsing agent", component:"AI browsing agents (research)", source_name:"Microsoft Security blog", url:"https://www.microsoft.com/en-us/security/blog/2026/06/18/autojack-single-page-rce-host-running-ai-agent/", category:"Agent core", ai_discovered:false, ai_system:"", note:"No-CVSS; escalated (RCE). Exploit chain abuses localhost trust + missing auth + unsafe parameter handling so one page drives an AI browser agent into host RCE. Microsoft research, 06-18. Theme 1+5+26."},
+  {date:"2026-06-19", severity:"High", id:"arXiv 2606.13385", title:"StakeBench / Who Pays the Price: stakeholder-centric prompt-injection benchmark - ~0 scenarios reliably blocked across GPT-5/Gemini web agents", component:"Web agents (research)", source_name:"arXiv / CSO Online", url:"https://arxiv.org/abs/2606.13385", category:"Agent core", ai_discovered:false, ai_system:"", note:"No-CVSS; escalated per blind-spot rule. Indirect-PI ASR 41.67-68.16%, direct-PI >79% over 3,168 runs on NanoBrowser + BrowserUse. Reframes PI as multi-party/system harm. Theme 5+26 (techniques that do not work)."},
+  {date:"2026-06-21", severity:"Critical", id:"CVE-2024-58351", title:"Flowise <2.1.4: overrideConfig config-injection -> RCE + vm2 sandbox escape (default-on, no allow-list)", component:"Flowise", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-5w6g-rc45-wvv9", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.8. overrideConfig injects configuration into the Chainflow during execution; enabled by default with NO allow-list of permitted variables, relies on vm2 for sandboxing -> RCE + sandbox escape, DoS, SSRF, prompt injection. Exposed on BOTH the frontend web-integration and the backend Prediction API. Late-published advisory (CVE year 2024). Theme 23 + 5 + 1."},
+  {date:"2026-06-21", severity:"Critical", id:"Secret Network / Axelar bridge", title:"Secret Network Axelar bridge infinite-mint exploit - $4.67M drained (no CVE)", component:"Secret Network <-> Axelar bridge", source_name:"The Block", url:"https://www.theblock.co/post/405459", category:"Protocol / crypto-ZK", ai_discovered:false, ai_system:"", note:"No-CVE; escalated to Critical per the no-CVSS + infinite-mint (inflation/double-spend) Critical-title-pattern rule. Drained over ~7 days unnoticed; ~$770K still in the attacker's Axelar wallet, Axelar declined the freeze request. Crypto/protocol blind-spot lane."},
+  {date:"2026-06-21", severity:"High", id:"CVE-2026-56340", title:"vLLM >=0.10.2 <0.13.0: missing sparse-tensor validation in multimodal embeddings", component:"vLLM", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-78fp-cf4h-g36p", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 8.8. With the prompt-embeds feature enabled, malformed (negative / out-of-bounds) tensor indices -> DoS (crash / resource exhaustion) + potential OOB / write-what-where memory corruption (PyTorch disables sparse-tensor invariant checks by default). Continues CVE-2025-62164. Theme 24(b) - inference-server attack surface."}
+];
+
+// Critical alerts posted to Drive this week — reset for new cycle
+var ALERTS = [
+  {date:"2026-06-17 1136", title:"5 Critical — AI-infra auth-bypass wave + n8n MCP unauth browser-control (CVSS 10)", drive_url:"https://docs.google.com/document/d/1pUYNouW75xEWTZabA8yECrMaBb72Q3nGLGzwvtS33Fc/edit?usp=drivesdk&ouid=113026484200967021090"},
+  {date:"2026-06-18 2111", title:"4 Critical — NVIDIA GEN3C unauth RCE + picklescan deny-list bypass + OpenHuman agent allowlist bypass + Langflow unauth file-upload (06-17 GHSAs, cache stale)", drive_url:"https://docs.google.com/document/d/1SrpexRrzmQiL7uMrBxC5fywwSW7HJk--My-H1Bqpg1A/edit?usp=drivesdk&ouid=113026484200967021090"},
+  {date:"2026-06-19 1141", title:"21 Critical - PraisonAI 47-advisory disclosure (14 Crit) + Crawl4AI unauth RCE 10.0 + gemini-mcp-tool RCE + googleapis/mcp-toolbox auth bypass + M365 Copilot missing-auth", drive_url:"https://docs.google.com/document/d/1_YF1B-rfFWqacWWYhOvhwhwI2KtEOE9HPNVT3tfI39U/edit?usp=drivesdk&ouid=113026484200967021090"},
+  {date:"2026-06-21 1135", title:"2 Critical - Flowise <2.1.4 overrideConfig RCE + vm2 sandbox escape (CVE-2024-58351, 9.8) + Secret Network Axelar bridge infinite-mint exploit $4.67M (no-CVE)", drive_url:"https://docs.google.com/document/d/1LSiyZnOB6syAjJ_4H5hV-nxnnqpqlnMC2J_x6o7StX0/edit?usp=drivesdk&ouid=113026484200967021090"}
+];
+
+// Optional: link to the full historical dashboard artifact (Cowork sidebar)
+var FULL_DASHBOARD_URL = "#"; // updated by scheduled task if a deep link exists
+
+// ============================================================
+// RENDER
+// ============================================================
+
+// Controlled vocabulary for the "Class" filter. Order = chip order.
+var CATEGORIES = ["MCP","Agent core","Agent ecosystem","Skills / plugins","Coding agent / IDE","AI infra","Protocol / crypto-ZK","Model / multimodal"];
+var FILTER = { cat:"All", aiOnly:false };
+
+function matchesFilter(it){
+  if (FILTER.aiOnly && !it.ai_discovered) return false;
+  if (FILTER.cat !== "All" && (it.category||"Uncategorized") !== FILTER.cat) return false;
+  return true;
+}
+function catCount(cat){
+  var n=0;
+  for (var i=0;i<ITEMS.length;i++){
+    var it=ITEMS[i];
+    if (FILTER.aiOnly && !it.ai_discovered) continue;
+    if (cat==="All" || (it.category||"Uncategorized")===cat) n++;
+  }
+  return n;
+}
+function buildFilters(){
+  var bar = document.getElementById("filterbar");
+  if (!bar) return;
+  var html = '<span class="flabel">Class</span>';
+  var cats = ["All"].concat(CATEGORIES);
+  // only show category chips that exist in the data (plus All), so the bar stays relevant
+  var present = {};
+  for (var i=0;i<ITEMS.length;i++){ present[ITEMS[i].category||"Uncategorized"] = true; }
+  for (var c=0;c<cats.length;c++){
+    var cat = cats[c];
+    if (cat!=="All" && !present[cat]) continue;
+    var n = catCount(cat);
+    html += '<span class="chip'+(FILTER.cat===cat?' active':'')+'" data-cat="'+esc(cat)+'">'+esc(cat)+'<span class="cnt">'+n+'</span></span>';
+  }
+  // any uncategorized present?
+  if (present["Uncategorized"]){
+    html += '<span class="chip'+(FILTER.cat==="Uncategorized"?' active':'')+'" data-cat="Uncategorized">Uncategorized<span class="cnt">'+catCount("Uncategorized")+'</span></span>';
+  }
+  html += '<span class="chip toggle'+(FILTER.aiOnly?' active':'')+'" data-toggle="ai">⚡ AI-discovered only</span>';
+  bar.innerHTML = html;
+  var chips = bar.querySelectorAll(".chip");
+  for (var k=0;k<chips.length;k++){
+    chips[k].addEventListener("click", function(){
+      if (this.getAttribute("data-toggle")==="ai"){ FILTER.aiOnly = !FILTER.aiOnly; }
+      else { FILTER.cat = this.getAttribute("data-cat"); }
+      buildFilters(); renderFindings();
+    });
+  }
+}
+function renderFindings(){
+  var tb = document.querySelector("#findings-table tbody");
+  if (!tb) return;
+  var rows = ITEMS.filter(matchesFilter).sort(function(a,b){
+    var so = sevOrder(a.severity) - sevOrder(b.severity);
+    if (so !== 0) return so;
+    return (b.date||"").localeCompare(a.date||"");
+  });
+  document.getElementById("badge-findings").textContent = rows.length + (rows.length===ITEMS.length ? " items" : " of "+ITEMS.length);
+  if (rows.length === 0){
+    var msg = ITEMS.length===0 ? "Nothing logged yet. Updates appear here after the next daily scan." : "No findings match this filter.";
+    tb.innerHTML = '<tr><td colspan="6" class="empty">'+msg+'</td></tr>';
+    return;
+  }
+  var html = "";
+  for (var i=0;i<rows.length;i++){
+    var r = rows[i];
+    var aiBadge = r.ai_discovered ? '<span class="ai-badge" title="'+esc(r.ai_system||"AI-discovered")+'">⚡ '+esc(r.ai_system||"AI")+'</span>' : '';
+    html += '<tr>'
+      + '<td style="white-space:nowrap;color:#6b7280">' + esc(r.date) + '</td>'
+      + '<td><span class="sev ' + sevClass(r.severity) + '">' + esc(r.severity) + '</span></td>'
+      + '<td><span class="cat-tag">' + esc(r.category||"—") + '</span></td>'
+      + '<td><a href="' + esc(r.url||"#") + '" target="_blank">' + esc(r.id||r.title) + '</a>' + aiBadge
+      + (r.title && r.title !== r.id ? '<br><span style="color:#6b7280">' + esc(r.title) + '</span>' : '')
+      + '</td>'
+      + '<td>' + esc(r.component||"") + '</td>'
+      + '<td style="color:#6b7280">' + esc(r.source_name||r.source||"") + '</td>'
+      + '</tr>';
+  }
+  tb.innerHTML = html;
+}
+
+function sevClass(s){
+  if (s==="Critical") return "sev-crit";
+  if (s==="High") return "sev-high";
+  if (s==="Medium") return "sev-med";
+  return "sev-low";
+}
+function sevOrder(s){ return {Critical:0,High:1,Medium:2,Low:3}[s] || 4; }
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function safe(fn,l){ try{fn();}catch(e){console.error(l,e);} }
+
+function init(){
+  safe(function(){
+    document.getElementById("hdr-week").textContent = WEEK_START + " → " + WEEK_END;
+    document.getElementById("hdr-updated").textContent = LAST_UPDATED;
+    var ca = CACHE_AGE_HOURS;
+    var cacheText = (ca === null) ? "unknown" : (ca < 1 ? "fresh (<1h)" : ca.toFixed(1) + "h");
+    document.getElementById("hdr-cache").textContent = cacheText;
+    document.getElementById("t-cache").textContent = cacheText;
+    var tile = document.getElementById("t-cache-tile");
+    if (ca !== null && ca > 4) { tile.classList.remove("fresh"); tile.classList.add("stale"); }
+    if (FULL_DASHBOARD_URL && FULL_DASHBOARD_URL !== "#") {
+      document.getElementById("hdr-fullboard").href = FULL_DASHBOARD_URL;
+    }
+  }, "header");
+
+  safe(function(){
+    var c=0,h=0,m=0,o=0;
+    for (var i=0;i<ITEMS.length;i++){
+      var s = ITEMS[i].severity;
+      if (s==="Critical") c++;
+      else if (s==="High") h++;
+      else if (s==="Medium") m++;
+      else o++;
+    }
+    document.getElementById("t-crit").textContent = c;
+    document.getElementById("t-high").textContent = h;
+    document.getElementById("t-med").textContent = m;
+    document.getElementById("t-total").textContent = ITEMS.length;
+    document.getElementById("t-scans").textContent = DAILY_SCANS.length;
+  }, "tiles");
+
+  safe(function(){
+    var ul = document.getElementById("daily-list");
+    document.getElementById("badge-scans").textContent = DAILY_SCANS.length + " runs";
+    if (DAILY_SCANS.length === 0) {
+      ul.innerHTML = '<li><span class="empty" style="text-align:left;padding:6px 0">No daily scans yet this week. First scan: tomorrow 7:30 AM.</span></li>';
+      return;
+    }
+    var html = "";
+    for (var i = DAILY_SCANS.length - 1; i >= 0; i--) {
+      var s = DAILY_SCANS[i];
+      var counts = "";
+      if (s.criticals > 0) counts += '<span class="sev sev-crit">' + s.criticals + ' crit</span> ';
+      if (s.highs > 0)     counts += '<span class="sev sev-high">' + s.highs + ' high</span> ';
+      if (s.others > 0)    counts += '<span style="color:#6b7280">' + s.others + ' other</span>';
+      if (!counts)         counts = '<span class="day-status-clean">clean</span>';
+      html += '<li><span class="day-date">' + esc(s.date) + '</span><span class="day-counts">' + counts + '</span></li>';
+    }
+    ul.innerHTML = html;
+  }, "daily-list");
+
+  safe(function(){
+    buildFilters();
+    renderFindings();
+  }, "findings-table");
+
+  safe(function(){
+    if (!ALERTS || ALERTS.length === 0) return;
+    document.getElementById("alerts-card").style.display = "";
+    var html = "";
+    for (var i=0;i<ALERTS.length;i++){
+      var a = ALERTS[i];
+      html += '<li>' + esc(a.date) + ' — <a href="' + esc(a.drive_url) + '" target="_blank" class="alert-link">' + esc(a.title) + '</a></li>';
+    }
+    document.getElementById("alerts-list").innerHTML = html;
+  }, "alerts");
+}
+
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+</script>
+</body>
+</html>
