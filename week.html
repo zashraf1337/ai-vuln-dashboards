@@ -115,19 +115,29 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-06-23";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-06-30";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-06-23 17:51 UTC";
-var CACHE_AGE_HOURS = 0.0;          // Weekly reset 2026-06-23: new cycle June 23 -> June 30. feeds-latest.jsonl HEALTHY (mtime 2026-06-23 11:16 UTC). Daily scans will accumulate here over the new window.
+var LAST_UPDATED = "2026-06-24 11:36 UTC";
+var CACHE_AGE_HOURS = 0.2;          // Daily scan 2026-06-24: feeds-latest.jsonl HEALTHY (mtime 2026-06-24 11:26 UTC, ~10 min old). 87 items in window since 2026-06-23.
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [];
+var DAILY_SCANS = [
+  {date:"2026-06-24", criticals:1, highs:3, others:1, status:"critical", note:"Flowise Custom MCP cmd-injection CVE-2026-56274 (9.9); foreman-mcp-server admin session hijack (7.8); fake AI skill -> 26k agents; NanoClaw approval-bypass privesc (Med)"}
+];
 
 // All findings logged this week (across daily scans) — reset for new cycle
 // Schema: {date, severity, id, title, component, source_name, url, category, ai_discovered, ai_system, note}
 // category vocab: see CATEGORIES below. ai_discovered:true flags frontier-AI / AI-agent-discovered vulns.
-var ITEMS = [];
+var ITEMS = [
+  {date:"2026-06-24", severity:"Critical", id:"CVE-2026-56274", title:"Flowise < 3.1.2 — multiple OS command injection in Custom MCP Server feature", component:"Flowise (Custom MCP Server)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-8rhx-2hcv-q49g", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 9.9. Any-role account / API view-update bypasses validateCommandFlags blocklist (docker build, npx --yes) + regex bypass in local-file-access -> RCE. Theme 1 + 5. Fix 3.1.2."},
+  {date:"2026-06-24", severity:"High", id:"GHSA-6v32-2jc8-w595", title:"foreman-mcp-server — session-management auth bypass (admin session hijack)", component:"foreman-mcp-server", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-6v32-2jc8-w595", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 7.8. Unauth attacker hijacks active admin MCP sessions: trusts non-secret session ID w/o re-validating tokens + logs session IDs to stdout. Theme 1 + 18 + 23."},
+  {date:"2026-06-24", severity:"High", id:"GHSA-4xff-r326-4qv2", title:"Flowise < 3.0.10 — unverified email change (account-takeover precursor)", component:"Flowise", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-4xff-r326-4qv2", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 8.3. Email changed without verification on the agent-builder platform."},
+  {date:"2026-06-24", severity:"High", id:"—", title:"Fake AI-agent skill passed security scans, reached ~26,000 agents", component:"AI agent skill ecosystem", source_name:"The Hacker News", url:"https://thehackernews.com/2026/06/fake-ai-agent-skill-passed-security.html", category:"Skills / plugins", ai_discovered:false, ai_system:"", note:"No CVSS -> No-CVSS escalation to High. Malicious skill cleared skill-security scans + propagated to ~26k agents. Theme 15 skill supply chain."},
+  {date:"2026-06-24", severity:"Medium", id:"GHSA-mhq9-hcw8-22mj", title:"NanoClaw < 2.1.17 — approval-bypass privilege escalation", component:"NanoClaw", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-mhq9-hcw8-22mj", category:"Agent core", ai_discovered:false, ai_system:"", note:"CVSS 6.5. handleApprovalsResponse fails to verify responder role; valid questionId -> approve privileged actions (pkg install). Theme 13 — approval prompt is the broken security boundary."}
+];
 
 // Critical alerts posted to Drive this week — reset for new cycle
-var ALERTS = [];
+var ALERTS = [
+  {date:"2026-06-24 1136", title:"CRITICAL CVE-2026-56274 — Flowise Custom MCP RCE (CVSS 9.9)", drive_url:"https://docs.google.com/document/d/11DwG55yd7O8xr4gYmA8lf0ixxxaPPjYWhHvnP1YyDDo/edit"}
+];
 
 // Optional: link to the full historical dashboard artifact (Cowork sidebar)
 var FULL_DASHBOARD_URL = "#"; // updated by scheduled task if a deep link exists
