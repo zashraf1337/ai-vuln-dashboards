@@ -115,12 +115,13 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-06-23";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-06-30";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-06-24 11:36 UTC";
-var CACHE_AGE_HOURS = 0.2;          // Daily scan 2026-06-24: feeds-latest.jsonl HEALTHY (mtime 2026-06-24 11:26 UTC, ~10 min old). 87 items in window since 2026-06-23.
+var LAST_UPDATED = "2026-06-25 11:42 UTC";
+var CACHE_AGE_HOURS = 2.5;          // Daily scan 2026-06-25: feeds-latest.jsonl HEALTHY (mtime 2026-06-25 09:09 UTC, ~2.5h old). 76 items in window since 2026-06-24.
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
-  {date:"2026-06-24", criticals:1, highs:3, others:1, status:"critical", note:"Flowise Custom MCP cmd-injection CVE-2026-56274 (9.9); foreman-mcp-server admin session hijack (7.8); fake AI skill -> 26k agents; NanoClaw approval-bypass privesc (Med)"}
+  {date:"2026-06-24", criticals:1, highs:3, others:1, status:"critical", note:"Flowise Custom MCP cmd-injection CVE-2026-56274 (9.9); foreman-mcp-server admin session hijack (7.8); fake AI skill -> 26k agents; NanoClaw approval-bypass privesc (Med)"},
+  {date:"2026-06-25", criticals:1, highs:1, others:6, status:"critical", note:"Gemini CLI container-launcher OS cmd-injection CVE-2026-12537 (pre-sandbox host RCE via .gemini/.env on CI); Apple M1 GPU register-file cross-process leak CVE-2026-49269 (8.6, Theme 24); Fable 5 comeback rumor + 3 arXiv idea candidates"}
 ];
 
 // All findings logged this week (across daily scans) — reset for new cycle
@@ -131,12 +132,15 @@ var ITEMS = [
   {date:"2026-06-24", severity:"High", id:"GHSA-6v32-2jc8-w595", title:"foreman-mcp-server — session-management auth bypass (admin session hijack)", component:"foreman-mcp-server", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-6v32-2jc8-w595", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 7.8. Unauth attacker hijacks active admin MCP sessions: trusts non-secret session ID w/o re-validating tokens + logs session IDs to stdout. Theme 1 + 18 + 23."},
   {date:"2026-06-24", severity:"High", id:"GHSA-4xff-r326-4qv2", title:"Flowise < 3.0.10 — unverified email change (account-takeover precursor)", component:"Flowise", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-4xff-r326-4qv2", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 8.3. Email changed without verification on the agent-builder platform."},
   {date:"2026-06-24", severity:"High", id:"—", title:"Fake AI-agent skill passed security scans, reached ~26,000 agents", component:"AI agent skill ecosystem", source_name:"The Hacker News", url:"https://thehackernews.com/2026/06/fake-ai-agent-skill-passed-security.html", category:"Skills / plugins", ai_discovered:false, ai_system:"", note:"No CVSS -> No-CVSS escalation to High. Malicious skill cleared skill-security scans + propagated to ~26k agents. Theme 15 skill supply chain."},
-  {date:"2026-06-24", severity:"Medium", id:"GHSA-mhq9-hcw8-22mj", title:"NanoClaw < 2.1.17 — approval-bypass privilege escalation", component:"NanoClaw", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-mhq9-hcw8-22mj", category:"Agent core", ai_discovered:false, ai_system:"", note:"CVSS 6.5. handleApprovalsResponse fails to verify responder role; valid questionId -> approve privileged actions (pkg install). Theme 13 — approval prompt is the broken security boundary."}
+  {date:"2026-06-24", severity:"Medium", id:"GHSA-mhq9-hcw8-22mj", title:"NanoClaw < 2.1.17 — approval-bypass privilege escalation", component:"NanoClaw", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-mhq9-hcw8-22mj", category:"Agent core", ai_discovered:false, ai_system:"", note:"CVSS 6.5. handleApprovalsResponse fails to verify responder role; valid questionId -> approve privileged actions (pkg install). Theme 13 — approval prompt is the broken security boundary."},
+  {date:"2026-06-25", severity:"Critical", id:"CVE-2026-12537", title:"Google Gemini CLI — OS command injection in the container launcher", component:"Google Gemini CLI < 0.39.1 / run-gemini-cli Action < 0.1.22", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-jj69-4grx-fqj5", category:"Coding agent / IDE", ai_discovered:false, ai_system:"", note:"GHSA severity Critical (CVSS pending). Malicious .gemini/.env on headless CI -> pre-sandbox host-level RCE (env consumed before the sandbox boundary applies). Theme 5 + Theme 26 trusted-context poisoning. Fix: CLI 0.39.1 / Action 0.1.22."},
+  {date:"2026-06-25", severity:"High", id:"CVE-2026-49269", title:"Apple M1 GPU register-file cross-process data retention (secret leak)", component:"Apple M1 GPU (Metal compute)", source_name:"GitHub Security Advisories", url:"https://github.com/advisories/GHSA-vwgr-66jm-j45f", category:"AI infra", ai_discovered:false, ai_system:"", note:"CVSS 8.6. Sandboxed Metal attacker recovers a victim's 128-bit secret from stale GPU registers across processes. Theme 24 class (d) GPU memory-disclosure/side-channel (LeftoverLocals sibling). Advisory carries a truncated vendor response -> verify stance at weekly."}
 ];
 
 // Critical alerts posted to Drive this week — reset for new cycle
 var ALERTS = [
-  {date:"2026-06-24 1136", title:"CRITICAL CVE-2026-56274 — Flowise Custom MCP RCE (CVSS 9.9)", drive_url:"https://docs.google.com/document/d/11DwG55yd7O8xr4gYmA8lf0ixxxaPPjYWhHvnP1YyDDo/edit"}
+  {date:"2026-06-24 1136", title:"CRITICAL CVE-2026-56274 — Flowise Custom MCP RCE (CVSS 9.9)", drive_url:"https://docs.google.com/document/d/11DwG55yd7O8xr4gYmA8lf0ixxxaPPjYWhHvnP1YyDDo/edit"},
+  {date:"2026-06-25 1141", title:"CRITICAL CVE-2026-12537 — Google Gemini CLI container-launcher RCE (pre-sandbox host code exec)", drive_url:"https://docs.google.com/document/d/1WjPZiI3dRTFmUBggDDtUxW4XqZwuIRMbE9tN4CbOXoM/edit"}
 ];
 
 // Optional: link to the full historical dashboard artifact (Cowork sidebar)
