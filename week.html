@@ -122,19 +122,42 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-06-30";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-07-07";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-06-30 17:41 UTC";
-var CACHE_AGE_HOURS = 2.9;           // Weekly reset 2026-06-30: cache HEALTHY (feeds-latest.jsonl mtime 2026-06-30 14:34 UTC). New cycle starts empty; daily scans repopulate.
+var LAST_UPDATED = "2026-07-01 11:39 UTC";
+var CACHE_AGE_HOURS = 0.3;           // Daily scan 2026-07-01: cache HEALTHY (feeds-latest.jsonl mtime 2026-07-01 11:19 UTC, ~13 min old at scan). First daily of the new cycle.
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [];
+var DAILY_SCANS = [
+  {date:"2026-07-01", criticals:9, highs:9, others:10, status:"critical", note:"Langflow/Flowise 8-CVE cluster (CVSS 9.1-10.0) + Langflow ITW Monero miner; DeepTutor/Vibe-Trading; GuardFall (Adversa); MS MCP tool-desc poisoning; Fable 5 restored (Theme 25)"}
+];
 
 // All findings logged this week (across daily scans) — reset for new cycle
 // Schema: {date, severity, id, title, component, source_name, url, category, ai_discovered, ai_system, note}
 // category vocab: see CATEGORIES below. ai_discovered:true flags frontier-AI / AI-agent-discovered vulns.
-var ITEMS = [];
+var ITEMS = [
+  {date:"2026-06-30", severity:"Critical", id:"CVE-2026-10134", title:"Langflow - read every secret + read/modify all flows, conversations, files", component:"IBM Langflow OSS <=1.9.3", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-mgqp-4wrr-7886", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 10.0; total info-disclosure + tamper; Theme 18"},
+  {date:"2026-06-30", severity:"Critical", id:"CVE-2026-7873", title:"Langflow - authenticated arbitrary OS command execution (RCE)", component:"IBM Langflow OSS <=1.10.0", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-v798-mcc6-2m3m", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.9; full system compromise + cred read"},
+  {date:"2026-06-30", severity:"Critical", id:"CVE-2026-7871", title:"Langflow - Redis access to arbitrary code execution", component:"IBM Langflow OSS <=1.10.0", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-2fmj-c726-jmv7", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.8; full app privileges"},
+  {date:"2026-06-30", severity:"Critical", id:"CVE-2026-7803", title:"Langflow - RCE via improper flow-node validation (empty component type)", component:"IBM Langflow OSS <=1.10.0", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-qrxw-fw7h-wjxj", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.8"},
+  {date:"2026-06-30", severity:"Critical", id:"CVE-2026-10140", title:"Langflow - voice-mode API-client reuse across tenant boundaries", component:"IBM Langflow OSS <=1.10.0", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-p5v5-v74q-w38h", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.6; cross-tenant; Theme 23"},
+  {date:"2026-06-30", severity:"Critical", id:"CVE-2026-7874", title:"Langflow - all stored credentials disclosed (weak reversible KDF)", component:"IBM Langflow OSS <=1.10.0", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-32fv-f5hq-fmx9", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.1; encryption-at-rest weak KDF; Theme 18"},
+  {date:"2026-06-30", severity:"Critical", id:"CVE-2026-7663", title:"Langflow - unauth access to MCP project resources + execute MCP ops", component:"IBM Langflow OSS <=1.9.6", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-5wjx-cxqm-p8r4", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 9.1; improper authz enforcement; Theme 1"},
+  {date:"2026-06-30", severity:"Critical", id:"CVE-2026-56278", title:"Flowise - weak hardcoded default session secret ('flowise')", component:"Flowise <=3.0.13", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-c973-v3cg-wcw4", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 9.1; session forgery when EXPRESS_SESSION_SECRET unset"},
+  {date:"2026-06-30", severity:"Critical", id:"Langflow RCE - active in-the-wild exploitation", title:"Langflow RCE exploited in-the-wild to deploy Monero miner", component:"Langflow (internet-exposed endpoints)", source_name:"The Hacker News", url:"https://thehackernews.com/2026/06/langflow-rce-exploited-to-deploy-monero.html", category:"AI infra", ai_discovered:false, ai_system:"", note:"Theme 14; exploits known Langflow RCE (CVE-2025-3248 class), not the new cluster"},
+  {date:"2026-06-30", severity:"High", id:"CVE-2026-58168", title:"DeepTutor - authz bypass to invoke unrestricted MCP tools", component:"DeepTutor <1.4.10", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-jg88-rvpc-qvxj", category:"MCP", ai_discovered:false, ai_system:"", note:"CVSS 8.8; allowed_mcp_tools flaw; Theme 1"},
+  {date:"2026-06-30", severity:"High", id:"CVE-2026-10129", title:"Langflow - SSRF-protection bypass in API Request component", component:"IBM Langflow OSS <=1.9.3", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-33xg-qw74-fhr3", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 8.5; low-priv authenticated"},
+  {date:"2026-06-30", severity:"High", id:"CVE-2026-58170", title:"Vibe-Trading - path traversal via unsanitized proposal identifier", component:"Vibe-Trading <0.1.10", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-h9xw-f6mh-953j", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 8.3; AI trading agent"},
+  {date:"2026-06-30", severity:"High", id:"CVE-2026-10564", title:"Langflow - SSRF in legacy RSSReader + SearXNG components", component:"IBM Langflow OSS <=1.9.6", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-rqjv-px3w-v3w6", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 8.2"},
+  {date:"2026-06-30", severity:"High", id:"CVE-2026-10560", title:"Langflow - missing auth on /api/v1/build_public_tmp/", component:"IBM Langflow OSS <=1.9.6", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-w636-w53p-5frh", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 8.2; unauth read of build events"},
+  {date:"2026-06-30", severity:"High", id:"CVE-2026-58169", title:"Vibe-Trading - DNS-rebinding auth bypass of bearer-token auth", component:"Vibe-Trading <0.1.10", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-q796-5g5h-cqcc", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 7.5"},
+  {date:"2026-06-30", severity:"High", id:"CVE-2026-10546", title:"Langflow - SSRF (TOCTOU) in URL component", component:"IBM Langflow OSS <=1.9.3", source_name:"GitHub Advisories", url:"https://github.com/advisories/GHSA-phxc-h9ch-q3gg", category:"Agent ecosystem", ai_discovered:false, ai_system:"", note:"CVSS 7.1"},
+  {date:"2026-06-30", severity:"High", id:"GuardFall - universal shell injection in OSS AI coding agents", title:"GuardFall (Adversa AI) - universal shell injection in open-source AI coding agents", component:"Multiple OSS AI coding agents", source_name:"Adversa AI", url:"https://adversa.ai/blog/opensource-ai-coding-agents-shell-injection-vulnerability/", category:"Coding agent / IDE", ai_discovered:false, ai_system:"", note:"No CVE - No-CVSS escalation; shell injection to RCE; Theme 5/26"},
+  {date:"2026-06-30", severity:"High", id:"Microsoft - poisoned MCP tool descriptions leak data", title:"Microsoft warns poisoned MCP tool descriptions can make AI agents leak data", component:"MCP tool descriptions (metadata)", source_name:"The Hacker News / Microsoft", url:"https://thehackernews.com/2026/06/microsoft-warns-poisoned-mcp-tool.html", category:"MCP", ai_discovered:false, ai_system:"", note:"No CVE - escalation; trusted-context poisoning; Theme 26/1"}
+];
 
 // Critical alerts posted to Drive this week — reset for new cycle
-var ALERTS = [];
+var ALERTS = [
+  {date:"2026-07-01 1139", title:"CRITICAL - Langflow/Flowise 8-CVE cluster (9.1-10.0) + active ITW miner", drive_url:"https://docs.google.com/document/d/1vEpoflmidWdMxtgoSCJfsJS1lw-vhpaNp3Kaeq1NCe8/edit"}
+];
 
 // Optional: link to the full historical dashboard artifact (Cowork sidebar)
 var FULL_DASHBOARD_URL = "#"; // updated by scheduled task if a deep link exists
