@@ -174,417 +174,98 @@
 // ============================================================
 
 var LATEST = [
-  {
-    "severity": "Critical",
-    "id": "Flowise audit cluster (9 GHSAs)",
-    "title": "Flowise Agent-Builder Audit -- 5 Critical RCE/file-access/auth-bypass",
-    "component": "Flowise (low-code LLM/agent-flow builder)",
-    "vector": "path traversal -> file write -> RCE (CVE-2025-71338 10.0); unsandboxed Custom-MCP OS command injection RCE (CVE-2026-56274 9.9 + CVE-2025-71336 9.8); arbitrary file access (CVE-2025-71334 9.8); unauth /account/register auth bypass (CVE-2025-71327 9.1) + unauth file upload",
-    "date": "2026-06-26",
-    "discoverer": "GHSA (FlowiseAI maintainers)",
-    "ai_disc": "-",
-    "technique": "manual code review (coordinated audit) + configuration review",
-    "notes": "9-GHSA coordinated audit. Paired Highs: unverified email/password change, session-not-invalidated, file-read-via-chatId. Default-no-auth posture. Themes 23+14+1.",
-    "advisory_url": "https://github.com/advisories/GHSA-c3hj-m5hq-59xw",
-    "writeup_url": "https://github.com/advisories/GHSA-8rhx-2hcv-q49g"
-  },
-  {
-    "severity": "Critical",
-    "id": "CVE-2026-12537",
-    "title": "Google Gemini CLI Container-Launcher OS Command Injection via .gemini/.env",
-    "component": "Gemini CLI <0.39.1 + run-gemini-cli Action <0.1.22",
-    "vector": "planted .gemini/.env consumed by container launcher BEFORE the sandbox boundary -> pre-sandbox host-level code execution on headless CI",
-    "date": "2026-06-25",
-    "discoverer": "GHSA (Google Gemini CLI maintainers)",
-    "ai_disc": "-",
-    "technique": "manual code review",
-    "notes": "GHSA-Critical (CVSS pending). Repo-config trusted-context poisoning -- sibling of Agentjacking/Mise/Amazon-Q. Themes 5+26.",
-    "advisory_url": "https://github.com/advisories/GHSA-jj69-4grx-fqj5",
-    "writeup_url": ""
-  },
-  {
-    "severity": "Critical",
-    "id": "CVE-2026-49257",
-    "title": "mcp-pinot Unauthenticated MCP Tool Invocation (oauth_enabled=False + 0.0.0.0)",
-    "component": "StarTree mcp-pinot (Apache-Pinot MCP server)",
-    "vector": "auth-off by default + binds all interfaces -> any network client runs arbitrary SQL/schema ops with server's Pinot creds (CWE-306)",
-    "date": "2026-06-27",
-    "discoverer": "GHSA (StarTree maintainers)",
-    "ai_disc": "-",
-    "technique": "configuration review",
-    "notes": "CVSS 10.0. Default-allow MCP-transport class; StarTree/Akamai MCP-DB lineage. Fixed v3.1.0. Themes 1+23.",
-    "advisory_url": "https://github.com/advisories/GHSA-73cv-556c-w3g6",
-    "writeup_url": ""
-  },
-  {
-    "severity": "Critical",
-    "id": "CVE-2026-11720",
-    "title": "googleapis/mcp-toolbox Path Traversal in HTTP Tool URL Builder",
-    "component": "Google MCP Toolbox for Databases",
-    "vector": "user-controlled pathParams parsed as relative URL; Go ResolveReference normalizes ../ -> downstream API request path bent past the guard (server-side request redirection)",
-    "date": "2026-06-29",
-    "discoverer": "GHSA (Google maintainers)",
-    "ai_disc": "-",
-    "technique": "manual code review",
-    "notes": "GHSA-Critical (~9.3). THIRD googleapis/mcp-toolbox CVE after -11717/-11718 opaque-token pair. Theme 1.",
-    "advisory_url": "https://github.com/advisories/GHSA-vwxw-jrg6-9jxv",
-    "writeup_url": ""
-  },
-  {
-    "severity": "Critical",
-    "id": "CVE-2026-48797",
-    "title": "Backpropagate backprop-ui Auth-Flag Bypass -> Unauth ML-Training Control Plane",
-    "component": "Backpropagate >=1.1.0 (Reflex web UI)",
-    "vector": "--auth / --share flags do NOT enforce auth -> unauthenticated control of dataset upload, model load, train start/stop, GGUF export, HuggingFace Hub push",
-    "date": "2026-06-27",
-    "discoverer": "GHSA (Backpropagate maintainers)",
-    "ai_disc": "-",
-    "technique": "configuration review (auth-flag audit on an AI-training tool)",
-    "notes": "GHSA-Critical. ML-training control plane exposed; model exfil/poisoning. Themes 1+23.",
-    "advisory_url": "https://github.com/advisories/GHSA-f65r-h4g3-3h9h",
-    "writeup_url": ""
-  },
-  {
-    "severity": "Critical",
-    "id": "semantic-router <- malicious litellm wheel (GHSA-98x5-vq43-vc5p)",
-    "title": "semantic-router Compromised-litellm Pull-In via Unbounded Transitive Pin",
-    "component": "aurelio-labs semantic-router 0.1.8-0.1.14",
-    "vector": "litellm>=1.61.3 with no upper bound -> resolves malicious litellm==1.82.8 wheel whose litellm_init.pth executes on Python startup -> RCE on install",
-    "date": "2026-06-27",
-    "discoverer": "GHSA (aurelio-labs maintainers)",
-    "ai_disc": "-",
-    "technique": "dependency / supply-chain analysis",
-    "notes": "GHSA-Critical (CVSS pending). Concrete AI-infra unbounded-transitive-pin instance. Themes 15+14.",
-    "advisory_url": "https://github.com/advisories/GHSA-98x5-vq43-vc5p",
-    "writeup_url": ""
-  },
-  {
-    "severity": "High",
-    "id": "GuardFall (no CVE)",
-    "title": "Universal Shell-Injection Class Across OSS AI Coding Agents (10 of 11)",
-    "component": "opencode, Goose, Cline, Roo-Code, Aider, Plandex, Open Interpreter, OpenHands, SWE-agent, Hermes (Continue defended)",
-    "vector": "agents check command as plain text vs a denylist, but bash rewrites it before exec (quote-stripping, expansion, base64-pipe) -> r''m passes a filter watching 'rm'",
-    "date": "2026-06-30",
-    "discoverer": "Adversa AI",
-    "ai_disc": "-",
-    "technique": "cross-IDE comparison testing + dynamic verification (Plandex binary; Claude Sonnet 4.6)",
-    "notes": "No CVE -- a design-convention class (No-CVSS->High). Empirical confirmation of CmdNeedle. Adversa lineage TrustFall->SymJack->GuardFall. Themes 13+26+5.",
-    "advisory_url": "https://adversa.ai/blog/opensource-ai-coding-agents-shell-injection-vulnerability/",
-    "writeup_url": "https://thehackernews.com/2026/06/guardfall-exposes-open-source-ai-coding.html"
-  },
-  {
-    "severity": "High",
-    "id": "BioShocking (no CVE)",
-    "title": "Fictional-Context Jailbreak -> Credential Exfiltration Across 6 AI Browsers",
-    "component": "ChatGPT Atlas (fixed), Perplexity Comet (closed-no-action), Anthropic Claude ext (patch failed), Fellou/Genspark/Sigma (no response)",
-    "vector": "malicious page runs a 'game' rewarding wrong answers -> agent stops treating its own guardrails as real -> copies signed-in creds (SSH from GitHub) and exfils",
-    "date": "2026-06-30",
-    "discoverer": "LayerX (Or Eshed)",
-    "ai_disc": "-",
-    "technique": "prompt-injection demo + dynamic verification",
-    "notes": "No CVE (No-CVSS->High; credential exfil). Same shop as CometJacking. LayerX added to tracked orgs. Themes 26+1+10.",
-    "advisory_url": "https://layerxsecurity.com/blog/bioshocking-ai-gaming-the-ai-browser-and-escaping-its-guardrails/",
-    "writeup_url": "https://thehackernews.com/2026/06/new-bioshocking-attack-tricks-ai.html"
-  },
-  {
-    "severity": "High",
-    "id": "Apple WebKit AI-discovered cluster (4 CVEs)",
-    "title": "Apple Ships AI-Discovered WebKit Bugs OUT-OF-BAND, Citing AI Exploit-Acceleration",
-    "component": "WebKit (iOS/iPadOS/macOS Tahoe/Safari 26.5.2)",
-    "vector": "4 memory-safety bugs found with AI: CVE-2026-43707 (mem corruption), -43716 (Safari crash), -43745 (OOB write) [OpenAI Codex Security]; CVE-2026-43715 (UAF) [Anthropic Claude + Nasr + Carlini]",
-    "date": "2026-06-29",
-    "discoverer": "OpenAI Codex Security (x3) + Anthropic Claude/Nasr/Carlini (x1), per Apple credits",
-    "ai_disc": "Codex Security (OpenAI) + Claude (Anthropic)",
-    "technique": "AI-assisted scanning",
-    "notes": "[attribution:vendor-confirmed] First OS-vendor release-cadence change driven by AI exploit-acceleration (Reuters). First WebKit CVEs jointly attributed to two frontier-AI programs. Carlini = tracked voice. Themes 16+22.",
-    "advisory_url": "https://support.apple.com/en-us/100100",
-    "writeup_url": "https://www.reuters.com/business/apple-says-it-is-releasing-updates-early-response-ai-cybersecurity-concerns-2026-06-29/"
-  },
-  {
-    "severity": "High",
-    "id": "Amazon Q Developer MCP-config RCE (no CVE)",
-    "title": "Malicious Repo Runs Code via Auto-Registered MCP Config",
-    "component": "Amazon Q Developer (AWS)",
-    "vector": "opening a malicious repo whose .amazonq/MCP config auto-registers/auto-runs MCP servers -> code execution on the developer's machine",
-    "date": "2026-06-26",
-    "discoverer": "reporter (AWS)",
-    "ai_disc": "-",
-    "technique": "manual research / repo-config analysis",
-    "notes": "No CVE (No-CVSS->High). Sibling of Gemini-CLI/Mise/Agentjacking trusted-context class. Themes 5+26.",
-    "advisory_url": "https://thehackernews.com/2026/06/amazon-q-developer-flaw-could-let.html",
-    "writeup_url": ""
-  },
-  {
-    "severity": "High",
-    "id": "Gaslight (no CVE)",
-    "title": "macOS Implant Embeds Prompt-Injection to Derail AI-Assisted Malware Analysis",
-    "component": "DPRK-linked Rust backdoor/stealer (macOS)",
-    "vector": "38 fabricated 'system' failure messages embedded as a prompt-injection payload -> analyst's LLM triage agent halts/refuses analysis",
-    "date": "2026-06-25",
-    "discoverer": "SentinelOne (Phil Stokes)",
-    "ai_disc": "-",
-    "technique": "runtime telemetry / malware reverse engineering",
-    "notes": "No CVE (No-CVSS->High). First in-the-wild ANTI-AI-analysis malware via prompt injection. Themes 26+10.",
-    "advisory_url": "https://thehackernews.com/2026/06/new-gaslight-macos-malware-uses-prompt.html",
-    "writeup_url": "https://securityaffairs.com/194256/malware/macos-gaslight-north-korea-linked-malware-that-tries-to-gaslight-the-analyst.html"
-  },
-  {
-    "severity": "High",
-    "id": "GHSA-6v32-2jc8-w595",
-    "title": "foreman-mcp-server Session-ID Trusted Without Auth Re-Validation (+ logs session IDs)",
-    "component": "foreman-mcp-server",
-    "vector": "caches authed connections + trusts a non-secret session ID without re-validating auth tokens, AND logs every session ID -> unauth attacker hijacks admin MCP sessions",
-    "date": "2026-06-24",
-    "discoverer": "GHSA",
-    "ai_disc": "-",
-    "technique": "manual code review",
-    "notes": "CVSS 7.8. MCP-transport-auth + logging-as-cred-disclosure. Themes 1+18+23.",
-    "advisory_url": "https://github.com/advisories/GHSA-6v32-2jc8-w595",
-    "writeup_url": ""
-  },
-  {
-    "severity": "High",
-    "id": "GHSA-4hf8-5mjm-rfgq",
-    "title": "line-desktop-mcp Streamable-HTTP Mode Exposes LINE Tools Without MCP Auth",
-    "component": "line-desktop-mcp (--http-mode)",
-    "vector": "binds 0.0.0.0 and exposes /mcp with no MCP-layer auth -> any reachable client lists/calls LINE read+send tools",
-    "date": "2026-06-27",
-    "discoverer": "GHSA",
-    "ai_disc": "-",
-    "technique": "configuration review",
-    "notes": "GHSA-High (No-CVSS escalation). Same default-allow MCP-transport class as mcp-pinot. Themes 1+23.",
-    "advisory_url": "https://github.com/advisories/GHSA-4hf8-5mjm-rfgq",
-    "writeup_url": ""
-  },
-  {
-    "severity": "High",
-    "id": "GHSA-2r68-g678-7qr3",
-    "title": "mcp-memory-service OAuth read-Scope Clients Can Write & Delete Memories",
-    "component": "mcp-memory-service (/mcp JSON-RPC)",
-    "vector": "/mcp requires only OAuth read scope then dispatches tools/call to mutating handlers (store_memory, delete_memory); REST requires write but MCP path doesn't",
-    "date": "2026-06-27",
-    "discoverer": "GHSA",
-    "ai_disc": "-",
-    "technique": "manual code review",
-    "notes": "CVSS 8.1. Scope-enforcement gap on MCP transport against an agent memory store. Themes 18+23.",
-    "advisory_url": "https://github.com/advisories/GHSA-2r68-g678-7qr3",
-    "writeup_url": ""
-  },
-  {
-    "severity": "High",
-    "id": "Computer-Use TOCTOU (no CVE)",
-    "title": "Click-Time != Approval-Time Race Subverts the Human-Approval Gate",
-    "component": "computer-use agents (ChatGPT Operator class)",
-    "vector": "UI/screen state at click time differs from approval time -> post-approval changes subvert the human-in-the-loop gate",
-    "date": "2026-06-25",
-    "discoverer": "Johann Rehberger (Embrace The Red)",
-    "ai_disc": "-",
-    "technique": "manual research + PoC",
-    "notes": "No CVE (No-CVSS->High; approval-bypass). Reproduces/extends Jun Kokatsu's ChatGPT Operator race. Core voice. Themes 5+13+26.",
-    "advisory_url": "https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/",
-    "writeup_url": ""
-  },
-  {
-    "severity": "High",
-    "id": "CVE-2026-49269 [gpu]",
-    "title": "Apple M1 GPU Register-File Cross-Process Data Retention",
-    "component": "Apple M1 GPU (Metal)",
-    "vector": "GPU registers retain data between compute-shader dispatches from different processes -> sandboxed attacker app recovers victim's exact 128-bit SecRandomCopyBytes secret",
-    "date": "2026-06-25",
-    "discoverer": "GHSA",
-    "ai_disc": "-",
-    "technique": "dynamic verification (two-app PoC)",
-    "notes": "[gpu:side-channel] CVSS 8.6. Register-file sibling of LeftoverLocals (CVE-2023-4969). Substrate beneath on-device ML/Metal inference. Verify Apple vendor stance. Theme 24(d).",
-    "advisory_url": "https://github.com/advisories/GHSA-vwgr-66jm-j45f",
-    "writeup_url": ""
-  },
-  {
-    "severity": "High",
-    "id": "GHSA-hwpp-2m5q-2cw8 [gpu]",
-    "title": "Host-VM Kernel Posts Improper GPU-Firmware Commands -> OOB Privileged Memory R/W",
-    "component": "GPU virtualization / vGPU firmware boundary (vendor: verify)",
-    "vector": "addresses passed to GPU firmware used for accesses more privileged than the host kernel is permitted -> firmware-boundary break",
-    "date": "2026-06-27",
-    "discoverer": "GHSA",
-    "ai_disc": "-",
-    "technique": "not disclosed",
-    "notes": "[gpu:driver] CVSS 7.8. Phrasing matches an NVIDIA GPU-driver bulletin -- confirm vendor. Theme 24.",
-    "advisory_url": "https://github.com/advisories/GHSA-hwpp-2m5q-2cw8",
-    "writeup_url": ""
-  },
-  {
-    "severity": "High",
-    "id": "GHSA-c5qr-j92g-m289 [gpu]",
-    "title": "Crafted Shader Code Triggers OOB Write in GPU Shader-Compiler Process",
-    "component": "GPU shader-compiler library (vendor: verify)",
-    "vector": "edge-case shader values cause OOB write/segfault in the GPU shader-compiler; where the compiler holds system privileges -> device exploits",
-    "date": "2026-06-27",
-    "discoverer": "GHSA",
-    "ai_disc": "-",
-    "technique": "not disclosed",
-    "notes": "[gpu:runtime] CVSS 7.7. Browser/WebGPU GPU-compiler class -- confirm vendor. Theme 24.",
-    "advisory_url": "https://github.com/advisories/GHSA-c5qr-j92g-m289",
-    "writeup_url": ""
-  },
-  {
-    "severity": "Medium",
-    "id": "Residual GPU Cache State on Apple M4 Pro (no CVE) [gpu]",
-    "title": "GPU Cache Residue / Cross-Context Retention on Apple M4 Pro",
-    "component": "Apple M4 Pro GPU (academic, arXiv 2606.27098)",
-    "vector": "GPU cache residue / cross-context data retention -- extends the M1 register-file leak + LeftoverLocals to the M4 cache layer",
-    "date": "2026-06-25",
-    "discoverer": "academic (arXiv 2606.27098)",
-    "ai_disc": "-",
-    "technique": "dynamic verification (cross-context observation)",
-    "notes": "[gpu:side-channel] No CVE (No-CVSS->research). Uncleared/residual GPU memory sustained across two Apple-silicon generations. Theme 24(d).",
-    "advisory_url": "https://arxiv.org/abs/2606.27098",
-    "writeup_url": ""
-  }
+  {"severity": "Critical", "id": "Langflow July cluster (8 CVEs)", "title": "IBM Langflow OSS July Critical Cluster + Flowise session-secret", "component": "IBM Langflow OSS + Flowise", "vector": "CVE-2026-10134 (10.0) read all secrets/flows; CVE-2026-7873 (9.9) arbitrary OS-cmd RCE; CVE-2026-7871/-7803 (9.8) RCE; CVE-2026-10140 (9.6) cross-tenant API-client reuse; CVE-2026-7874 (9.1) cred disclosure weak KDF; CVE-2026-7663 (9.1) unauth MCP resources; Flowise CVE-2026-56278 (9.1) hardcoded 'flowise' session secret", "date": "2026-06-30", "discoverer": "GHSA (IBM Langflow + FlowiseAI maintainers)", "ai_disc": "-", "technique": "not disclosed (GHSA Credits pending -> enrichment)", "notes": "Same-day 8-CVE batch. Themes 1+18+23+14.", "advisory_url": "https://github.com/advisories/GHSA-mgqp-4wrr-7886", "writeup_url": ""},
+  {"severity": "Critical", "id": "Langroid RCE cluster (July)", "title": "Langroid LLM-Agent-Framework RCE Cluster", "component": "Langroid (LLM-agent framework)", "vector": "TableChatAgent eval() sandbox-escape RCE (10.0, GHSA-q9p7-wqxg-mrhc); Neo4jChatAgent prompt-to-Cypher injection RCE (GHSA-2pq5-3q89-j7cc); SQLChatAgent blocklist bypass (GHSA-6xc5); + unauth tool-JSON exec (8.1) + pg_read_file arbitrary read (CVE-2026-50180) + path traversal (CVE-2026-50181)", "date": "2026-07-06", "discoverer": "GHSA (Langroid maintainers)", "ai_disc": "-", "technique": "not disclosed -> enrichment", "notes": "eval()/blocklist incomplete-fix pattern recurs. Themes 1+5+26.", "advisory_url": "https://github.com/advisories/GHSA-q9p7-wqxg-mrhc", "writeup_url": ""},
+  {"severity": "Critical", "id": "9router cluster (July)", "title": "9router LLM-Gateway Auth-Bypass -> RCE Cluster", "component": "9router (LLM gateway w/ MCP plugin routes)", "vector": "CVE-2026-49352 (9.8) hardcoded fallback JWT secret; GHSA-vjc7-jrh9-9j86 (10.0) unauth CRUD /api/providers + API-key leak; GHSA-g6g7 missing-authz + OS-cmd injection; CVE-2026-49353 (7.5) Host-header-spoof incomplete-fix", "date": "2026-07-06", "discoverer": "GHSA (9router maintainers)", "ai_disc": "-", "technique": "configuration review + not disclosed", "notes": "Default-secret / default-allow gateway class. Themes 14+1.", "advisory_url": "https://github.com/advisories/GHSA-jphh-m39h-6gwx", "writeup_url": ""},
+  {"severity": "Critical", "id": "OpenClaw 23-advisory batch (July)", "title": "OpenClaw July Hardening Batch -- exec-authorization / approval-integrity bypasses", "component": "OpenClaw agent (Claw Chain)", "vector": "GHSA-w4v6-g3wm-w36c (Critical) QQBot admin bypass; CVE-2026-53814 (8.4) hook->owner MCP authority; CVE-2026-53810 (8.8) marketplace unscanned payloads; CVE-2026-53819 (8.8) .env exec hijack; GHSA-xww8 (8.0) approval-UI shows shortened command", "date": "2026-07-02", "discoverer": "GHSA (OpenClaw maintainers)", "ai_disc": "-", "technique": "not disclosed -> enrichment", "notes": "23 advisories (1 Crit + ~21 High + 1 Med). Themes 13+26+15.", "advisory_url": "https://github.com/advisories/GHSA-w4v6-g3wm-w36c", "writeup_url": ""},
+  {"severity": "Critical", "id": "DuneSlide (CVE-2026-50548/-50549)", "title": "Two Zero-Click Cursor RCEs -- Cato AI Labs", "component": "Cursor IDE <3.0", "vector": "zero-click prompt injection (poisoned MCP/web result): working_directory param added to sandbox allow-list -> overwrite cursorsandbox binary (CVE-2026-50548); symlink canonicalization-failure fallback -> OOB write (CVE-2026-50549); both 9.8. Fixed Cursor 3.0", "date": "2026-07-01", "discoverer": "Cato AI Labs (Itay Ravia)", "ai_disc": "-", "technique": "manual code review + dynamic verification", "notes": "NEW tracked org. Systematic 'break all popular coding agents' program. Themes 5+13+26.", "advisory_url": "https://www.catonetworks.com/blog/duneslide-two-critical-rce-vulnerabilities/", "writeup_url": "https://thehackernews.com/2026/07/critical-cursor-flaws-could-let-prompt.html"},
+  {"severity": "Critical", "id": "CVE-2026-50027", "title": "mcp-memory-service Unauthenticated Memory Read/Write/Delete", "component": "mcp-memory-service (/api/documents/*)", "vector": "all Document API routes served with no auth even when MCP_API_KEY/OAuth configured -> unauth remote read/write/delete of agent memories (CWE-306)", "date": "2026-07-02", "discoverer": "GHSA", "ai_disc": "-", "technique": "configuration review", "notes": "CVSS 9.8. Passive memory-disclosure + tamper. Themes 18+23+1.", "advisory_url": "https://github.com/advisories/GHSA-84hp-mqvj-3p8h", "writeup_url": ""},
+  {"severity": "Critical", "id": "CVE-2026-52830", "title": "fast-mcp-telegram Bearer-Token Path-Traversal Auth Bypass", "component": "fast-mcp-telegram", "vector": "bearer-token verifier joins raw token into session-file path without normalizing -> ../fast-mcp-telegram/telegram traversal authenticates as default legacy Telegram session", "date": "2026-07-02", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 9.4. MCP-transport auth-bypass. Themes 1+26.", "advisory_url": "https://github.com/advisories/GHSA-rxw2-pc8j-vxwm", "writeup_url": ""},
+  {"severity": "Critical", "id": "CVE-2026-41106", "title": "Microsoft 365 Copilot Open Redirect -> Privilege Elevation", "component": "Microsoft 365 Copilot", "vector": "URL redirection to untrusted site -> unauthorized attacker elevates privileges over a network", "date": "2026-07-03", "discoverer": "Microsoft (via GHSA)", "ai_disc": "-", "technique": "not disclosed (MSRC self-find)", "notes": "CVSS 9.3. Agent ecosystem / Theme 5.", "advisory_url": "https://github.com/advisories/GHSA-6xf4-794h-3f7w", "writeup_url": ""},
+  {"severity": "Critical", "id": "GHSA-ww9q-8r59-xv46 (crypto-ZK lane)", "title": "Zebra halo2_gadgets Missing Copy Constraint -> Zcash Orchard Action Circuit Soundness Break", "component": "Zebra / ECC halo2_gadgets", "vector": "missing copy constraint in variable-base scalar multiplication -> under-constrained base -> breaks soundness of the Zcash Orchard Action circuit (proof no longer binds base point)", "date": "2026-07-06", "discoverer": "GHSA (Zebra/ECC maintainers)", "ai_disc": "-", "technique": "manual code/circuit review", "notes": "CVSS 9.3. CRYPTO-ZK BLIND-SPOT LANE catch -- the exact zk-circuit-soundness class the lane exists for. Not an AI-stack vuln.", "advisory_url": "https://github.com/advisories/GHSA-ww9q-8r59-xv46", "writeup_url": ""},
+  {"severity": "Critical", "id": "CVE-2026-52735 (crypto-ZK lane)", "title": "Zcash zebrad Consensus Divergence via P2SH Sigop Undercount", "component": "Zcash zebrad <=v4.4.1", "vector": "P2SH sigop counter's pure-Rust path short-circuits on disabled opcodes (OP_CODESEPARATOR) -> undercount -> Zebra/zcashd disagree -> chain-split risk (all default configs)", "date": "2026-07-02", "discoverer": "GHSA (Zebra maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "Sibling CVE-2026-52736 (High) block-suppression. Crypto-ZK lane (consensus integrity).", "advisory_url": "https://github.com/advisories/GHSA-gf9r-m956-97qx", "writeup_url": ""},
+  {"severity": "High", "id": "Friendly Fire (no CVE)", "title": "AI Coding Agents Execute Attacker Code DURING an Untrusted-Code Security Review", "component": "Claude Code (Sonnet 4.6/5, Opus 4.8) + Codex (GPT-5.5)", "vector": "README references security.sh + decoy code_policies.go + disguised binary; agent in auto 'review this untrusted code' mode runs the binary -> host RCE; no MCP/hooks/config vector, no trust-folder prompt; transfers across 4 models", "date": "2026-07-08", "discoverer": "AI Now Institute (Boyan Milanov, Heidy Khlaaf)", "ai_disc": "-", "technique": "dynamic verification / PoC harness (cross-model)", "notes": "No CVE (No-CVSS->High). Rebuts 'use AI to review untrusted OSS' pitch. NEW tracked org (both ex-ToB). Themes 26+5+21.", "advisory_url": "https://ainowinstitute.org/publications/friendly-fire-exploit-brief", "writeup_url": "https://github.com/Boyan-MILANOV/friendly-fire-ai-agent-exploit"},
+  {"severity": "High", "id": "HalluSquatting (arXiv 2607.07433)", "title": "Beware of Agentic Botnets -- Hallucinated-Resource-Name Squatting -> Agent RCE/Botnet", "component": "Cursor, Copilot, Gemini CLI, OpenClaw", "vector": "pre-register attacker resources at LLM-hallucinated repo/skill names (85% repo-clone / 100% skill-install hallucination, transferable); agent w/ integrated terminal pulls+executes -> remote tool-exec/RCE -> pull-based botnet", "date": "2026-07-08", "discoverer": "Tel Aviv U + Technion (Spira, Cohen, Feldman, Bitton, Wool, Ben Nassi)", "ai_disc": "-", "technique": "research (measurement + PoC)", "notes": "No CVE (No-CVSS->High). Evolution of slopsquatting into the agent-skill layer. Nassi promptware group nominated. Themes 15+27+1.", "advisory_url": "https://arxiv.org/abs/2607.07433", "writeup_url": "https://sites.google.com/view/agentic-botnets/home"},
+  {"severity": "High", "id": "GitLost (no CVE)", "title": "Unauthenticated Private-Repo Exfiltration via GitHub Agentic Workflow", "component": "GitHub Agentic Workflows (Noma Labs finding)", "vector": "unauth attacker plants indirect prompt in a PUBLIC GitHub Issue; the NL workflow (read+comment, read access to private repos) exfiltrates private-repo README into a public comment; 'additionally' defeats the guardrail", "date": "2026-07-08", "discoverer": "Noma Labs", "ai_disc": "-", "technique": "prompt-injection demo", "notes": "No CVE (No-CVSS->High). Trusted-context poisoning on a first-party agentic-workflow product. Themes 26+1+23.", "advisory_url": "https://noma.security/blog/gitlost-how-we-tricked-githubs-ai-agent-into-leaking-private-repos/", "writeup_url": "https://www.securityweek.com/"},
+  {"severity": "High", "id": "WhatsApp->host OpenClaw chain (3 GHSAs)", "title": "Host RCE from an External WhatsApp Message", "component": "OpenClaw (fixed v2026.6.6)", "vector": "GHSA-hjr6 (8.8) env-var-sanitizer ignores NODE_OPTIONS/BASH_ENV/PYTHONSTARTUP; GHSA-9969 (8.8) Git ext:: transport RCE; GHSA-575v (8.4) bind-mount parent-dir denylist bypass -> host RCE + sandbox escape, no prior foothold", "date": "2026-07-10", "discoverer": "Chinmohan Nayak", "ai_disc": "-", "technique": "manual code review + dynamic verification", "notes": "NEW name nominated. Themes 5+26.", "advisory_url": "https://thehackernews.com/2026/07/researcher-details-whatsapp-to-host.html", "writeup_url": "https://medium.com/@chinmohannayak/i-sent-a-whatsapp-message-to-an-ai-agent-it-ran-my-code-on-the-host-adbbcbb0e0ad"},
+  {"severity": "High", "id": "Wiz GhostApproval (CVE-2026-12958 + CVE-2026-50549)", "title": "Symlink-Disguised SSH-Key Theft Across 6 AI Coding Assistants", "component": "Amazon Q, Claude Code, Augment, Cursor, Google Antigravity, Windsurf", "vector": "symlink-following (CWE-61) + approval-UI misrepresentation (CWE-451): repo symlink 'project_settings.json' -> ~/.ssh/authorized_keys; agent reasoning sees real target but dialog hides it -> SSH-key injection -> RCE", "date": "2026-07-08", "discoverer": "Wiz (Maor Dokhanian)", "ai_disc": "-", "technique": "cross-IDE comparison testing", "notes": "Aggregates CVE-2026-12958 (AWS Q) + CVE-2026-50549 (Cursor, same as DuneSlide). Anthropic disputes. Extends SymJack/GuardFall/DuneSlide lineage. Themes 13+5+26.", "advisory_url": "https://www.wiz.io/blog/ghostapproval-a-trust-boundary-gap-in-ai-coding-assistants", "writeup_url": "https://www.securityweek.com/ai-coding-tools-tricked-into-hacking-developer-machine-via-decades-old-technique/"},
+  {"severity": "High", "id": "Zscaler ITW agent-PI campaigns (no CVE)", "title": "In-the-Wild Indirect-PI Campaigns Steer Browsing Agents into Crypto Payments", "component": "AI web-browsing agents (26 LLMs tested)", "vector": "live campaigns: fake requests-secure-v2 PyPI page instructs a ~$3 ETH 'API-key' payment to a hardcoded wallet; debank.auction typosquat w/ SEO structured-data misclassified as real DeBank. 4/26 paid, 2/26 misclassified", "date": "2026-07-02", "discoverer": "Zscaler ThreatLabz", "ai_disc": "-", "technique": "runtime telemetry / in-the-wild observation + cross-model testing", "notes": "No CVE (No-CVSS->High). First public adversary operationalization of agent-PI for financial theft. NEW tracked org. Themes 27+26+1.", "advisory_url": "https://www.zscaler.com/blogs/security-research/indirect-prompt-injection-web-content-targets-ai-agents", "writeup_url": ""},
+  {"severity": "High", "id": "Varonis Rogue Agent (no CVE)", "title": "Google Dialogflow CX Cross-Agent Compromise + VPC-SC Bypass", "component": "Google Dialogflow CX (Code-Block agents)", "vector": "user w/ dialogflow.playbooks.update on one Code-Block agent compromises OTHER agents in same GCP project -> read live conversations, exfil via unrestricted urllib, push attacker messages, bypass VPC Service Controls", "date": "2026-07-07", "discoverer": "Varonis Threat Labs", "ai_disc": "-", "technique": "manual analysis of managed-agent-platform authz", "notes": "No CVE (patched Jun 2026; disclosed via Google VRP Nov 2025). Themes 23+1.", "advisory_url": "https://www.varonis.com/blog/rogue-agent-dialogflow-attack", "writeup_url": ""},
+  {"severity": "High", "id": "Writer WriteOut (no CVE)", "title": "One-Click Cross-Tenant Account Takeover of Writer AI", "component": "Writer (enterprise GenAI platform)", "vector": "session-isolation flaw -> outsider takes over any Writer org 'with nothing more than a link' -> victim chats/docs/agents/private models/connectors/LLM credentials; escalates to admin", "date": "2026-07-07", "discoverer": "SAND Security", "ai_disc": "-", "technique": "manual analysis (session isolation)", "notes": "No CVE (patched). NEW name nominated (sandsecurity.ai). Joins DifyTap/PraisonAI Theme 23 tenancy class. Primary writeup URL pending indexing (S15).", "advisory_url": "https://thehackernews.com/", "writeup_url": ""},
+  {"severity": "High", "id": "SkillCloak / Cloak and Detonate (arXiv 2607.02357)", "title": "Payload-Preserving Evasion of AI-Agent Skill Scanners (+ SkillDetonate)", "component": "Claude Code + OpenAI Codex skills; 8 scanners", "vector": "Structural Obfuscation + Self-Extracting-Skill (SFS) Packing bypass every scanner >90% (Cisco 99%->~10%); SkillDetonate runtime IFC auditor catches 97% TP @2% FPR", "date": "2026-07-02", "discoverer": "HKUST (Ji, Xu, Li, Gao, Wei, Wang, Cheung)", "ai_disc": "-", "technique": "research (scanner-evasion systematization)", "notes": "No CVE (No-CVSS->High). SkillDetonate -> S10. Theme 15.", "advisory_url": "https://arxiv.org/abs/2607.02357", "writeup_url": "https://thehackernews.com/2026/07/skillcloak-lets-malicious-ai-agent.html"},
+  {"severity": "High", "id": "CoT Forgery / role-confusion (arXiv 2603.12277)", "title": "Prompt Injection as Role Confusion -- Injected Text Impersonating the Model's Own Reasoning", "component": "GPT-5 family, o4-mini, gpt-oss, GLM-4.6, Kimi-K2, MiniMax-M2", "vector": "LLMs infer speaker from writing STYLE not role tags; text mimicking the model's own <think> reasoning inherits its self-trust -> jailbreak ~0->60%; also tricked a coding agent into uploading SECRETS.env", "date": "2026-07-02", "discoverer": "MIT (Charles Ye, Jasmine Cui, Dylan Hadfield-Menell)", "ai_disc": "-", "technique": "research", "notes": "No CVE (No-CVSS->High). Extends Theme 26 to the REASONING channel. Research Gap #17. NEW names nominated.", "advisory_url": "https://arxiv.org/abs/2603.12277", "writeup_url": "https://decrypt.co/372688/ai-researchers-chatbots-share-cocaine-recipes-wild-trick"},
+  {"severity": "High", "id": "Grackle (GHSA-f9ff / -vv65)", "title": "MCP Fail-Open Authorization (IDOR) + Git-Worktree Arg-Injection RCE", "component": "Grackle (MCP-backed agent orchestrator)", "vector": "fail-open authz: several mutating tools omit ancestry/workspace check while MCP layer is sole authz boundary -> prompt-injected scoped agent does cross-task IDOR; git-worktree executor (shell:true, unsanitized branch name) -> RCE on every provisioned host", "date": "2026-07-02", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "Themes 26+23+1+5.", "advisory_url": "https://github.com/advisories/GHSA-f9ff-5x35-7gfw", "writeup_url": "https://github.com/advisories/GHSA-vv65-f55v-xm6g"},
+  {"severity": "High", "id": "Coder workspace-agent cluster (4 CVEs)", "title": "Cross-Workspace Rebinding / Cross-Agent File R-W / Route Hijacking / Owner-Password Reset", "component": "Coder (dev-env workspace-agent infra)", "vector": "GHSA-9rjw (8.7) cross-workspace rebinding via user-controlled app ID; GHSA-qrwj (8.3) cross-agent file r/w via insecure redirect; GHSA-wrq8 (8.2) route hijack via unvalidated AllowedIPs; GHSA-29xf (7.2) user-admin resets owner password", "date": "2026-07-06", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "Theme 23 (tenancy/privilege boundary).", "advisory_url": "https://github.com/advisories/GHSA-9rjw-3gwp-f59v", "writeup_url": ""},
+  {"severity": "High", "id": "flyto-core (GHSA-h9f9 / -794r)", "title": "Unauth Command Execution via HTTP MCP execute_module + SSRF-Guard Bypass", "component": "flyto-core (MCP server)", "vector": "GHSA-h9f9 (8.4) remote unauth command execution via HTTP MCP execute_module; GHSA-794r (7.1) SSRF-guard bypass via IPv6 transition addresses", "date": "2026-07-06", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "MCP-transport-auth-bypass wave. Themes 1+5.", "advisory_url": "https://github.com/advisories/GHSA-h9f9-h6gm-wc85", "writeup_url": ""},
+  {"severity": "High", "id": "CVE-2026-13341", "title": "Kong Konnect MCP Server Indirect Prompt Injection -> Unintended API Requests", "component": "Kong Konnect MCP server <1.0.0", "vector": "remote attacker performs indirect prompt injection to make the MCP server execute unintended API requests", "date": "2026-07-03", "discoverer": "GHSA (Kong)", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 7.4. MCP-as-attack-surface on a vendor transport. Themes 1+26.", "advisory_url": "https://github.com/advisories/GHSA-6pr5-9p6v-xxrq", "writeup_url": ""},
+  {"severity": "High", "id": "picklescan bypass triple (CVE-2025-71375/-71373/-71367)", "title": "Malicious ML Pickle Files Evade the Scanner", "component": "picklescan <0.0.33/<0.0.34 (HF model-hub pickle guard)", "vector": "fails to detect operator.methodcaller / _operator.methodcaller / _operator.attrgetter -> detection bypass -> RCE on pickle.load()", "date": "2026-07-04", "discoverer": "GHSA", "ai_disc": "-", "technique": "not disclosed -> enrichment", "notes": "CVSS 8.1 each. Re-opens the unsafe-deserialization->RCE model-supply-chain vector. Protect AI ModelScan lane.", "advisory_url": "https://github.com/advisories/GHSA-xgj3-g5r2-m8rf", "writeup_url": ""},
+  {"severity": "High", "id": "CVE-2026-58168", "title": "DeepTutor MCP Authorization Bypass -> Unrestricted MCP Tool Invocation", "component": "DeepTutor", "vector": "authorization bypass in allowed_mcp_tools lets low-priv users invoke unrestricted MCP tools", "date": "2026-06-30", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 8.8. Theme 1.", "advisory_url": "https://github.com/advisories/GHSA-jg88-rvpc-qvxj", "writeup_url": ""},
+  {"severity": "High", "id": "Vibe-Trading (CVE-2026-58170/-58169)", "title": "Path Traversal + DNS-Rebinding Auth Bypass (AI Trading Agent)", "component": "Vibe-Trading", "vector": "CVE-2026-58170 (8.3) path traversal (proposal id joined onto broker dir unsanitized); CVE-2026-58169 (7.5) DNS-rebinding bearer-token auth bypass", "date": "2026-06-30", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "Themes 1+23.", "advisory_url": "https://github.com/advisories/GHSA-h9xw-f6mh-953j", "writeup_url": ""},
+  {"severity": "High", "id": "CVE-2026-59095", "title": "LobeChat SSRF via Skill-Import", "component": "LobeChat", "vector": "importFromUrl (skill import) + fetchImageFromUrl use raw fetch w/o ssrf-safe wrapper -> reach cloud metadata endpoints", "date": "2026-07-02", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 7.7. Skill-import vector. Theme 15.", "advisory_url": "https://github.com/advisories/GHSA-r2cx-cpfx-9h63", "writeup_url": ""},
+  {"severity": "High", "id": "CVE-2026-14783", "title": "NousResearch hermes-agent Path Traversal in skill_view (public exploit)", "component": "NousResearch hermes-agent 2026.5.29.2", "vector": "path traversal via Name arg of skill_view tool; public exploit", "date": "2026-07-06", "discoverer": "GHSA/VulDB", "ai_disc": "-", "technique": "not disclosed (NVD/VulDB-unreviewed) -> enrichment", "notes": "GH sev Low -> No-CVSS escalation (remote+weaponized). Themes 15+26.", "advisory_url": "https://github.com/advisories/GHSA-xq87-v97r-jw5g", "writeup_url": ""},
+  {"severity": "High", "id": "CVE-2026-14748", "title": "AIAnytime Awesome-MCP-Server SSRF (mcp-wiki url arg, exploit published)", "component": "AIAnytime Awesome-MCP-Server", "vector": "SSRF via url arg in mcp-wiki server.py", "date": "2026-07-05", "discoverer": "GHSA/VulDB", "ai_disc": "-", "technique": "not disclosed (NVD/VulDB-unreviewed) -> enrichment", "notes": "GH sev Low -> No-CVSS escalation. Theme 1.", "advisory_url": "https://github.com/advisories/GHSA-qq5h-499r-fxfj", "writeup_url": ""},
+  {"severity": "Medium", "id": "markdownify-mcp pair (CVE-2026-14699/-14702)", "title": "Symlink Following + Weak Temp-File Randomness", "component": "markdownify-mcp <=1.1.0", "vector": "CVE-2026-14699 symlink following bypasses assertPathAllowed (local-only); CVE-2026-14702 weak temp-file randomness", "date": "2026-07-05", "discoverer": "GHSA", "ai_disc": "-", "technique": "not disclosed -> enrichment", "notes": "Local-only -> Medium/Low. Theme 1.", "advisory_url": "https://github.com/advisories/GHSA-mf9r-r6pc-8fc6", "writeup_url": ""}
 ];
 
 var LATEST_TOOLS = [
-  {
-    "tool": "Snyk VulnBench JS 1.0",
-    "maintainer": "Snyk",
-    "date": "2026-06-29",
-    "description": "LLM security-review REPEATABILITY benchmark (arXiv 2606.15762): 300 repeated scans over 10 JS/Express fixtures. Reference-matched bugs stable (134/158 in all 5 reps) but 'extra' findings highly non-deterministic (80/161 in only 1/5). Claude Opus 4.6 High ~40% F1. Cleanest public AI-VR reproducibility datapoint. Themes 16+19.",
-    "advisory_url": "https://snyk.io/blog/snyk-vulnbench-js-1-0-llm-security-review-repeatability/"
-  },
-  {
-    "tool": "Agentlint",
-    "maintainer": "Leporis14 (OSS)",
-    "date": "2026-06-26",
-    "description": "OSS scanner that lints MCP server configurations for misconfig/missing-auth/default-allow gaps -- aimed at the week's mcp-pinot/line-desktop-mcp/Backpropagate default-allow class. Theme 1.",
-    "advisory_url": "https://github.com/Leporis14/agentlint"
-  },
-  {
-    "tool": "pi-detector-bench",
-    "maintainer": "bastion-soft (OSS)",
-    "date": "2026-06-29",
-    "description": "Open eval harness for PROMPT-INJECTION DETECTORS -- measures detector bypassability (the question Saxe's CyberGym post + BioShocking/GuardFall sharpen). Show HN; verify maturity. Themes 1+3+26.",
-    "advisory_url": "https://github.com/bastion-soft/pi-detector-bench"
-  },
-  {
-    "tool": "SkillSpec",
-    "maintainer": "SkillSpec (OSS)",
-    "date": "2026-06-30",
-    "description": "Verifies an agent SKILL runs the way its SKILL.md says -- productized sibling of arXiv VIGIL. Defensive answer to fake-skill/skillctl supply chain. Theme 15.",
-    "advisory_url": "https://skillspec.sh"
-  },
-  {
-    "tool": "Trust3 AI -> NVIDIA NeMo",
-    "maintainer": "Trust3 AI",
-    "date": "2026-06-30",
-    "description": "Extends Trust3's agent control plane (discovery incl. shadow AI, purpose-bound access control with auto-expiring grants, full-fidelity replay) to NVIDIA NeMo via NVIDIA Inception. Theme 23.",
-    "advisory_url": "https://www.prnewswire.com/news-releases/trust3-ai-plans-to-extend-its-agent-control-plane-to-nvidia-nemo-302814786.html"
-  },
-  {
-    "tool": "Google AI Threat Defense + CodeMender [backfill]",
-    "maintainer": "Google Cloud",
-    "date": "2026-05-27",
-    "description": "Multi-model always-on defensive platform (Gemini + Wiz + CodeMender auto-patching + Mandiant) that prioritizes/remediates rather than just flags. Hyperscaler AI-defense entrant alongside MDASH/Daybreak/Glasswing. Themes 16+20.",
-    "advisory_url": "https://cloud.google.com/blog/products/identity-security/introducing-google-ai-threat-defense"
-  },
-  {
-    "tool": "AISLE Snapshot [backfill]",
-    "maintainer": "AISLE",
-    "date": "2026-06-10",
-    "description": "Fully on-prem/air-gapped frontier-class vuln discovery at ~10x cost-efficiency vs hosted Mythos -- removes the data-sovereignty barrier. Theme 16.",
-    "advisory_url": "https://www.globenewswire.com/news-release/2026/06/10/3309773/0/en/AISLE-Introduces-Snapshot.html"
-  },
-  {
-    "tool": "garak v0.15.0 [backfill]",
-    "maintainer": "NVIDIA",
-    "date": "2026-05-01",
-    "description": "Adds a multi-turn GOAT probe + an Agent-breaker probe (tests the tools available to agents, not just the model) + system-prompt-extraction probe. Extends garak from model-scanning into agent-tool-surface scanning.",
-    "advisory_url": "https://github.com/NVIDIA/garak/releases"
-  },
-  {
-    "tool": "Skill-security benchmark cluster [backfill]",
-    "maintainer": "arXiv (multiple)",
-    "date": "2026-06",
-    "description": "Most active AI-security arXiv sub-theme since May: SkillVetBench (LLM-as-judge, live HF leaderboard, SARS score + per-skill CVSS v4.0), MalSkillBench (3,944 malicious skills, Docker syscall-monitored), SeClaw (spec-driven continuous synthesis), SABER (operational safety from final env state). Theme 15.",
-    "advisory_url": "https://arxiv.org/abs/2606.15899"
-  }
+  {"tool": "SkillDetonate", "maintainer": "HKUST", "date": "2026-07-02", "description": "Runtime behavior auditor for AI-agent skills (on-demand closure lift + marker-based taint over OS-boundary info-flow): 97% TP @2% FPR (SkillJect). Built as the defense against SkillCloak (beats 8 static scanners >90%). Static-scanner->runtime-auditor pivot. Theme 15.", "advisory_url": "https://arxiv.org/abs/2607.02357"},
+  {"tool": "GPTFuzz", "maintainer": "academic (SemiEngineering deep-dive)", "date": "2026-07-02", "description": "Automated jailbreak fuzzer -- systematically mutates prompt inputs to surface guardrail bypasses at scale. Red-team tooling. Themes 10+12.", "advisory_url": "https://semiengineering.com/"},
+  {"tool": "MAREF", "maintainer": "maref-org (OSS, Apache 2.0)", "date": "2026-07-04", "description": "Multi-Agent Recursive Evolution Framework -- Agent Governance OS. TLA+ formal verification, per-agent crypto identity, claims 10/10 OWASP Agentic Top-10 coverage. Cites '73% permission-overreach across 100 audited agent projects' (->S13). Governance lane (Noma/Trust3/Operant).", "advisory_url": "https://github.com/maref-org/maref"},
+  {"tool": "code-on-incus", "maintainer": "mensfeld (OSS, Show HN)", "date": "2026-07-05", "description": "Agent-containment: each AI agent gets its own isolated Incus VM (root only inside the sandbox). OSS agent-sandbox lane. Theme 3/8.", "advisory_url": "https://github.com/mensfeld/code-on-incus"},
+  {"tool": "GetSuperpower", "maintainer": "0xroylee (OSS, Show HN)", "date": "2026-07-05", "description": "Installable 'skill tree' for coding agents -- skill-distribution tooling that is itself a skill-ecosystem supply-chain surface. Theme 15.", "advisory_url": "https://github.com/0xroylee/getsuperpower"},
+  {"tool": "Adversa July roundups", "maintainer": "Adversa AI (tracked)", "date": "2026-07-06", "description": "'Top Agentic AI security resources -- July 2026' (7/2) + 'Top MCP security resources -- July 2026' (7/6). Curated monthly roundups (flag AutoJack + new agent defenses). Reference.", "advisory_url": "https://adversa.ai/blog/top-agentic-ai-security-resources-july-2026"},
+  {"tool": "Benchmark cluster (RustMizan/ToolFailBench/PiSAs/SkillFuzz)", "maintainer": "arXiv (multiple)", "date": "2026-07-07", "description": "RustMizan (compilable contamination-aware Rust-vuln VR benchmark), ToolFailBench (tool-use failure diagnosis), PiSAs (contextual integrity multi-user agentic), SkillFuzz (fuzzing skill composition) + 'Untrusted Content Masking for Web Agents' + 'Certified Speculative Execution for Untrusted AI Agents' (defense-with-guarantees -> Theme 8).", "advisory_url": "https://arxiv.org/abs/2607.05120"},
+  {"tool": "Snyk 10k dev-environments telemetry [backfill]", "maintainer": "Snyk", "date": "2026-06-23", "description": "Field telemetry: 50.8% of devs run an MCP server; 1-in-7 has an MCP finding; 392 confirmed PI findings live in tool descriptions. Themes 1+15.", "advisory_url": "https://snyk.io/blog/agentic-development-security-ai-coding-risk/"},
+  {"tool": "Trend Micro 'Hunt Them All' 19k-MCP sweep [backfill]", "maintainer": "Trend Micro (TrendAI)", "date": "2026-05-28", "description": "AI-powered sweep of 19,000 MCP servers (2 Gemini agents + Claude Haiku re-screen) quantifying MCP-ecosystem vuln density + FP-culling pipeline. Themes 1+16.", "advisory_url": "https://www.trendmicro.com/vinfo/us/security/news/vulnerabilities-and-exploits/hunt-them-all-an-ai-powered-vulnerability-sweep-of-19-000-mcp-servers"},
+  {"tool": "Microsoft Build 2026 Agent Registry [backfill]", "maintainer": "Microsoft", "date": "2026-06-02", "description": "Local agent/MCP discovery registry; part of the MDASH/Agent 365 lifecycle-security stack. Agent-inventory layer.", "advisory_url": "https://www.microsoft.com/en-us/security/blog/2026/06/02/microsoft-build-2026-securing-code-agents-and-models-across-the-development-lifecycle/"},
+  {"tool": "Knostic AgentMesh -> VirusTotal [backfill]", "maintainer": "Knostic", "date": "2026-06-08", "description": "AgentMesh (scans MCP servers/skills/IDE extensions for PI/typosquatting/secret-exfil) joins VirusTotal's Crowdsourced AI Program. Theme 15.", "advisory_url": "https://www.knostic.ai/blog/knostics-agentmesh-joins-virustotals-crowdsourced-ai-program"}
 ];
 
 var LATEST_POSTS = [
-  {
-    "source": "Apple / Reuters",
-    "date": "2026-06-29",
-    "title": "Apple ships AI-discovered WebKit bugs OUT-OF-BAND (Safari 26.5.2), citing AI exploit-acceleration -- OpenAI Codex Security x3 + Anthropic Claude/Carlini x1",
-    "advisory_url": "https://support.apple.com/en-us/100100"
-  },
-  {
-    "source": "Adversa AI",
-    "date": "2026-06-30",
-    "title": "GuardFall: a universal shell-injection vulnerability in open-source AI agents (10 of 11 vulnerable)",
-    "advisory_url": "https://adversa.ai/blog/opensource-ai-coding-agents-shell-injection-vulnerability/"
-  },
-  {
-    "source": "LayerX",
-    "date": "2026-06-30",
-    "title": "BioShocking: 'gaming' the AI browser and escaping its guardrails -> credential exfil across 6 browsers",
-    "advisory_url": "https://layerxsecurity.com/blog/bioshocking-ai-gaming-the-ai-browser-and-escaping-its-guardrails/"
-  },
-  {
-    "source": "Joshua Saxe",
-    "date": "2026-06-27",
-    "title": "AI security notes 6/27 -- Berkeley CyberGym: best LLM+scaffolding reproduces only 11.9% of real bugs across 188 projects",
-    "advisory_url": "https://joshuasaxe181906.substack.com/p/ai-security-notes-627"
-  },
-  {
-    "source": "Snyk",
-    "date": "2026-06-29",
-    "title": "Snyk VulnBench JS 1.0: Can LLMs Find the Same Bugs Twice? (AI-VR repeatability)",
-    "advisory_url": "https://snyk.io/blog/snyk-vulnbench-js-1-0-llm-security-review-repeatability/"
-  },
-  {
-    "source": "Embrace The Red (Rehberger)",
-    "date": "2026-06-25",
-    "title": "Computer-Use and TOCTOU: What You Click Is Not What You Get!",
-    "advisory_url": "https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/"
-  },
-  {
-    "source": "OX Security",
-    "date": "2026-06-30",
-    "title": "'Be Violent With Your Agents': The Hard Truths of Governing Agentic AI",
-    "advisory_url": "https://www.ox.security/blog/be-violent-with-your-agents-the-hard-truths-of-governing-agentic-ai/"
-  },
-  {
-    "source": "Knostic",
-    "date": "2026-06-29",
-    "title": "The Source Looked Clean. The Binary Wasn't. (AI-code-review source-vs-binary blind spot)",
-    "advisory_url": "https://www.knostic.ai/blog/the-source-looked-clean-the-binary-wasnt"
-  },
-  {
-    "source": "Trail of Bits",
-    "date": "2026-06-30",
-    "title": "Shipping post-quantum cryptography to Python (ML-KEM + ML-DSA into PyCA cryptography)",
-    "advisory_url": "https://blog.trailofbits.com/2026/06/30/shipping-post-quantum-cryptography-to-python/"
-  },
-  {
-    "source": "The Register",
-    "date": "2026-06-30",
-    "title": "'Role-model' prompt injection extracts illicit recipes (framing-bypass sibling to BioShocking)",
-    "advisory_url": "https://www.theregister.com/ai-and-ml/2026/06/30/security-researchers-tricked-llms-into-giving-them-cocaine-recipes-by-abusing-role-models-for-prompt-injection/"
-  }
+  {"source": "Sysdig (Michael Clark)", "date": "2026-07-01", "title": "JADEPUFFER: first documented END-TO-END AGENTIC RANSOMWARE in the wild (Langflow RCE -> Nacos takeover -> DB encryption; self-narrating payloads; 31s error-correction)", "advisory_url": "https://www.sysdig.com/blog/jadepuffer-agentic-ransomware-for-automated-database-extortion"},
+  {"source": "Zscaler ThreatLabz", "date": "2026-07-02", "title": "Two IN-THE-WILD indirect-PI campaigns steer browsing agents into crypto payments (4/26 LLMs paid)", "advisory_url": "https://www.zscaler.com/blogs/security-research/indirect-prompt-injection-web-content-targets-ai-agents"},
+  {"source": "Reuters", "date": "2026-07-06", "title": "CISA is running Anthropic's Mythos to scan U.S. federal code -- the export-controlled model deployed defensively by government (Theme 16+25)", "advisory_url": "https://www.reuters.com/"},
+  {"source": "The Hacker News", "date": "2026-07-01", "title": "Anthropic Restores Claude Fable 5 After U.S. Lifts Jailbreak-Linked Export Controls (Theme 25 reversal)", "advisory_url": "https://thehackernews.com/2026/07/anthropic-restores-claude-fable-5-after.html"},
+  {"source": "AI Now Institute (Milanov, Khlaaf)", "date": "2026-07-08", "title": "Friendly Fire -- AI coding agents run attacker code DURING an untrusted-code security review (Claude Code + Codex, 4 models)", "advisory_url": "https://ainowinstitute.org/publications/friendly-fire-exploit-brief"},
+  {"source": "Noma Labs", "date": "2026-07-08", "title": "GitLost -- unauthenticated private-repo exfiltration via GitHub Agentic Workflow (indirect PI in a public Issue)", "advisory_url": "https://noma.security/blog/gitlost-how-we-tricked-githubs-ai-agent-into-leaking-private-repos/"},
+  {"source": "Trail of Bits", "date": "2026-07-02", "title": "Field reports from Patch the Planet -- GPT-5.5-Cyber built a zlib fuzzing lab in a day (AI-VR capability datapoint)", "advisory_url": "https://blog.trailofbits.com/2026/07/02/field-reports-from-patch-the-planet/"},
+  {"source": "MIT (Ye, Cui, Hadfield-Menell)", "date": "2026-07-02", "title": "Prompt Injection as Role Confusion / CoT Forgery -- injected text impersonating the model's own reasoning (arXiv 2603.12277)", "advisory_url": "https://arxiv.org/abs/2603.12277"},
+  {"source": "Wiz (Maor Dokhanian)", "date": "2026-07-08", "title": "GhostApproval -- symlink + approval-UI-misrepresentation SSH-key theft across 6 AI coding assistants (CVE-2026-12958 + CVE-2026-50549)", "advisory_url": "https://www.wiz.io/blog/ghostapproval-a-trust-boundary-gap-in-ai-coding-assistants"},
+  {"source": "The Register", "date": "2026-07-08", "title": "Alan Turing Institute: GitHub Copilot workflow-level jailbreak -- 816/816 unsafe completions under full IDE workflow vs 8/816 in chat (arXiv 2607.03968)", "advisory_url": "https://arxiv.org/abs/2607.03968"}
 ];
 
 var HEADLINES = [
-  "<b>LEAD -- Apple ships AI-discovered WebKit bugs OUT-OF-BAND, citing AI exploit-acceleration (June 29)</b> -- Safari/iOS/macOS 26.5.2 fixes 4 WebKit memory-safety bugs found with AI tools; Apple broke its normal cadence (ahead of iOS 26.6), telling Reuters it accelerated because AI compresses the find-to-exploit window. Credits OpenAI Codex Security (CVE-2026-43707/-43716/-43745) + Anthropic Claude w/ Nasr+Carlini (CVE-2026-43715). First OS-vendor release-schedule change driven by AI; first WebKit CVEs jointly attributed to two frontier-AI programs. Themes 16+22.",
-  "<b>GuardFall -- universal shell-injection class across OSS AI coding agents (June 30, Adversa)</b> -- 11 agents tested (~548k stars), 10 vulnerable (opencode/Goose/Cline/Roo-Code/Aider/Plandex/Open Interpreter/OpenHands/SWE-agent/Hermes), only Continue defended. Agents check commands as plain text vs a denylist but bash rewrites the text before exec. No CVE -- a design-convention class. Empirical confirmation of CmdNeedle. Themes 13+26.",
-  "<b>BioShocking -- fictional-context jailbreak exfiltrates credentials across 6 AI browsers (June 30, LayerX)</b> -- a 'game' rewarding wrong answers collapses the agent's guardrails -> copies signed-in creds (SSH from GitHub) and exfils. ChatGPT Atlas fixed; Comet closed-no-action; Claude ext patch reportedly failed; Fellou/Genspark/Sigma silent. LayerX (Or Eshed) added to tracked orgs. Themes 26+1+10.",
-  "<b>MCP-transport/config trusted-context cluster continues (Themes 1/23/26)</b> -- mcp-pinot CVE-2026-49257 (10.0, default oauth_enabled=False + 0.0.0.0); googleapis/mcp-toolbox path traversal CVE-2026-11720 (3rd toolbox CVE); line-desktop-mcp + mcp-memory-service + foreman-mcp-server; plus repo-config RCE on Gemini CLI (.gemini/.env CVE-2026-12537) + Amazon Q Developer MCP config.",
-  "<b>Flowise audit wave -- 9 GHSAs (5 Critical) across the agent-builder (June 24-26)</b> -- unsandboxed Custom-MCP RCE (CVE-2026-56274 9.9), path-traversal AFW->RCE (CVE-2025-71338 10.0), arbitrary file access (9.8), unauth /account auth bypass (9.1) + account-takeover precursors. Flowise joins PraisonAI + Langflow as a serially-CVE'd agent-builder; default-no-auth is the root cause. Themes 23+14.",
-  "<b>GPU substrate now generating CVEs on Apple silicon (Theme 24)</b> -- Apple M1 GPU register-file cross-process retention (CVE-2026-49269, 8.6) recovers a victim's SecRandomCopyBytes secret; academic 'Residual GPU Cache State on Apple M4 Pro' extends the residue class to M4. Plus two driver-class GPU advisories (firmware-command OOB 7.8; shader-compiler OOB 7.7).",
-  "<b>Gaslight -- first in-the-wild anti-AI-analysis malware (June 25, SentinelOne)</b> -- a DPRK-linked macOS implant embeds 38 fabricated 'system' messages as a prompt-injection payload to make an analyst's LLM triage agent halt/refuse. The analyzed artifact is itself the injection channel. Themes 26+10.",
-  "<b>AI-VR reproducibility is now a measured problem (Themes 16/19)</b> -- Snyk VulnBench JS 1.0 (LLM findings vary run-to-run; 80/161 'extra' findings in only 1/5 reps), Berkeley CyberGym (best LLM reproduces only 11.9% of real bugs across 188 projects, via Saxe 6/27), clearbluejar (one system stage cuts FP 30->5). New Research Gap #16.",
-  "<b>~19 new S8 rows (6 Critical + 9 High + 4 GPU)</b> -- roster recomputed to 191 rows (Critical 65 / High 88 / Medium 12 / Low 5 / GPU 21); AI-discovered 17->18 (Apple WebKit). No new theme -- all map to existing Themes 1/5/13/14/15/16/22/24/26.",
-  "<b>Operational status:</b> feed cache HEALTHY (2026-06-30 14:34 UTC, 220 in-window items); 2nd consecutive weekly on a fresh cache. Discovery Pass: theme sweep net-new in-window items (GuardFall, BioShocking, mcp-pinot, mcp-toolbox, Orca 'Skill Issues'); no net-new GPU/Rowhammer; REcon 2026 recordings STILL pending (3rd cycle). New tracked org: LayerX."
+  "<b>LEAD -- First AUTONOMOUS offensive-AI operations observed IN THE WILD (new Theme 27)</b> -- Sysdig's JADEPUFFER (Jul 1) is the first documented end-to-end AGENTIC RANSOMWARE: an LLM agent chains a Langflow RCE -> Nacos takeover -> DB encryption, with self-narrating payloads + 31s machine-speed error-correction. Zscaler ThreatLabz (Jul 2) caught two LIVE indirect-PI campaigns steering browsing agents into crypto payments (4/26 LLMs paid). The offensive mirror of Theme 16.",
+  "<b>July 8 trusted-context RCE cluster across AI coding agents / agentic workflows</b> -- Friendly Fire (AI Now: Claude Code/Codex run attacker code DURING an untrusted-code review, 4 models); HalluSquatting (TAU/Technion: hallucinated-name squatting -> agent botnet); Wiz GhostApproval (6 assistants, CVE-2026-12958 + -50549); GitLost (Noma: unauth private-repo exfil via GitHub Agentic Workflow). Plus (Jul 10) WhatsApp->host OpenClaw chain. Theme 26+5+13.",
+  "<b>THEME 25 REVERSAL -- U.S. lifts export controls; Anthropic restores Fable 5 (Jul 1)</b> -- the first government export-authority recall of a frontier model over a cyber capability lasted ~3 weeks and resolved for the Saxe/Moussouris/freefable.org side. Days earlier, Reuters: CISA is running the SAME Mythos model to scan federal code -- 'too dangerous to export' and 'trusted to scan federal code' at once (Theme 16+25).",
+  "<b>DuneSlide -- two zero-click Cursor RCEs (Jul 1, Cato AI Labs; CVE-2026-50548/-50549, both 9.8)</b> -- prompt injection via a poisoned MCP/web result overwrites the cursorsandbox binary (working_directory allow-list abuse) or writes OOB via a symlink canonicalization fallback. Fixed Cursor 3.0. Cato is disclosing flaws 'in all popular coding agents.' New tracked org. Themes 5+13+26.",
+  "<b>Agent-framework audit clusters dominate the catalog (Theme 23+1)</b> -- Langflow July 8-CVE cluster (CVE-2026-10134 10.0 read-all-secrets); Langroid RCE cluster (TableChatAgent eval() 10.0); 9router gateway cluster (unauth CRUD + API-key leak 10.0); OpenClaw 23-advisory hardening batch; mcp-memory-service (9.8 unauth memory R/W/D); fast-mcp-telegram (9.4 path-traversal auth bypass); M365 Copilot (9.3 open-redirect->EoP).",
+  "<b>Crypto-ZK blind-spot lane earns its keep -- a genuine Orchard soundness break</b> -- Zebra halo2_gadgets missing copy constraint (GHSA-ww9q-8r59-xv46, 9.3) leaves the base under-constrained, breaking the Zcash Orchard Action circuit's soundness -- the exact zk-circuit class the lane was created to catch. Plus zebrad CVE-2026-52735 consensus divergence (chain-split risk).",
+  "<b>The reasoning channel joins the injection surface (Theme 26 -> Research Gap #17)</b> -- MIT's CoT Forgery / 'Prompt Injection as Role Confusion' (arXiv 2603.12277): LLMs infer speaker from writing STYLE not role tags, so text mimicking the model's own <think> reasoning inherits its self-trust -> jailbreak ~0->60%. And SkillCloak (HKUST) systematizes skill-scanner evasion (beats 8 scanners >90%; SkillDetonate defense catches 97%).",
+  "<b>~31 new S8 rows (10 Critical + 20 High + 1 Medium) over a TWO-WEEK window</b> -- roster recomputed to 224 rows (Critical 76 / High 109 / Medium 13 / Low 5 / GPU 21); AI-discovered unchanged at 20 (this cycle's finds are all human). New Theme 27. New tracked orgs: Cato AI Labs, Zscaler ThreatLabz, AI Now Institute.",
+  "<b>WARNING -- feed pipeline STALLED July 7-13</b> -- the cache + daily-scan log both froze July 7. July 1-7 is cache/daily-verified; July 8-13 was covered by a supplemental live-web sweep (the Jul-8 cluster on arxiv.org/wiz.io/vendor blogs confirms the stall is a real gap, not a quiet week). ACTION: restart/health-check the Mac feed-populator + daily-scan task before the next weekly."
 ];
 
 var CUMULATIVE_PRE = [
+  {"severity": "Critical", "id": "Flowise audit cluster (9 GHSAs)", "title": "Flowise Agent-Builder Audit -- 5 Critical RCE/file-access/auth-bypass", "component": "Flowise (low-code LLM/agent-flow builder)", "vector": "path traversal -> file write -> RCE (CVE-2025-71338 10.0); unsandboxed Custom-MCP OS command injection RCE (CVE-2026-56274 9.9 + CVE-2025-71336 9.8); arbitrary file access (CVE-2025-71334 9.8); unauth /account/register auth bypass (CVE-2025-71327 9.1) + unauth file upload", "date": "2026-06-26", "discoverer": "GHSA (FlowiseAI maintainers)", "ai_disc": "-", "technique": "manual code review (coordinated audit) + configuration review", "notes": "9-GHSA coordinated audit. Paired Highs: unverified email/password change, session-not-invalidated, file-read-via-chatId. Default-no-auth posture. Themes 23+14+1.", "advisory_url": "https://github.com/advisories/GHSA-c3hj-m5hq-59xw", "writeup_url": "https://github.com/advisories/GHSA-8rhx-2hcv-q49g"},
+  {"severity": "Critical", "id": "CVE-2026-12537", "title": "Google Gemini CLI Container-Launcher OS Command Injection via .gemini/.env", "component": "Gemini CLI <0.39.1 + run-gemini-cli Action <0.1.22", "vector": "planted .gemini/.env consumed by container launcher BEFORE the sandbox boundary -> pre-sandbox host-level code execution on headless CI", "date": "2026-06-25", "discoverer": "GHSA (Google Gemini CLI maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "GHSA-Critical (CVSS pending). Repo-config trusted-context poisoning -- sibling of Agentjacking/Mise/Amazon-Q. Themes 5+26.", "advisory_url": "https://github.com/advisories/GHSA-jj69-4grx-fqj5", "writeup_url": ""},
+  {"severity": "Critical", "id": "CVE-2026-49257", "title": "mcp-pinot Unauthenticated MCP Tool Invocation (oauth_enabled=False + 0.0.0.0)", "component": "StarTree mcp-pinot (Apache-Pinot MCP server)", "vector": "auth-off by default + binds all interfaces -> any network client runs arbitrary SQL/schema ops with server's Pinot creds (CWE-306)", "date": "2026-06-27", "discoverer": "GHSA (StarTree maintainers)", "ai_disc": "-", "technique": "configuration review", "notes": "CVSS 10.0. Default-allow MCP-transport class; StarTree/Akamai MCP-DB lineage. Fixed v3.1.0. Themes 1+23.", "advisory_url": "https://github.com/advisories/GHSA-73cv-556c-w3g6", "writeup_url": ""},
+  {"severity": "Critical", "id": "CVE-2026-11720", "title": "googleapis/mcp-toolbox Path Traversal in HTTP Tool URL Builder", "component": "Google MCP Toolbox for Databases", "vector": "user-controlled pathParams parsed as relative URL; Go ResolveReference normalizes ../ -> downstream API request path bent past the guard (server-side request redirection)", "date": "2026-06-29", "discoverer": "GHSA (Google maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "GHSA-Critical (~9.3). THIRD googleapis/mcp-toolbox CVE after -11717/-11718 opaque-token pair. Theme 1.", "advisory_url": "https://github.com/advisories/GHSA-vwxw-jrg6-9jxv", "writeup_url": ""},
+  {"severity": "Critical", "id": "CVE-2026-48797", "title": "Backpropagate backprop-ui Auth-Flag Bypass -> Unauth ML-Training Control Plane", "component": "Backpropagate >=1.1.0 (Reflex web UI)", "vector": "--auth / --share flags do NOT enforce auth -> unauthenticated control of dataset upload, model load, train start/stop, GGUF export, HuggingFace Hub push", "date": "2026-06-27", "discoverer": "GHSA (Backpropagate maintainers)", "ai_disc": "-", "technique": "configuration review (auth-flag audit on an AI-training tool)", "notes": "GHSA-Critical. ML-training control plane exposed; model exfil/poisoning. Themes 1+23.", "advisory_url": "https://github.com/advisories/GHSA-f65r-h4g3-3h9h", "writeup_url": ""},
+  {"severity": "Critical", "id": "semantic-router <- malicious litellm wheel (GHSA-98x5-vq43-vc5p)", "title": "semantic-router Compromised-litellm Pull-In via Unbounded Transitive Pin", "component": "aurelio-labs semantic-router 0.1.8-0.1.14", "vector": "litellm>=1.61.3 with no upper bound -> resolves malicious litellm==1.82.8 wheel whose litellm_init.pth executes on Python startup -> RCE on install", "date": "2026-06-27", "discoverer": "GHSA (aurelio-labs maintainers)", "ai_disc": "-", "technique": "dependency / supply-chain analysis", "notes": "GHSA-Critical (CVSS pending). Concrete AI-infra unbounded-transitive-pin instance. Themes 15+14.", "advisory_url": "https://github.com/advisories/GHSA-98x5-vq43-vc5p", "writeup_url": ""},
+  {"severity": "High", "id": "GuardFall (no CVE)", "title": "Universal Shell-Injection Class Across OSS AI Coding Agents (10 of 11)", "component": "opencode, Goose, Cline, Roo-Code, Aider, Plandex, Open Interpreter, OpenHands, SWE-agent, Hermes (Continue defended)", "vector": "agents check command as plain text vs a denylist, but bash rewrites it before exec (quote-stripping, expansion, base64-pipe) -> r''m passes a filter watching 'rm'", "date": "2026-06-30", "discoverer": "Adversa AI", "ai_disc": "-", "technique": "cross-IDE comparison testing + dynamic verification (Plandex binary; Claude Sonnet 4.6)", "notes": "No CVE -- a design-convention class (No-CVSS->High). Empirical confirmation of CmdNeedle. Adversa lineage TrustFall->SymJack->GuardFall. Themes 13+26+5.", "advisory_url": "https://adversa.ai/blog/opensource-ai-coding-agents-shell-injection-vulnerability/", "writeup_url": "https://thehackernews.com/2026/06/guardfall-exposes-open-source-ai-coding.html"},
+  {"severity": "High", "id": "BioShocking (no CVE)", "title": "Fictional-Context Jailbreak -> Credential Exfiltration Across 6 AI Browsers", "component": "ChatGPT Atlas (fixed), Perplexity Comet (closed-no-action), Anthropic Claude ext (patch failed), Fellou/Genspark/Sigma (no response)", "vector": "malicious page runs a 'game' rewarding wrong answers -> agent stops treating its own guardrails as real -> copies signed-in creds (SSH from GitHub) and exfils", "date": "2026-06-30", "discoverer": "LayerX (Or Eshed)", "ai_disc": "-", "technique": "prompt-injection demo + dynamic verification", "notes": "No CVE (No-CVSS->High; credential exfil). Same shop as CometJacking. LayerX added to tracked orgs. Themes 26+1+10.", "advisory_url": "https://layerxsecurity.com/blog/bioshocking-ai-gaming-the-ai-browser-and-escaping-its-guardrails/", "writeup_url": "https://thehackernews.com/2026/06/new-bioshocking-attack-tricks-ai.html"},
+  {"severity": "High", "id": "Apple WebKit AI-discovered cluster (4 CVEs)", "title": "Apple Ships AI-Discovered WebKit Bugs OUT-OF-BAND, Citing AI Exploit-Acceleration", "component": "WebKit (iOS/iPadOS/macOS Tahoe/Safari 26.5.2)", "vector": "4 memory-safety bugs found with AI: CVE-2026-43707 (mem corruption), -43716 (Safari crash), -43745 (OOB write) [OpenAI Codex Security]; CVE-2026-43715 (UAF) [Anthropic Claude + Nasr + Carlini]", "date": "2026-06-29", "discoverer": "OpenAI Codex Security (x3) + Anthropic Claude/Nasr/Carlini (x1), per Apple credits", "ai_disc": "Codex Security (OpenAI) + Claude (Anthropic)", "technique": "AI-assisted scanning", "notes": "[attribution:vendor-confirmed] First OS-vendor release-cadence change driven by AI exploit-acceleration (Reuters). First WebKit CVEs jointly attributed to two frontier-AI programs. Carlini = tracked voice. Themes 16+22.", "advisory_url": "https://support.apple.com/en-us/100100", "writeup_url": "https://www.reuters.com/business/apple-says-it-is-releasing-updates-early-response-ai-cybersecurity-concerns-2026-06-29/"},
+  {"severity": "High", "id": "Amazon Q Developer MCP-config RCE (no CVE)", "title": "Malicious Repo Runs Code via Auto-Registered MCP Config", "component": "Amazon Q Developer (AWS)", "vector": "opening a malicious repo whose .amazonq/MCP config auto-registers/auto-runs MCP servers -> code execution on the developer's machine", "date": "2026-06-26", "discoverer": "reporter (AWS)", "ai_disc": "-", "technique": "manual research / repo-config analysis", "notes": "No CVE (No-CVSS->High). Sibling of Gemini-CLI/Mise/Agentjacking trusted-context class. Themes 5+26.", "advisory_url": "https://thehackernews.com/2026/06/amazon-q-developer-flaw-could-let.html", "writeup_url": ""},
+  {"severity": "High", "id": "Gaslight (no CVE)", "title": "macOS Implant Embeds Prompt-Injection to Derail AI-Assisted Malware Analysis", "component": "DPRK-linked Rust backdoor/stealer (macOS)", "vector": "38 fabricated 'system' failure messages embedded as a prompt-injection payload -> analyst's LLM triage agent halts/refuses analysis", "date": "2026-06-25", "discoverer": "SentinelOne (Phil Stokes)", "ai_disc": "-", "technique": "runtime telemetry / malware reverse engineering", "notes": "No CVE (No-CVSS->High). First in-the-wild ANTI-AI-analysis malware via prompt injection. Themes 26+10.", "advisory_url": "https://thehackernews.com/2026/06/new-gaslight-macos-malware-uses-prompt.html", "writeup_url": "https://securityaffairs.com/194256/malware/macos-gaslight-north-korea-linked-malware-that-tries-to-gaslight-the-analyst.html"},
+  {"severity": "High", "id": "GHSA-6v32-2jc8-w595", "title": "foreman-mcp-server Session-ID Trusted Without Auth Re-Validation (+ logs session IDs)", "component": "foreman-mcp-server", "vector": "caches authed connections + trusts a non-secret session ID without re-validating auth tokens, AND logs every session ID -> unauth attacker hijacks admin MCP sessions", "date": "2026-06-24", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 7.8. MCP-transport-auth + logging-as-cred-disclosure. Themes 1+18+23.", "advisory_url": "https://github.com/advisories/GHSA-6v32-2jc8-w595", "writeup_url": ""},
+  {"severity": "High", "id": "GHSA-4hf8-5mjm-rfgq", "title": "line-desktop-mcp Streamable-HTTP Mode Exposes LINE Tools Without MCP Auth", "component": "line-desktop-mcp (--http-mode)", "vector": "binds 0.0.0.0 and exposes /mcp with no MCP-layer auth -> any reachable client lists/calls LINE read+send tools", "date": "2026-06-27", "discoverer": "GHSA", "ai_disc": "-", "technique": "configuration review", "notes": "GHSA-High (No-CVSS escalation). Same default-allow MCP-transport class as mcp-pinot. Themes 1+23.", "advisory_url": "https://github.com/advisories/GHSA-4hf8-5mjm-rfgq", "writeup_url": ""},
+  {"severity": "High", "id": "GHSA-2r68-g678-7qr3", "title": "mcp-memory-service OAuth read-Scope Clients Can Write & Delete Memories", "component": "mcp-memory-service (/mcp JSON-RPC)", "vector": "/mcp requires only OAuth read scope then dispatches tools/call to mutating handlers (store_memory, delete_memory); REST requires write but MCP path doesn't", "date": "2026-06-27", "discoverer": "GHSA", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 8.1. Scope-enforcement gap on MCP transport against an agent memory store. Themes 18+23.", "advisory_url": "https://github.com/advisories/GHSA-2r68-g678-7qr3", "writeup_url": ""},
+  {"severity": "High", "id": "Computer-Use TOCTOU (no CVE)", "title": "Click-Time != Approval-Time Race Subverts the Human-Approval Gate", "component": "computer-use agents (ChatGPT Operator class)", "vector": "UI/screen state at click time differs from approval time -> post-approval changes subvert the human-in-the-loop gate", "date": "2026-06-25", "discoverer": "Johann Rehberger (Embrace The Red)", "ai_disc": "-", "technique": "manual research + PoC", "notes": "No CVE (No-CVSS->High; approval-bypass). Reproduces/extends Jun Kokatsu's ChatGPT Operator race. Core voice. Themes 5+13+26.", "advisory_url": "https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/", "writeup_url": ""},
+  {"severity": "High", "id": "CVE-2026-49269 [gpu]", "title": "Apple M1 GPU Register-File Cross-Process Data Retention", "component": "Apple M1 GPU (Metal)", "vector": "GPU registers retain data between compute-shader dispatches from different processes -> sandboxed attacker app recovers victim's exact 128-bit SecRandomCopyBytes secret", "date": "2026-06-25", "discoverer": "GHSA", "ai_disc": "-", "technique": "dynamic verification (two-app PoC)", "notes": "[gpu:side-channel] CVSS 8.6. Register-file sibling of LeftoverLocals (CVE-2023-4969). Substrate beneath on-device ML/Metal inference. Verify Apple vendor stance. Theme 24(d).", "advisory_url": "https://github.com/advisories/GHSA-vwgr-66jm-j45f", "writeup_url": ""},
+  {"severity": "High", "id": "GHSA-hwpp-2m5q-2cw8 [gpu]", "title": "Host-VM Kernel Posts Improper GPU-Firmware Commands -> OOB Privileged Memory R/W", "component": "GPU virtualization / vGPU firmware boundary (vendor: verify)", "vector": "addresses passed to GPU firmware used for accesses more privileged than the host kernel is permitted -> firmware-boundary break", "date": "2026-06-27", "discoverer": "GHSA", "ai_disc": "-", "technique": "not disclosed", "notes": "[gpu:driver] CVSS 7.8. Phrasing matches an NVIDIA GPU-driver bulletin -- confirm vendor. Theme 24.", "advisory_url": "https://github.com/advisories/GHSA-hwpp-2m5q-2cw8", "writeup_url": ""},
+  {"severity": "High", "id": "GHSA-c5qr-j92g-m289 [gpu]", "title": "Crafted Shader Code Triggers OOB Write in GPU Shader-Compiler Process", "component": "GPU shader-compiler library (vendor: verify)", "vector": "edge-case shader values cause OOB write/segfault in the GPU shader-compiler; where the compiler holds system privileges -> device exploits", "date": "2026-06-27", "discoverer": "GHSA", "ai_disc": "-", "technique": "not disclosed", "notes": "[gpu:runtime] CVSS 7.7. Browser/WebGPU GPU-compiler class -- confirm vendor. Theme 24.", "advisory_url": "https://github.com/advisories/GHSA-c5qr-j92g-m289", "writeup_url": ""},
+  {"severity": "Medium", "id": "Residual GPU Cache State on Apple M4 Pro (no CVE) [gpu]", "title": "GPU Cache Residue / Cross-Context Retention on Apple M4 Pro", "component": "Apple M4 Pro GPU (academic, arXiv 2606.27098)", "vector": "GPU cache residue / cross-context data retention -- extends the M1 register-file leak + LeftoverLocals to the M4 cache layer", "date": "2026-06-25", "discoverer": "academic (arXiv 2606.27098)", "ai_disc": "-", "technique": "dynamic verification (cross-context observation)", "notes": "[gpu:side-channel] No CVE (No-CVSS->research). Uncleared/residual GPU memory sustained across two Apple-silicon generations. Theme 24(d).", "advisory_url": "https://arxiv.org/abs/2606.27098", "writeup_url": ""},
   {"severity": "Critical", "id": "CVE-2026-4747", "component": "FreeBSD RPCSEC_GSS (remote kernel)", "vector": "stack overflow -> ROP -> shellcode -> uid-0 reverse shell; full exploit WRITTEN BY CLAUDE (15-round multi-packet delivery)", "discoverer": "Discovery: Carlini using Claude (FreeBSD-SA-26:08); Exploit: Calif (Thai Duong) via Claude", "date": "2026-03-31", "ai_disc": "Claude (Calif)", "advisory_url": "https://www.freebsd.org/security/advisories/FreeBSD-SA-26:08.rpcsec_gss.asc", "writeup_url": "https://blog.calif.io/p/mad-bugs-claude-wrote-a-full-freebsd"},
   {"severity": "High", "id": "Vim + GNU Emacs open-file RCE (MAD Bugs)", "component": "Vim <=9.2 / GNU Emacs vc-git", "vector": "Claude-found open-a-file RCE: Vim crafted markdown -> code exec (fixed 9.2.0272); Emacs vc-git core.fsmonitor from .git/config -> command exec (maintainers declined)", "discoverer": "Calif (Thai Duong) via Claude", "date": "2026-03-31", "ai_disc": "Claude (Calif)", "advisory_url": "https://blog.calif.io", "writeup_url": "https://www.bleepingcomputer.com/news/security/claude-ai-finds-vim-emacs-rce-bugs-that-trigger-on-file-open/"},
   {"severity": "Critical", "id": "Flowise audit cluster (9 GHSAs)", "title": "Flowise Agent-Builder Audit -- 5 Critical RCE/file-access/auth-bypass", "component": "Flowise (low-code LLM/agent-flow builder)", "vector": "path traversal -> file write -> RCE (CVE-2025-71338 10.0); unsandboxed Custom-MCP OS command injection RCE (CVE-2026-56274 9.9 + CVE-2025-71336 9.8); arbitrary file access (CVE-2025-71334 9.8); unauth /account/register auth bypass (CVE-2025-71327 9.1) + unauth file upload", "date": "2026-06-26", "discoverer": "GHSA (FlowiseAI maintainers)", "ai_disc": "-", "technique": "manual code review (coordinated audit) + configuration review", "notes": "9-GHSA coordinated audit. Paired Highs: unverified email/password change, session-not-invalidated, file-read-via-chatId. Default-no-auth posture. Themes 23+14+1.", "advisory_url": "https://github.com/advisories/GHSA-c3hj-m5hq-59xw", "writeup_url": "https://github.com/advisories/GHSA-8rhx-2hcv-q49g"},
@@ -781,6 +462,10 @@ LATEST.forEach(function(l){
 });
 
 var THEMES = [
+  "<b>Autonomous Offensive AI Agents Operating In-the-Wild (NEW v4.1)</b> -- the offensive mirror of Theme 16: an autonomous LLM agent runs a real end-to-end offensive operation against real victims (not a PoC). JADEPUFFER (Sysdig, Jul 1: first agentic ransomware -- Langflow RCE -> Nacos takeover -> DB encryption, self-narrating payloads, 31s error-correction, ephemeral unrecoverable key); Zscaler ThreatLabz (Jul 2: two live agent-hijack-to-crypto-payment campaigns, 4/26 LLMs paid); 'Dawn of the Apex Agentic Adversary' framing. Distinct from Theme 14 (exploitation cadence) -- here the AGENT is the operator. Open Qs: behavioral IOCs (self-narration, machine-speed correction), attribution when the agent improvises, containment.",
+  "<b>July 8 Trusted-Context RCE Cluster Across AI Coding Agents / Agentic Workflows (NEW v4.1)</b> -- Friendly Fire (AI Now: agent runs attacker code DURING an untrusted-code review, no config/MCP vector, 4 models), HalluSquatting (TAU/Technion: hallucinated-resource-name squatting -> agent botnet), Wiz GhostApproval (6 assistants; symlink + approval-UI misrepresentation; CVE-2026-12958 + -50549), GitLost (Noma: unauth private-repo exfil via GitHub Agentic Workflow), WhatsApp->host OpenClaw chain (3 GHSAs). The trusted-context class (Theme 26) now spans the whole coding-agent/agentic-workflow surface.",
+  "<b>Reasoning-Channel Injection (NEW v4.1)</b> -- MIT CoT Forgery / 'Prompt Injection as Role Confusion' (arXiv 2603.12277): LLMs infer speaker from writing STYLE not role tags, so text mimicking the model's own <think> reasoning inherits its self-trust -> jailbreak ~0->60%. Extends Theme 26 from external channels to the model's INTERNAL reasoning channel (Research Gap #17).",
+  "<b>Export-Control Recall REVERSED + CISA Runs Mythos (UPDATED v4.1)</b> -- the U.S. LIFTED the June-12 controls and Anthropic RESTORED Fable 5 (Jul 1); the first government frontier-model recall over a cyber capability lasted ~3 weeks and resolved for the Saxe/Moussouris/freefable.org side -> reframes to a TEMPORARY-availability event (strengthens the model-redundancy takeaway). Same week, Reuters: CISA is running Mythos to scan U.S. federal code -- 'too dangerous to export' and 'trusted to scan federal code' at once. Theme 25+16.",
   "<b>MCP-Transport-Auth-Bypass Wave is the Largest S8 Sub-Class (NEW v3.9)</b> -- 8+ distinct MCP servers shipped unauthenticated / authz-bypass transport bugs in the June 17-23 window: n8n @n8n/mcp-browser (CVE-2026-54309, 10.0), PraisonAI MCPServer, googleapis/mcp-toolbox (CVE-2026-11717/-11718, a GOOGLE-maintained server), IBM Langflow OSS (CVE-2026-7664), netlicensing-mcp, gemini-mcp-tool (CVE-2026-0755), Apache Doris MCP, Docker MCP Gateway. Root causes: HTTP/streamable transports binding 0.0.0.0 with no auth + no Origin/Host validation (DNS-rebinding-able), and opaque-token/introspection validators that fail open. Extends Theme 1.",
   "<b>Agent-Platform Tenancy is now a Dominant Catalog Driver (UPDATED v3.9)</b> -- PraisonAI 47-advisory coordinated disclosure (14 Critical + 33 High, largest single-project agent-framework disclosure logged) + DifyTap (Zafran; unauthenticated cross-tenant reads of other customers' AI conversations on Dify, 1M+ apps -- first cross-tenant AI-conversation-exfil primitive) + IBM Langflow OSS unauth RCE/MCP-authz-bypass. The default-allow tenancy boundary now rivals MCP-transport-auth as the top S8 source. Theme 23.",
   "<b>MDASH Second Consecutive Patch-Tuesday Cluster (UPDATED v3.9)</b> -- 10 vendor-confirmed AI-discovered CVEs in June (2x CVSS 9.8: Windows Kernel UAF CVE-2026-45657, HTTP.sys CVE-2026-47291) across Hyper-V/Kernel/AD DS/RDP/HTTP.sys/DNS/DHCP; 96.5% CyberGym; wired into Defender+GHAS+Azure DevOps. Two back-to-back monthly clusters make MDASH the most cadence-consistent vendor AI-discovery program. Theme 16.",
@@ -818,18 +503,15 @@ var THEMES = [
 ];
 
 var WATCHLIST = [
-  "<b>REcon 2026 recordings STILL pending (3rd consecutive cycle, NEW v4.0)</b> -- concluded June 21; agentic-RE cluster happened, recordings not posted (2025 talks only as of June 30). 3-state: schedule done / happened / recordings pending. Promote Todd Manning ('Agentic RE of Claude's Security Architecture'), Blazytko/Altamura (agentic deobfuscation), Bachaalany ('vibe reversing'), Laulheret + McIntosh (tracked). Post-conference: check recon.cx + @reconmtl.",
-  "<b>Orca Security 'Skill Issues' date + primary not pinned (NEW v4.0)</b> -- AI-skill-marketplace supply-chain primitives (bait-and-switch, nested injection, delayed weaponization), author Swamynathan Arunachalam. Confirm publication date is in-window + fetch orca.security primary; if in-window, promote to S10/S8 (Theme 15/26) + nominate Orca/Arunachalam to S6.",
-  "<b>Apple WebKit AI-discovery per-CVE credit finalization (NEW v4.0)</b> -- HT100100 credits OpenAI Codex Security (3 CVEs) + Anthropic Claude/Nasr/Carlini (1 CVE); cataloged on Apple+Reuters+THN authority. Confirm each CVE page's credit text and finalize CVSS when NVD populates.",
-  "<b>googleapis/mcp-toolbox CVE-2026-11720 CVSS (NEW v4.0)</b> -- GHSA-Critical; secondary source lists ~9.3. Confirm NVD vector at monthly enrichment.",
-  "<b>GPU advisories GHSA-hwpp-2m5q-2cw8 + GHSA-c5qr-j92g-m289 vendor identity (NEW v4.0)</b> -- cataloged S8.GPU on GHSA text (firmware-command OOB 7.8; shader-compiler OOB 7.7); the vendor (matches NVIDIA driver bulletin / WebGPU compiler) isn't explicitly named. Confirm + cross-link vendor bulletin.",
-  "<b>Apple M1 GPU register-file leak vendor stance (NEW v4.0)</b> -- CVE-2026-49269 advisory carries a truncated Apple response -> possible expected-behavior/dispute framing. Verify before external citation.",
-  "<b>'Anthropic embedded spyware in Claude Code' (HN/Reddit, June 30) -- REJECTED, logged (NEW v4.0)</b> -- inflammatory community post, no primary evidence/advisory/writeup. Not a finding; not promoted. Re-glance only if a substantiated primary source appears.",
-  "<b>New names nominated -- Discovery Pass one-hop (NEW v4.0)</b> -- Or Eshed/LayerX (PROMOTED to S6 this cycle); REcon agentic-RE speakers Todd Manning / Tim Blazytko / Nicolo Altamura / Elias Bachaalany; Microsoft RE-agent trainers Dr. Malachi Jones / Joe Mansour + Richard Johnson; Orca Security / Swamynathan Arunachalam; UC Berkeley RDI / CyberGym team.",
-  "<b>Verified-and-rejected (logged, NOT promoted, NEW v4.0)</b> -- Royal MCP (GHSA-7649-6hf2-rxrp 8.1) re-confirmed a WordPress plugin, not Model Context Protocol; deepstream prototype pollution (CVE-2026-49252) = deepstream.io realtime server, not NVIDIA DeepStream; OCPP/EV-charging WS missing-auth (CVE-2026-40702) not AI. Generic WordPress/kernel/IoT criticals filtered per daily triage.",
-  "<b>Fable 5 / Mythos 5 restoration status + appeal (carried)</b> -- track whether/when access is restored, any formal regulatory determination, and the appeal path; leaked-code 'Fable 5 return' rumor (Decrypt 6/24) unconfirmed.",
-  "<b>HuggingFace feed-lane + offensive-open-weight-models S10 category (carried, process)</b> -- Qwable item exposed HuggingFace as an unwired feed source; build a S10 'security-tuned/offensive open-weight models' subsection + wire a HF lane into scripts/feeds.py. See CLAUDE.md SOURCE-GAP note.",
-  "<b>TrendAI / AgentForge $20-per-vuln (carried)</b> -- primary CHT/Trend Micro paper not yet published."
+  "<b>FEED PIPELINE STALLED July 7-13 (TOP ACTION, NEW v4.1)</b> -- the Mac feed-populator + daily-scanner produced no output after 2026-07-07 (cache mtime + last daily-scan both July 7); a working feed should have caught the Jul-8 cluster (Friendly Fire, HalluSquatting, GhostApproval, GitLost on arxiv.org/wiz.io/vendor blogs). ACTION: restart/health-check scripts/feeds.py + run-feeds.sh + the daily-scan task; verify cache freshness before the next weekly.",
+  "<b>Anthropic July Glasswing/Mythos public accounting STILL NOT published (NEW v4.1)</b> -- as of Jul 13 no July-dated report (May 22 initial update remains latest); no in-window partner Mythos/Glasswing H/C disclosures. But in-window: CISA is running Mythos on federal code (Reuters Jul 6-7). Re-check anthropic.com/news + /research + partner blogs.",
+  "<b>Writer AI 'WriteOut' primary writeup URL not yet resolvable (NEW v4.1)</b> -- SAND Security (sandsecurity.ai) disclosed a one-click cross-tenant Writer ATO (Jul 7, no CVE); substance confirmed via THN quotes but the SAND writeup + exact THN slug not indexed at report time (SPA renders empty to fetcher). Capture URL + confirm SAND roster promotion.",
+  "<b>Black Hat USA 2026 AI talks (lineup published; conf early Aug, NEW v4.1)</b> -- Novee Security/Elad Meged 'Trusted Enough to Run: Breaking AI Agents in Official Workflows' (cross-vendor trust-handoff); NVIDIA/Bar Lanyado + Eliya Cohen -- fine-tuned 30B open-source model at 56% exploit success, 70-125x lower cost than frontier agents (Theme 25+19). 3-state: schedule done / not happened / recordings pending.",
+  "<b>REcon 2026 recordings STILL pending (4th consecutive cycle)</b> -- agentic-RE cluster happened Jun 19-21 (Blazytko/Altamura deobfuscation; McIntosh/clearbluejar training); recordings not posted. Check recon.cx + @reconmtl.",
+  "<b>BlueRock Security MCP Trust Registry + ShareLock (NEW v4.1)</b> -- BlueRock: 7,000+ MCP servers (41% no auth, 53% static keys, 8.5% OAuth; MarkItDown 'MCP fURI' SSRF). ShareLock: Shamir-shared multi-tool MCP threshold poisoning (arXiv 2606.27027). Verify exact dates; strong S8-technique / S10-measurement candidates.",
+  "<b>Alan Turing Copilot workflow-jailbreak (NEW v4.1)</b> -- arXiv 2607.03968 (paper Jul 4 / news Jul 8-9): harmful ask reframed as a coding task -> 816/816 unsafe completions vs 8/816 in chat (Claude Sonnet 4.6/Haiku 4.5 + Gemini 3.1 Pro/3.5 Flash). Cataloged as a Theme 3/S13 measurement, not a S8 row.",
+  "<b>Fable 5 / Mythos restoration -- RESOLVED this cycle (carried context)</b> -- controls lifted, Fable 5 restored Jul 1; mechanism (foreign-national-access -> same-day global shutdown) remains a usable regulatory lever. Watch for any formal determination or a repeat.",
+  "<b>HuggingFace feed-lane + offensive-open-weight-models S10 category (carried, process)</b> -- build a S10 'security-tuned/offensive open-weight models' subsection + wire a HF lane into scripts/feeds.py. See CLAUDE.md SOURCE-GAP note."
 ];
 
 var GAPS = [
@@ -844,7 +526,9 @@ var GAPS = [
   "Audio + image multi-modal attack composition — under-explored compared to text-only PI.",
   "AI-infra exploitation latency benchmarking — formalize the &lt;36h finding into a tracked metric.",
   "OAuth confused-deputy systematics in MCP — generalize from FastMCP/PraisonAI patterns.",
-  "TrustFall / cross-agent containment — design defaults for .mcp.json ingestion by IDEs."
+  "TrustFall / cross-agent containment — design defaults for .mcp.json ingestion by IDEs.",
+  "Reasoning-channel injection -- can a model treat its own <think> content as untrusted-until-attributed without wrecking reasoning quality; provenance/binding for CoT tokens (MIT CoT Forgery, Gap #17).",
+  "Autonomous-offensive-agent forensics -- behavioral IOCs (self-narrating payloads, machine-speed error-correction), attribution when the agent improvises, mid-operation context-poisoning of an attacker, destructive-vs-profitable agentic-ransomware economics (Theme 27, Gap #18)."
 ];
 
 var PEOPLE = [
@@ -893,7 +577,10 @@ var PEOPLE = [
   {"name": "Michael Bargury (Zenity)", "org": "CTO/co-founder Zenity; agent/copilot security (AgentFlayer, PowerPwn, Shadow MCP); RAPTOR co-author", "site": "zenity.io"},
   {"name": "Taha Karim (\"lordx64\")", "org": "open-weight agentic/security models; Qwable lineage (Fable-5 trace distill) -- Theme 25 capability-preservation datapoint", "site": "huggingface.co/lordx64"},
   {"name": "LayerX (Or Eshed)", "org": "AI-browser-agent attack research (BioShocking 6 browsers, CometJacking, Vibe Hacking)", "site": "layerxsecurity.com/blog"},
-  {"name": "Calif (Thai Duong)", "org": "frontier-AI-VR + red-team firm (Anthropic+OpenAI); MAD Bugs 500+ 0-days; Claude wrote full FreeBSD kernel RCE exploit (CVE-2026-4747); Vim/Emacs 0-days", "site": "blog.calif.io"}
+  {"name": "Calif (Thai Duong)", "org": "frontier-AI-VR + red-team firm (Anthropic+OpenAI); MAD Bugs 500+ 0-days; Claude wrote full FreeBSD kernel RCE exploit (CVE-2026-4747); Vim/Emacs 0-days", "site": "blog.calif.io"},
+  {"name": "Cato AI Labs (Itay Ravia)", "org": "AI coding-agent attack research (ex-Aim Security/EchoLeak); DuneSlide Cursor RCEs (CVE-2026-50548/-50549); systematic 'break all popular coding agents' program", "site": "catonetworks.com/blog"},
+  {"name": "Zscaler ThreatLabz", "org": "in-the-wild AI-agent threat research; two live indirect-PI-to-crypto-payment campaigns (Theme 27)", "site": "zscaler.com/blogs/security-research"},
+  {"name": "AI Now Institute (Boyan Milanov, Heidy Khlaaf)", "org": "both ex-Trail of Bits; 'Friendly Fire'/'Double Agents' -- AI coding agents run attacker code during an untrusted-code review", "site": "ainowinstitute.org"}
 ];
 
 // ============================================================
