@@ -73,7 +73,7 @@
 </header>
 
 <div class="tabs">
-  <div class="tab active" data-pane="latest">Latest run (June 23 weekly)</div>
+  <div class="tab active" data-pane="latest">Latest run (July 14 weekly)</div>
   <div class="tab" data-pane="cumulative">Cumulative (all findings)</div>
   <div class="tab" data-pane="themes">Themes &amp; Watchlist</div>
   <div class="tab" data-pane="people">People &amp; Orgs</div>
@@ -97,6 +97,7 @@
   <div class="card">
     <h2>New vulnerabilities this cycle</h2>
     <div class="filter-bar" id="latest-filters"></div>
+    <div class="filter-bar" id="latest-cat-filters"></div>
     <table class="findings" id="latest-table">
       <thead><tr><th>Severity</th><th>ID / Title</th><th>Component</th><th>Class</th><th>Date</th><th>Notes</th></tr></thead>
       <tbody></tbody>
@@ -144,6 +145,7 @@
   <div class="card">
     <h2>All vulnerabilities tracked</h2>
     <div class="filter-bar" id="cum-filters"></div>
+    <div class="filter-bar" id="cum-cat-filters"></div>
     <div class="filter-bar" id="ai-disc-filters"></div>
     <div class="filter-bar" id="refs-filters"></div>
     <input id="cum-search" class="search" placeholder="Filter by ID, component, class, discoverer, AI system…"/>
@@ -174,12 +176,12 @@
 // ============================================================
 
 var LATEST = [
-  {"severity": "High", "id": "MemGhost (no CVE)", "title": "Zero-Click Persistent Memory Poisoning of Personal AI Agents via One Email", "component": "OpenClaw/GPT-5.4; Claude Code SDK/Sonnet 4.6", "vector": "attacker model trained OFFLINE vs a shadow agent aims a saved false 'fact' at the core files loaded every session + keeps the visible reply quiet -> one email persists across future sessions and steers later answers", "date": "2026-07-13", "discoverer": "research (via The Hacker News)", "ai_disc": "-", "technique": "dynamic verification / PoC harness (trained attacker vs shadow agent)", "notes": "No-CVSS->High. 56 cases: 87.5% OpenClaw/GPT-5.4, 71.4% Claude Code SDK/Sonnet 4.6; beat a purpose-built input filter >9/10. = arXiv 2607.05189. OWASP ASI06. Themes 18+26.", "advisory_url": "https://thehackernews.com/2026/07/new-memghost-attack-plants-persistent.html", "writeup_url": "https://arxiv.org/abs/2607.05189"},
-  {"severity": "High", "id": "Grok Build repo-exfil (no CVE)", "title": "Grok Build CLI Uploads Entire Git Repos (history + unread files + secrets) to xAI Cloud Bucket", "component": "xAI Grok Build CLI v0.2.93", "vector": "client bundles the entire tracked repo (full git history) to GCS grok-code-session-traces: ~5.1GB uploaded vs ~192KB task-relevant on a 12GB repo; recovered a file the agent was told NOT to read + an unredacted canary .env secret", "date": "2026-07-14", "discoverer": "cereblab (wire-level analysis)", "ai_disc": "-", "technique": "dynamic verification (mitmproxy wire capture)", "notes": "No-CVSS->High. xAI silently disabled upload Jul 13 (disable_codebase_upload:true); Musk promised data deletion. Coding-agent OVER-COLLECTION. NEW name nominated. Theme 5.", "advisory_url": "https://thehackernews.com/2026/07/grok-build-uploads-entire-git.html", "writeup_url": "https://gist.github.com/cereblab/dc9a40bc26120f4540e4e09b75ffb547"},
-  {"severity": "High", "id": "GHSA-5383-j2p9-qfg3 (mcp-gitlab)", "title": "mcp-gitlab job_id Path Traversal -> GitLab-API Redirection Under Operator PAT", "component": "mcp-gitlab (MCP server)", "vector": "job_id concatenated into GitLab API path unsanitized -> ../../../user redirects API requests to arbitrary endpoints, executed with the OPERATOR'S PAT (confused deputy / SSRF-style)", "date": "2026-07-13", "discoverer": "GHSA (mcp-gitlab maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 8.6 (GHSA-Critical-labeled; cataloged HIGH per >=9.0 threshold). Lead MCP-transport bug of the window. Theme 1.", "advisory_url": "https://github.com/advisories/GHSA-5383-j2p9-qfg3", "writeup_url": ""},
-  {"severity": "High", "id": "OpenClaw July-14 second hardening wave (3 advisories)", "title": "OpenClaw -- MCP-loopback authz bypass (8.3) + plugin-install privesc (8.8) + Feishu policy bypass (8.1)", "component": "OpenClaw (2026.5.20-<2026.6.9)", "vector": "GHSA-5pr8-xjq5-2wrc (8.3) MCP-loopback authz bypass (lower-trust callers run owner-only tools); GHSA-rqg5-28vh-5645 (8.8) plugin-install privesc; GHSA-mm88-h44m-w2gp (8.1) @openclaw/feishu ignores per-account disablement", "date": "2026-07-14", "discoverer": "GHSA (OpenClaw maintainers)", "ai_disc": "-", "technique": "not disclosed -> enrichment", "notes": "Continuation of the Jul-2 Claw Chain 23-advisory batch; same lower-trust-caller-reaches-owner-authority class. Themes 13+26+15.", "advisory_url": "https://github.com/advisories/GHSA-rqg5-28vh-5645", "writeup_url": "https://github.com/advisories/GHSA-5pr8-xjq5-2wrc"},
-  {"severity": "High", "id": "GHSA-mr4r-hcgx-8p4h (CrewAI)", "title": "CrewAI < 1.15.1 SSRF (validate_url DNS-rebind / redirect bypass)", "component": "CrewAI (agent framework)", "vector": "validate_url does a one-shot DNS resolution + blocklist check then returns the original URL unchanged -> redirect-to-internal / DNS-rebind reaches internal services + cloud-metadata", "date": "2026-07-14", "discoverer": "GHSA (CrewAI maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 7.4. SSRF on a mainstream agent framework. Themes 1+14.", "advisory_url": "https://github.com/advisories/GHSA-mr4r-hcgx-8p4h", "writeup_url": ""},
-  {"severity": "High", "id": "GHSA-c52p-2jm8-wv9q (OpenBMB XAgent)", "title": "OpenBMB XAgent <= 1.0.0 Path Traversal in file() -> Arbitrary File Read", "component": "OpenBMB XAgent (autonomous AI agent server)", "vector": "user-controllable filename concatenated into the read path in XAgentServer/.../routers/workspace.py without validation -> arbitrary file read", "date": "2026-07-13", "discoverer": "GHSA (OpenBMB maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 7.5. Agent-ecosystem info disclosure. Themes 5+1.", "advisory_url": "https://github.com/advisories/GHSA-c52p-2jm8-wv9q", "writeup_url": ""}
+  {"severity": "High", "id": "MemGhost (no CVE)", "category": "Agent core", "title": "Zero-Click Persistent Memory Poisoning of Personal AI Agents via One Email", "component": "OpenClaw/GPT-5.4; Claude Code SDK/Sonnet 4.6", "vector": "attacker model trained OFFLINE vs a shadow agent aims a saved false 'fact' at the core files loaded every session + keeps the visible reply quiet -> one email persists across future sessions and steers later answers", "date": "2026-07-13", "discoverer": "research (via The Hacker News)", "ai_disc": "-", "technique": "dynamic verification / PoC harness (trained attacker vs shadow agent)", "notes": "No-CVSS->High. 56 cases: 87.5% OpenClaw/GPT-5.4, 71.4% Claude Code SDK/Sonnet 4.6; beat a purpose-built input filter >9/10. = arXiv 2607.05189. OWASP ASI06. Themes 18+26.", "advisory_url": "https://thehackernews.com/2026/07/new-memghost-attack-plants-persistent.html", "writeup_url": "https://arxiv.org/abs/2607.05189"},
+  {"severity": "High", "id": "Grok Build repo-exfil (no CVE)", "category": "Coding agent / IDE", "title": "Grok Build CLI Uploads Entire Git Repos (history + unread files + secrets) to xAI Cloud Bucket", "component": "xAI Grok Build CLI v0.2.93", "vector": "client bundles the entire tracked repo (full git history) to GCS grok-code-session-traces: ~5.1GB uploaded vs ~192KB task-relevant on a 12GB repo; recovered a file the agent was told NOT to read + an unredacted canary .env secret", "date": "2026-07-14", "discoverer": "cereblab (wire-level analysis)", "ai_disc": "-", "technique": "dynamic verification (mitmproxy wire capture)", "notes": "No-CVSS->High. xAI silently disabled upload Jul 13 (disable_codebase_upload:true); Musk promised data deletion. Coding-agent OVER-COLLECTION. NEW name nominated. Theme 5.", "advisory_url": "https://thehackernews.com/2026/07/grok-build-uploads-entire-git.html", "writeup_url": "https://gist.github.com/cereblab/dc9a40bc26120f4540e4e09b75ffb547"},
+  {"severity": "High", "id": "GHSA-5383-j2p9-qfg3 (mcp-gitlab)", "category": "MCP", "title": "mcp-gitlab job_id Path Traversal -> GitLab-API Redirection Under Operator PAT", "component": "mcp-gitlab (MCP server)", "vector": "job_id concatenated into GitLab API path unsanitized -> ../../../user redirects API requests to arbitrary endpoints, executed with the OPERATOR'S PAT (confused deputy / SSRF-style)", "date": "2026-07-13", "discoverer": "GHSA (mcp-gitlab maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 8.6 (GHSA-Critical-labeled; cataloged HIGH per >=9.0 threshold). Lead MCP-transport bug of the window. Theme 1.", "advisory_url": "https://github.com/advisories/GHSA-5383-j2p9-qfg3", "writeup_url": ""},
+  {"severity": "High", "id": "OpenClaw July-14 second hardening wave (3 advisories)", "category": "MCP", "title": "OpenClaw -- MCP-loopback authz bypass (8.3) + plugin-install privesc (8.8) + Feishu policy bypass (8.1)", "component": "OpenClaw (2026.5.20-<2026.6.9)", "vector": "GHSA-5pr8-xjq5-2wrc (8.3) MCP-loopback authz bypass (lower-trust callers run owner-only tools); GHSA-rqg5-28vh-5645 (8.8) plugin-install privesc; GHSA-mm88-h44m-w2gp (8.1) @openclaw/feishu ignores per-account disablement", "date": "2026-07-14", "discoverer": "GHSA (OpenClaw maintainers)", "ai_disc": "-", "technique": "not disclosed -> enrichment", "notes": "Continuation of the Jul-2 Claw Chain 23-advisory batch; same lower-trust-caller-reaches-owner-authority class. Themes 13+26+15.", "advisory_url": "https://github.com/advisories/GHSA-rqg5-28vh-5645", "writeup_url": "https://github.com/advisories/GHSA-5pr8-xjq5-2wrc"},
+  {"severity": "High", "id": "GHSA-mr4r-hcgx-8p4h (CrewAI)", "category": "Agent ecosystem", "title": "CrewAI < 1.15.1 SSRF (validate_url DNS-rebind / redirect bypass)", "component": "CrewAI (agent framework)", "vector": "validate_url does a one-shot DNS resolution + blocklist check then returns the original URL unchanged -> redirect-to-internal / DNS-rebind reaches internal services + cloud-metadata", "date": "2026-07-14", "discoverer": "GHSA (CrewAI maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 7.4. SSRF on a mainstream agent framework. Themes 1+14.", "advisory_url": "https://github.com/advisories/GHSA-mr4r-hcgx-8p4h", "writeup_url": ""},
+  {"severity": "High", "id": "GHSA-c52p-2jm8-wv9q (OpenBMB XAgent)", "category": "Agent ecosystem", "title": "OpenBMB XAgent <= 1.0.0 Path Traversal in file() -> Arbitrary File Read", "component": "OpenBMB XAgent (autonomous AI agent server)", "vector": "user-controllable filename concatenated into the read path in XAgentServer/.../routers/workspace.py without validation -> arbitrary file read", "date": "2026-07-13", "discoverer": "GHSA (OpenBMB maintainers)", "ai_disc": "-", "technique": "manual code review", "notes": "CVSS 7.5. Agent-ecosystem info disclosure. Themes 5+1.", "advisory_url": "https://github.com/advisories/GHSA-c52p-2jm8-wv9q", "writeup_url": ""}
 ];
 
 var LATEST_TOOLS = [
@@ -513,7 +515,7 @@ var THEMES = [
 ];
 
 var WATCHLIST = [
-  "<b>WEEKLY RAN ~6 DAYS LATE (TOP ACTION, NEW v4.1)</b> -- the ~July 7 weekly was missed; daily scans + feed populator ran fine throughout (72 items in this week view; cache fresh to 2026-07-13). Only the weekly consolidation slipped, now caught up on the full June 30 -> July 13 backlog. An early-run stale FS snapshot briefly masked the live state (looked like a stall; it was not). ACTION: confirm the weekly scheduled task fires on cadence.",
+  "<b>Weekly cadence RESTORED (v4.3, Jul 14)</b> -- the regular Tuesday scheduled weekly fired on time (Jul 14), the day after the v4.1 catch-up (Jul 13, which cleared the June 30 -> July 13 backlog) + the v4.2 structural pass. The ~Jul 7 slip is resolved; daily scans + feed populator have run continuously. No outstanding action beyond routine cadence monitoring.",
   "<b>Anthropic July Glasswing/Mythos public accounting STILL NOT published (NEW v4.1)</b> -- as of Jul 13 no July-dated report (May 22 initial update remains latest); no in-window partner Mythos/Glasswing H/C disclosures. But in-window: CISA is running Mythos on federal code (Reuters Jul 6-7). Re-check anthropic.com/news + /research + partner blogs.",
   "<b>Writer AI 'WriteOut' primary writeup URL not yet resolvable (NEW v4.1)</b> -- SAND Security (sandsecurity.ai) disclosed a one-click cross-tenant Writer ATO (Jul 7, no CVE); substance confirmed via THN quotes but the SAND writeup + exact THN slug not indexed at report time (SPA renders empty to fetcher). Capture URL + confirm SAND roster promotion.",
   "<b>Black Hat USA 2026 AI talks (lineup published; conf early Aug, NEW v4.1)</b> -- Novee Security/Elad Meged 'Trusted Enough to Run: Breaking AI Agents in Official Workflows' (cross-vendor trust-handoff); NVIDIA/Bar Lanyado + Eliya Cohen -- fine-tuned 30B open-source model at 56% exploit success, 70-125x lower cost than frontier agents (Theme 25+19). 3-state: schedule done / not happened / recordings pending.",
@@ -621,6 +623,22 @@ function safe(fn, label){
 // RENDER
 // ============================================================
 
+var CATEGORIES = ["MCP","Agent core","Agent ecosystem","Skills / plugins","Coding agent / IDE","AI infra","Protocol / crypto-ZK","Model / multimodal"];
+// Heuristic classifier (keyword-based) with explicit item.category override. Shares the week-dashboard's 8-category vocab.
+function catOf(item){
+  if (item && item.category) return item.category;
+  var s = ((item.id||"")+" "+(item.title||"")+" "+(item.component||"")+" "+(item.vector||"")+" "+(item.notes||"")).toLowerCase();
+  if (/zcash|zebra|halo2|orchard|gossipsub|ethereum|consensus|\bzk\b|zk-|p2sh|sigop|scalar mult/.test(s)) return "Protocol / crypto-ZK";
+  if (/cursor|claude code|copilot|gemini cli|coding agent|\bide\b|grok build|ghostapproval|duneslide|guardfall|symjack|windsurf|antigravity|amazon q|\baider\b|\bcline\b|roo-code|openhands|swe-agent|plandex|\bgoose\b|vs code|\bserena\b|friendly fire|gitlost/.test(s)) return "Coding agent / IDE";
+  if (/\bskill|\bplugin|marketplace|skillcloak|slopsquat|hallusquat/.test(s)) return "Skills / plugins";
+  if (/\bmcp\b|mcp-|-mcp|model context protocol|tool poisoning|line.?jump|tool metadata|tool description/.test(s)) return "MCP";
+  if (/gateway|inference|\bvllm\b|triton|litellm|9router|mlops|nuclio|semantic-router|kubernetes|\bgpu\b|\[gpu\]|rowhammer|\bcuda\b|container.?toolkit|nvidiascape|orchestrator|backpropagate|ml.?training/.test(s)) return "AI infra";
+  if (/memory poisoning|agent memory|memghost|reasoning|cot forgery|role confusion|prompt injection|excessive agency|trusted.?context/.test(s)) return "Agent core";
+  if (/webkit|multimodal|\bimage\b|\baudio\b|\bvision\b|jailbreak|deepfake|browser agent|ai browser|bioshock/.test(s)) return "Model / multimodal";
+  if (/crewai|praisonai|langflow|flowise|langroid|xagent|\bdify\b|autogen|better.?auth|composio|\bn8n\b|agent.?framework|agent.?builder|agent platform/.test(s)) return "Agent ecosystem";
+  return "Agent ecosystem";
+}
+
 function init(){
   // Tab switching
   safe(function(){
@@ -668,6 +686,7 @@ function init(){
 
   // Latest filters
   var latestFilter = "All";
+  var latestCat = "All";
   safe(function(){
     var sevs = ["All","Critical","High","Medium","Low"];
     var lf = document.getElementById("latest-filters");
@@ -688,10 +707,36 @@ function init(){
     }
   }, "latest filters");
 
+  // latest category filters
+  safe(function(){
+    var counts={}, i;
+    for(i=0;i<LATEST.length;i++){ var cc=catOf(LATEST[i]); counts[cc]=(counts[cc]||0)+1; }
+    var bar=document.getElementById("latest-cat-filters");
+    var lab=document.createElement("div");
+    lab.style.cssText="font-size:11px;color:#6b7280;align-self:center;margin-right:4px;text-transform:uppercase;letter-spacing:0.04em;";
+    lab.textContent="Category:";
+    bar.appendChild(lab);
+    var vals=["All"].concat(CATEGORIES.filter(function(c){return counts[c];}));
+    for(i=0;i<vals.length;i++){(function(sv){
+      var c=document.createElement("div");
+      c.className="chip"+(sv==="All"?" active":"");
+      c.textContent=sv+(sv==="All"?"":" ("+(counts[sv]||0)+")");
+      c.addEventListener("click",function(){
+        latestCat=sv;
+        var chips=document.querySelectorAll("#latest-cat-filters .chip");
+        for(var j=0;j<chips.length;j++) chips[j].classList.remove("active");
+        c.classList.add("active");
+        renderLatestTable();
+      });
+      bar.appendChild(c);
+    })(vals[i]);}
+  }, "latest category filters");
+
+
   function renderLatestTable(){
     safe(function(){
       var tb = document.querySelector("#latest-table tbody");
-      var rows = LATEST.filter(function(r){ return latestFilter==="All" || r.severity===latestFilter; })
+      var rows = LATEST.filter(function(r){ if (latestFilter!=="All" && r.severity!==latestFilter) return false; if (latestCat!=="All" && catOf(r)!==latestCat) return false; return true; })
         .sort(function(a,b){
           var so = sevOrder(a.severity)-sevOrder(b.severity);
           if (so !== 0) return so;
@@ -773,6 +818,7 @@ function init(){
   // Cumulative filters + table
   var cumFilter = "All";
   var aiDiscFilter = "All";
+  var cumCat = "All";
   safe(function(){
     var sevs = ["All","Critical","High","Medium","Low"];
     var cf = document.getElementById("cum-filters");
@@ -793,6 +839,32 @@ function init(){
     }
     document.getElementById("cum-search").addEventListener("input", renderCumulativeTable);
   }, "cumulative filters");
+
+  // cumulative category filters
+  safe(function(){
+    var counts={}, i;
+    for(i=0;i<CUMULATIVE.length;i++){ var cc=catOf(CUMULATIVE[i]); counts[cc]=(counts[cc]||0)+1; }
+    var bar=document.getElementById("cum-cat-filters");
+    var lab=document.createElement("div");
+    lab.style.cssText="font-size:11px;color:#6b7280;align-self:center;margin-right:4px;text-transform:uppercase;letter-spacing:0.04em;";
+    lab.textContent="Category:";
+    bar.appendChild(lab);
+    var vals=["All"].concat(CATEGORIES.filter(function(c){return counts[c];}));
+    for(i=0;i<vals.length;i++){(function(sv){
+      var c=document.createElement("div");
+      c.className="chip"+(sv==="All"?" active":"");
+      c.textContent=sv+(sv==="All"?"":" ("+(counts[sv]||0)+")");
+      c.addEventListener("click",function(){
+        cumCat=sv;
+        var chips=document.querySelectorAll("#cum-cat-filters .chip");
+        for(var j=0;j<chips.length;j++) chips[j].classList.remove("active");
+        c.classList.add("active");
+        renderCumulativeTable();
+      });
+      bar.appendChild(c);
+    })(vals[i]);}
+  }, "cumulative category filters");
+
 
   // AI-Discovery filter chips
   safe(function(){
@@ -904,6 +976,7 @@ function init(){
       var q = (document.getElementById("cum-search").value || "").toLowerCase();
       var rows = CUMULATIVE.filter(function(r){
         if (cumFilter !== "All" && r.severity !== cumFilter) return false;
+        if (cumCat !== "All" && catOf(r) !== cumCat) return false;
         var aiVal = r.ai_disc || "—";
         if (aiVal === "—") aiVal = "Human";
         if (aiDiscFilter !== "All" && aiVal !== aiDiscFilter) return false;
