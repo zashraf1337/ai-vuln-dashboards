@@ -120,35 +120,22 @@
 // ============================================================
 
 // Window of the current week — RESET on weekly run for new cycle
-var WEEK_START = "2026-07-13";       // YYYY-MM-DD (start of new cycle = today)
+var WEEK_START = "2026-07-14";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-07-21";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-07-14 07:32 EDT";
-var CACHE_AGE_HOURS = 0.2;   // Daily scan 2026-07-14: cache fresh (feeds-latest.jsonl mtime 07:20 EDT, ~12 min old), 92 items in window (>=2026-07-13). First daily of the cycle that reset 2026-07-13.
+var LAST_UPDATED = "2026-07-14 11:22 EDT";
+var CACHE_AGE_HOURS = 0.1;   // Weekly reset 2026-07-14 (v4.3): new cycle 2026-07-14 -> 2026-07-21. Arrays cleared; daily scans repopulate.
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [
-  {date:"2026-07-14", criticals:1, highs:7, others:9, status:"critical", note:"mcp-gitlab path traversal (8.6) Critical + MemGhost memory-poisoning; 3x OpenClaw; CrewAI SSRF; OpenBMB XAgent; Grok Build repo over-upload"},
-];
+var DAILY_SCANS = [];
 
 // All findings logged this week (across daily scans) — reset for new cycle
 // Schema: {date, severity, id, title, component, source_name, url, category, ai_discovered, ai_system, technique, note}
 // category vocab: see CATEGORIES below. ai_discovered:true flags frontier-AI / AI-agent-discovered vulns.
 // AI-VR tags (report §8.0.3): technique = HOW found {manual-code-review, configuration-review, dynamic-verification, prompt-injection-demo, fuzzing, static-analysis, ai-assisted-scanning, runtime-telemetry, cross-ide-testing, re-symbolic-taint, research, not-disclosed}; ai_system = WHICH system/harness found it {big-sleep, daybreak, mdash, glasswing, aisle, aesir-fenrir, calif, ... or "" for human}.
-var ITEMS = [
-  {date:"2026-07-14", severity:"Critical", id:"GHSA-5383-j2p9-qfg3", title:"mcp-gitlab path traversal in job_id -> GitLab API redirection under operator PAT", component:"mcp-gitlab (MCP server)", source_name:"GitHub Advisory", url:"https://github.com/advisories/GHSA-5383-j2p9-qfg3", category:"MCP", ai_discovered:false, ai_system:"", technique:"manual-code-review", note:"CVSS 8.6, severity critical. ../../../ in job_id escapes prefix, redirects GitLab API to arbitrary endpoints using the operator's PAT. Theme 1 (MCP tool-parameter injection)."},
-  {date:"2026-07-14", severity:"High", id:"GHSA-mr4r-hcgx-8p4h", title:"CrewAI <1.15.1 SSRF in validate_url (DNS-rebinding / redirect bypass)", component:"CrewAI", source_name:"GitHub Advisory", url:"https://github.com/advisories/GHSA-mr4r-hcgx-8p4h", category:"Agent ecosystem", ai_discovered:false, ai_system:"", technique:"manual-code-review", note:"CVSS 7.4. One-shot DNS+blocklist check then returns URL unchanged -> redirect/rebinding reaches internal svcs + cloud metadata."},
-  {date:"2026-07-14", severity:"High", id:"GHSA-5pr8-xjq5-2wrc", title:"OpenClaw MCP loopback authorization bypass (lower-trust -> owner-only tools)", component:"OpenClaw", source_name:"GitHub Advisory", url:"https://github.com/advisories/GHSA-5pr8-xjq5-2wrc", category:"MCP", ai_discovered:false, ai_system:"", technique:"manual-code-review", note:"CVSS 8.3; 2026.5.20-<2026.6.6. Theme 13 permission-UX + Theme 26 trusted-context. Extends the Cyera Claw Chain line."},
-  {date:"2026-07-14", severity:"High", id:"GHSA-rqg5-28vh-5645", title:"OpenClaw privilege escalation in plugin-install commands", component:"OpenClaw", source_name:"GitHub Advisory", url:"https://github.com/advisories/GHSA-rqg5-28vh-5645", category:"Skills / plugins", ai_discovered:false, ai_system:"", technique:"manual-code-review", note:"CVSS 8.8; 2026.5.20-<2026.6.9. Lower-trust caller escalates via plugin-install paths."},
-  {date:"2026-07-14", severity:"High", id:"GHSA-mm88-h44m-w2gp", title:"OpenClaw Feishu tools ignore per-account disablement", component:"@openclaw/feishu", source_name:"GitHub Advisory", url:"https://github.com/advisories/GHSA-mm88-h44m-w2gp", category:"Agent ecosystem", ai_discovered:false, ai_system:"", technique:"manual-code-review", note:"CVSS 8.1; <=2026.6.6, fixed 2026.6.9. Policy/authorization check bypass."},
-  {date:"2026-07-14", severity:"High", id:"GHSA-c52p-2jm8-wv9q", title:"OpenBMB XAgent path traversal in file() -> arbitrary file read", component:"OpenBMB XAgent", source_name:"GitHub Advisory", url:"https://github.com/advisories/GHSA-c52p-2jm8-wv9q", category:"Agent ecosystem", ai_discovered:false, ai_system:"", technique:"manual-code-review", note:"CVSS 7.5; <=v1.0.0. User-controlled filename concatenated into read path in workspace.py -> info disclosure."},
-  {date:"2026-07-13", severity:"High", id:"MemGhost", title:"MemGhost — zero-click persistent memory-poisoning of AI assistants via one email", component:"Memory-enabled inbox agents", source_name:"The Hacker News", url:"https://thehackernews.com/2026/07/new-memghost-attack-plants-persistent.html", category:"Agent core", ai_discovered:false, ai_system:"", technique:"prompt-injection-demo", note:"No-CVSS escalation -> High. One email saves a hidden false 'fact' and steers later sessions with no further interaction. Theme 26/18, OWASP ASI06 Memory Poisoning."},
-  {date:"2026-07-14", severity:"High", id:"grok-build-repo-upload", title:"Grok Build coding CLI uploaded entire git repos (full history) to xAI storage", component:"xAI Grok Build CLI v0.2.93", source_name:"The Hacker News", url:"https://thehackernews.com/2026/07/grok-build-uploads-entire-git.html", category:"Coding agent / IDE", ai_discovered:false, ai_system:"", technique:"dynamic-verification", note:"No-CVSS escalation -> High. Researcher cereblab cloned the git bundle from an intercepted upload and recovered a file the agent was told not to read. Data over-collection/exfil."},
-];
+var ITEMS = [];
 
 // Critical alerts posted to Drive this week — reset for new cycle
-var ALERTS = [
-  {date:"2026-07-14 0737", title:"CRITICAL: mcp-gitlab path traversal (8.6) — GitLab API redirection under operator PAT", drive_url:"https://docs.google.com/document/d/1qLH_4nj0LAKX7u_Iqhat3xt7ioTzxA_m6Pa0KI-BF2c/edit?usp=drivesdk&ouid=113026484200967021090"},
-];
+var ALERTS = [];
 
 // Optional: link to the full historical dashboard artifact (Cowork sidebar)
 var FULL_DASHBOARD_URL = "#"; // updated by scheduled task if a deep link exists
