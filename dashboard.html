@@ -64,7 +64,7 @@
 <header>
   <h1><span class="pulse"></span>Agentic AI &amp; MCP Vulnerability Dashboard</h1>
   <div class="meta">
-    Report v4.7 · Last refreshed: <b>July 19, 2026</b> · Window: July 13 → July 19 (v4.3/v4.4 + v4.6 HW-INTEL fold + v4.7 lane consolidation) · Lead (v4.7): <b>5 AI-agent-adjacent lanes now sliceable</b> — use the new <b>Lane:</b> filter below (mcp-server / agent-framework / llm-serving / ai-browser / ai-sec-tooling). +2 grounding cluster rows (MCP-config-exec-sink: LiteLLM/Fay 9.8 + LangBot 8.8; IBM Langflow 8-CVE). Prior lead (v4.6): 14 NVIDIA inference-server CVEs folded to §8.GPU. All human-discovered ·
+    Report v4.8 · Last refreshed: <b>July 20, 2026</b> · Window: 5-lane 12-month catch-up (Aug 2025 → Jul 2026) on top of v4.3–v4.7 · Lead (v4.8): <b>~48 net-new lane disclosures backfilled</b> as 5 per-lane catch-up clusters (roster 231 → 236). ⭐ AI-discovered highlights: <b>Ollama CVE-2026-5757</b> (AI-assisted, no-patch) + <b>OpenAI Atlas PI-class</b> (automated red-teamer). Use the <b>Lane:</b> filter to slice. All other backfill items human-discovered ·
     Source: <code>Agentic-AI-MCP-Security-Research-Report.md</code>
   </div>
   <div class="meta" style="margin-top:6px">
@@ -148,6 +148,7 @@
     <div class="filter-bar" id="cum-cat-filters"></div>
     <div class="filter-bar" id="cum-lane-filters"></div>
     <div class="filter-bar" id="ai-disc-filters"></div>
+    <div class="filter-bar" id="cum-attacker-filters"></div>
     <div class="filter-bar" id="refs-filters"></div>
     <input id="cum-search" class="search" placeholder="Filter by ID, component, class, discoverer, AI system…"/>
     <div style="max-height:600px;overflow:auto">
@@ -193,7 +194,12 @@ var LATEST = [
   {"severity": "High", "id": "CVE-2026-15583 (Grafana MCP)", "category": "MCP", "title": "Grafana MCP Server Confused-Deputy (unauthenticated remote)", "component": "Grafana MCP Server", "vector": "unauthenticated remote attacker abuses the server's trust to act as a confused deputy -- requests executed with the server's own privileges/identity", "date": "2026-07-15", "discoverer": "GHSA (Grafana maintainers)", "ai_disc": "—", "technique": "manual code review", "notes": "CVSS 8.6. Same MCP-transport confused-deputy family as mcp-gitlab (this cycle). Themes 1+26. [v4.6 07-15 daily]", "advisory_url": "https://github.com/advisories/GHSA-7cfp-pmw3-4j7r", "writeup_url": ""},
   {"severity": "High", "id": "CVE-2026-54446 (NetLicensing-MCP)", "category": "MCP", "title": "NetLicensing-MCP Uses Server-Side API Key With No Caller Auth (HTTP mode)", "component": "NetLicensing MCP server (Labs64)", "vector": "HTTP mode uses the server-side NetLicensing API key with no caller auth -> any client reaching the endpoint acts with operator licensing creds", "date": "2026-07-14", "discoverer": "GHSA (Labs64 maintainers)", "ai_disc": "—", "technique": "configuration review", "notes": "CVSS 8.1. Distinct from June path-traversal token-redaction bypass (GHSA-hxpf). MCP-transport-auth-bypass wave. Theme 1. [v4.6 07-15 daily]", "advisory_url": "https://github.com/advisories/GHSA-x9vc-9ffq-p3gj", "writeup_url": ""},
   {"severity": "Critical", "id": "MCP-config-exec-sink cluster (LiteLLM/Fay/LangBot)", "category": "MCP", "lane": ["mcp-server","llm-serving"], "title": "MCP-Config-as-Exec-Sink Cluster -- LiteLLM + Fay (both 9.8) + LangBot (8.8)", "component": "LiteLLM 1.18.10 / xszyou Fay 4.3.1 / LangBot", "vector": "operator/attacker-supplied MCP (STDIO) server definition with command+args executed without containment -> OS command exec; identical pattern in 3 products in a 2-day window", "date": "2026-07-16", "discoverer": "GHSA (reporters)", "ai_disc": "—", "technique": "manual code review / configuration review", "notes": "CVE-2026-30623 (LiteLLM 9.8) + CVE-2026-30618 (Fay 9.8) + CVE-2026-54449 (LangBot 8.8). MCP config treated as trusted, not untrusted input. Themes 1+14+26. [v4.7 lane-consolidation fold]", "advisory_url": "https://github.com/advisories/GHSA-gw7c-8jfv-4mj2", "writeup_url": "https://github.com/advisories/GHSA-3pvh-63gf-j9mw"},
-  {"severity": "High", "id": "IBM Langflow OSS July 8-CVE cluster", "category": "Agent ecosystem", "lane": ["agent-framework","mcp-server"], "title": "IBM Langflow OSS July 8-CVE High Cluster (interpreter-exec + param-override + unauth build RCE + JWT-key read)", "component": "IBM Langflow OSS", "vector": "Python-Interpreter cmd exec (14499), MCP-config RCE (7755), Content-Disposition file write (7667), apply_tweaks() override (8056), unauth build_public_tmp RCE (13448), SaveToFile cross-user (13445), JWT-signing-key read->forge (7872), SSRF (7754)", "date": "2026-07-18", "discoverer": "GHSA (IBM Langflow maintainers)", "ai_disc": "—", "technique": "manual code review", "notes": "8x High cluster. Themes 14+23+1. [v4.7 lane-consolidation fold]", "advisory_url": "https://github.com/advisories/GHSA-q4fv-x4j4-jx84", "writeup_url": ""}
+  {"severity": "High", "id": "IBM Langflow OSS July 8-CVE cluster", "category": "Agent ecosystem", "lane": ["agent-framework","mcp-server"], "title": "IBM Langflow OSS July 8-CVE High Cluster (interpreter-exec + param-override + unauth build RCE + JWT-key read)", "component": "IBM Langflow OSS", "vector": "Python-Interpreter cmd exec (14499), MCP-config RCE (7755), Content-Disposition file write (7667), apply_tweaks() override (8056), unauth build_public_tmp RCE (13448), SaveToFile cross-user (13445), JWT-signing-key read->forge (7872), SSRF (7754)", "date": "2026-07-18", "discoverer": "GHSA (IBM Langflow maintainers)", "ai_disc": "—", "technique": "manual code review", "notes": "8x High cluster. Themes 14+23+1. [v4.7 lane-consolidation fold]", "advisory_url": "https://github.com/advisories/GHSA-q4fv-x4j4-jx84", "writeup_url": ""},
+  {"severity": "Critical", "id": "ai-browser 12-mo catch-up cluster", "category": "Model / multimodal", "lane": ["ai-browser"], "title": "AI-Browser / Browser-Agent 12-Month Catch-Up (12 indirect-PI & agent-hijack disclosures)", "component": "Comet / Atlas / Claude-for-Chrome ext / Copilot-Edge / Gemini / BrowserOS / Opera Neon", "vector": "indirect prompt-injection in page/screenshot/URL-fragment/memory -> autonomous action, credential+OTP exfil, OAuth abuse, zero-click extension ATO", "date": "2026-03-26", "discoverer": "Brave / Anthropic / OpenAI / LayerX / Cato CTRL / NeuralTrust / SquareX / Koi / Unit 42", "ai_disc": "—", "technique": "prompt-injection demo / dynamic verification", "notes": "Backfill cluster: Brave-Comet IPI, Unseeable screenshots, NeuralTrust Atlas omnibox, Cato HashJack, LayerX Tainted-Memories (persistent), Koi ShadowPrompt (zero-click ATO 3M+ users), SquareX OAuth, Unit42 ITW; OpenAI Atlas PI-class was AI-found by an automated red-teamer. Themes 26+1+10+17. [v4.8 12-mo lane catch-up]", "advisory_url": "https://brave.com/blog/comet-prompt-injection/", "writeup_url": "https://www.koi.ai/blog/shadowprompt-how-any-website-could-have-hijacked-anthropic-claude-chrome-extension"},
+  {"severity": "Critical", "id": "agent-framework 12-mo catch-up cluster", "category": "Agent ecosystem", "lane": ["agent-framework"], "title": "Agent-Framework 12-Month Catch-Up (LangGrinch 9.3 + Google ADK unauth RCE 9.3 + AutoJack + PydanticAI)", "component": "LangChain/LangGraph, Google ADK, AutoGen Studio, PydanticAI, DSPy", "vector": "trusted-deserialization RCE, unauth RCE, localhost-trust-boundary host RCE, SSRF-via-message-history, path traversal", "date": "2026-04-13", "discoverer": "Cyata / Google / Microsoft / JFrog / joernchen", "ai_disc": "—", "technique": "manual code review", "notes": "CVE-2025-68664 LangGrinch (9.3), CVE-2026-4810 Google ADK unauth RCE (9.3), AutoJack (AutoGen Studio host RCE), CVE-2026-25580 PydanticAI SSRF, CVE-2025-64439 langgraph, CVE-2026-34070 langchain-core, CVE-2025-12695 DSPy. Themes 1+5+26. [v4.8 12-mo lane catch-up]", "advisory_url": "https://github.com/advisories/GHSA-c67j-w6g6-q2cm", "writeup_url": "https://www.microsoft.com/en-us/security/blog/2026/06/18/autojack-single-page-rce-host-running-ai-agent/"},
+  {"severity": "Critical", "id": "mcp-server 12-mo catch-up cluster", "category": "MCP", "lane": ["mcp-server"], "title": "MCP-Server 12-Month Catch-Up (mcp-remote 9.6 + MCP Inspector 9.4 + aws-mcp 9.8 + Anthropic Git-MCP chain + postmark-mcp backdoor + OX 6-CVE)", "component": "mcp-remote, MCP Inspector, aws-mcp-server, Anthropic mcp-server-git, postmark-mcp, Smithery, Figma-MCP, Amazon Q", "vector": "malicious-server->client RCE, DNS-rebind localhost RCE, unauth command-injection, reference-server path-traversal+arg-injection chain, malicious server ITW, registry compromise, config-as-exec-sink", "date": "2026-04-11", "discoverer": "JFrog / Oligo / ZDI-TrendAI / Cyata / Koi / GitGuardian / OX Security / Wiz / Imperva", "ai_disc": "—", "technique": "manual code review / configuration review", "notes": "CVE-2025-6514 mcp-remote (9.6), CVE-2025-49596 MCP Inspector (9.4), CVE-2026-5059 aws-mcp (9.8), CVE-2025-68143/-68144/-68145 Anthropic Git-MCP chain, postmark-mcp backdoor (first malicious MCP server ITW), Smithery, CVE-2025-53967 Figma-MCP, CVE-2026-12957 Amazon Q, OX 'MCP by Design' 6-CVE. New org: Cyata. Themes 1+23+26. [v4.8 12-mo lane catch-up]", "advisory_url": "https://jfrog.com/blog/2025-6514-critical-mcp-remote-rce-vulnerability/", "writeup_url": "https://cyata.ai/blog/cyata-research-breaking-anthropics-official-mcp-server/"},
+  {"severity": "Critical", "id": "ai-sec-tooling 12-mo catch-up cluster", "category": "Skills / plugins", "lane": ["ai-sec-tooling"], "title": "AI-Sec-Tooling (vulns-IN / evasions-OF) 12-Month Catch-Up (picklescan/Fickling/ModelScan bypasses + OpenAI-Guardrails & Prompt-Guard-2 evasions + guardrails-ai 9.6)", "component": "picklescan, Fickling, ModelScan, OpenAI Guardrails, Meta Prompt Guard 2, Cisco AI Defense, guardrails-ai", "vector": "denylist pickle-scanner bypass, LLM-judge guardrail coercion, compute-asymmetry prompt-guard bypass, MCP-scanner 73% false-negative, guardrail-lib supply-chain compromise", "date": "2026-05-11", "discoverer": "JFrog / Trail of Bits / HiddenLayer / UC Berkeley / academic", "ai_disc": "—", "technique": "manual code review + research", "notes": "guardrails-ai CVE-2026-45758 (9.6 supply-chain), picklescan CVE-2025-10155 + Dec cluster, Fickling 5-CVE run, PickleBall (ModelScan), HiddenLayer OpenAI-Guardrails, Controlled-Release Prompting, VIPER-MCP (Cisco 73% FN), Hiding-in-Plain-Floats (Prompt Guard 2). Defenses fail open. Themes 15+12. [v4.8 12-mo lane catch-up]", "advisory_url": "https://github.com/advisories/GHSA-xmpw-2vmm-p4p6", "writeup_url": "https://jfrog.com/blog/unveiling-3-zero-day-vulnerabilities-in-picklescan/"},
+  {"severity": "Critical", "id": "llm-serving 12-mo catch-up cluster", "category": "AI infra", "lane": ["llm-serving"], "title": "LLM-Serving 12-Month Catch-Up (ShadowRay 2.0 ITW 9.8 + llama.cpp RPC/GGUF RCE + Ollama GGUF cluster incl. AI-discovered + text-generation-webui + TGI)", "component": "Ray, llama.cpp, Ollama, text-generation-webui, HuggingFace TGI", "vector": "unauth cluster-API worm, RPC/GGUF deserialization RCE, GGUF heap-disclosure of other users' data, updater-integrity persistent RCE, path-traversal RCE, DoS", "date": "2026-05-04", "discoverer": "Oligo / ggml-org / CERT.pl / CERT-CC / oobabooga / huntr", "ai_disc": "AI-assisted (Ollama CVE-2026-5757)", "technique": "manual code review; CVE-2026-5757 AI-assisted", "notes": "[AI-DISCOVERED] Ollama CVE-2026-5757 (GGUF quantization heap-disclosure, Jeremy Brown/CERT-CC, no-patch). Also: ShadowRay 2.0 CVE-2023-48022 (ITW GPU botnet), llama.cpp RPC CVE-2026-34159 + GGUF CVE-2026-27940, Ollama Bleeding-Llama CVE-2026-7482, Ollama updater CVE-2026-42248/-42249, text-generation-webui CVE-2026-35050, TGI CVE-2026-0599. Maintainer won't-fix recurring. Theme 24(b)+27. [v4.8 12-mo lane catch-up]", "advisory_url": "https://www.oligo.security/blog/shadowray-2-0-attackers-turn-ai-against-itself-in-global-campaign-that-hijacks-ai-into-self-propagating-botnet", "writeup_url": "https://kb.cert.org/vuls/id/518910"}
 ];
 
 var LATEST_TOOLS = [
@@ -215,6 +221,7 @@ var LATEST_POSTS = [
 ];
 
 var HEADLINES = [
+  "<b>v4.8 FIVE-LANE 12-MONTH CATCH-UP -- ~48 net-new disclosures backfilled (Aug 2025 -&gt; Jul 2026)</b> -- 5 per-lane catch-up clusters folded to &sect;8 (roster 231 -&gt; 236). <b>&#11088; AI-DISCOVERY LEAD:</b> Ollama CVE-2026-5757 (GGUF quantization heap-leak, <b>AI-assisted</b>, CERT/CC, no-patch) + the OpenAI Atlas PI-class found by OpenAI's own automated red-teamer -- both flagged [AI-DISCOVERED]. Lanes: ai-browser (Brave/Comet IPI, Koi ShadowPrompt zero-click ATO, LayerX Atlas Tainted-Memories); agent-framework (LangGrinch 9.3, Google ADK unauth RCE 9.3, AutoJack); mcp-server (mcp-remote 9.6, MCP Inspector 9.4, aws-mcp 9.8, Anthropic Git-MCP chain, postmark-mcp backdoor); ai-sec-tooling (picklescan/Fickling/ModelScan bypasses, guardrails-ai 9.6); llm-serving (ShadowRay 2.0, llama.cpp RPC/GGUF, Ollama). New orgs: Cyata, Koi, Oligo, Brave, Cato CTRL.",
   "<b>v4.7 AI-AGENT-ADJACENT LANE CONSOLIDATION -- 5 lanes now slice the historical catalog (Jul 19)</b> -- the cumulative view has a new <b>Lane:</b> filter (mcp-server 85 / agent-framework 47 / llm-serving 23 / ai-browser 4 / ai-sec-tooling 3) so lane CVEs accumulate week-over-week instead of falling off after a daily. Active lanes this cycle: <b>mcp-server</b> (MCP-config-as-exec-sink shipped in LiteLLM + Fay + LangBot in 2 days; + n8n cross-tenant / Grafana / NetLicensing), <b>agent-framework</b> (IBM Langflow 8-CVE cluster), <b>llm-serving</b> (14 NVIDIA TensorRT-LLM/Triton CVEs). ai-browser + ai-sec-tooling quiet. +2 grounding cluster rows; &sect;8 roster 229 -&gt; 231.",
   "<b>v4.6 HW-INTEL / CROSS-DOMAIN FOLD -- 14 NVIDIA inference-server CVEs enter permanent &sect;8.GPU history (Jul 15)</b> -- TensorRT-LLM x5 (CVE-2026-24233 8.4 restricted-unpickler model-load bypass + IPC / write-what-where / tensor-deser / orchestrator; PSIRT bulletin 5840), TensorRT x3 (all 7.8), Triton x6 (all 7.5, DoS/OOB; bulletin 5853). These arrived via the GHSA/NVD feed -- NOT the HW-INTEL inbox -- so without this fold they'd vanish at the weekly week-reset. Plus 2 MCP Highs: Grafana MCP confused-deputy (CVE-2026-15583, 8.6) + NetLicensing-MCP unauth server-side API key (CVE-2026-54446, 8.1). +5 rows, all human-discovered; &sect;8 roster 224 -&gt; 229.",
   "<b>LATE-DAY DELTA (v4.4) -- July Patch Tuesday + a Critical MCP cross-tenant CVE landed AFTER the v4.3 pass (Jul 14)</b> -- the 16:21 cache refresh added 4 in-scope items the earlier v4.3 pass had not seen: <b>n8n-MCP CVE-2026-54052 (9.9)</b> -- an authenticated tenant reads/destroys OTHER tenants' workflow-backup snapshots (credential refs + auth headers); <b>Microsoft Copilot CVE-2026-48561 (9.6)</b> command-injection -&gt; unauth network RCE (July Patch Tuesday, MSRC); yutu MCP arbitrary file write (7.7); M365 Copilot for iOS EoP (8.1, mobile-AI Theme 17). All human-discovered; MDASH contributed to this Patch Tuesday broadly but not to these CVEs.",
@@ -676,6 +683,18 @@ function laneOf(item){
   return out;
 }
 
+// AI-role axis (2026-07-20, user-directed): was an autonomous AI the ATTACK OPERATOR in the wild (Theme 27)?
+// Orthogonal to ai_disc (= AI FOUND the bug). Excludes victim-agent PI-hijack (Zscaler/MemGhost) + botnets that merely target AI infra (NadMesh).
+// Explicit override: item.ai_attacker === true/false. Else keyword-classify a small, specific set.
+var AI_ROLES = ["ai-attacker"];
+function attackerOf(item){
+  if (item && item.ai_attacker === true) return ["ai-attacker"];
+  if (item && item.ai_attacker === false) return [];
+  var s = ((item.id||"")+" "+(item.title||"")+" "+(item.component||"")+" "+(item.vector||"")+" "+(item.notes||"")).toLowerCase();
+  if (/jadepuffer|agentic ransomware|hugging ?face[^.]{0,80}autonomous ai|autonomous ai (agent|harness|system)[^.]{0,80}(intrusion|breach|compromise|operat|end.to.end)/.test(s)) return ["ai-attacker"];
+  return [];
+}
+
 function init(){
   // Tab switching
   safe(function(){
@@ -857,6 +876,7 @@ function init(){
   var aiDiscFilter = "All";
   var cumCat = "All";
   var cumLane = "All";
+  var cumAttacker = "All";
   safe(function(){
     var sevs = ["All","Critical","High","Medium","Low"];
     var cf = document.getElementById("cum-filters");
@@ -928,6 +948,32 @@ function init(){
       bar.appendChild(c);
     })(vals[i]);}
   }, "cumulative lane filters");
+
+  // cumulative AI-ROLE (ai-attacker) filter (2026-07-20, user-directed) — the offensive quadrant of the AI-VR 2x2
+  safe(function(){
+    var counts={}, i, R, k;
+    for(i=0;i<CUMULATIVE.length;i++){ R=attackerOf(CUMULATIVE[i]); for(k=0;k<R.length;k++) counts[R[k]]=(counts[R[k]]||0)+1; }
+    var bar=document.getElementById("cum-attacker-filters");
+    if(!bar) return;
+    var lab=document.createElement("div");
+    lab.style.cssText="font-size:11px;color:#6b7280;align-self:center;margin-right:4px;text-transform:uppercase;letter-spacing:0.04em;";
+    lab.textContent="AI role:";
+    bar.appendChild(lab);
+    var vals=["All"].concat(AI_ROLES.filter(function(c){return counts[c];}));
+    for(i=0;i<vals.length;i++){(function(sv){
+      var c=document.createElement("div");
+      c.className="chip"+(sv==="All"?" active":"");
+      c.textContent=(sv==="All"?"All":sv+" ("+(counts[sv]||0)+")");
+      c.addEventListener("click",function(){
+        cumAttacker=sv;
+        var chips=document.querySelectorAll("#cum-attacker-filters .chip");
+        for(var j=0;j<chips.length;j++) chips[j].classList.remove("active");
+        c.classList.add("active");
+        renderCumulativeTable();
+      });
+      bar.appendChild(c);
+    })(vals[i]);}
+  }, "cumulative ai-role filters");
 
 
   // AI-Discovery filter chips
@@ -1042,6 +1088,7 @@ function init(){
         if (cumFilter !== "All" && r.severity !== cumFilter) return false;
         if (cumCat !== "All" && catOf(r) !== cumCat) return false;
         if (cumLane !== "All" && laneOf(r).indexOf(cumLane) < 0) return false;
+        if (cumAttacker !== "All" && attackerOf(r).indexOf(cumAttacker) < 0) return false;
         var aiVal = r.ai_disc || "—";
         if (aiVal === "—") aiVal = "Human";
         if (aiDiscFilter !== "All" && aiVal !== aiDiscFilter) return false;
