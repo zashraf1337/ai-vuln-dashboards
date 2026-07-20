@@ -64,7 +64,7 @@
 <header>
   <h1><span class="pulse"></span>Agentic AI &amp; MCP Vulnerability Dashboard</h1>
   <div class="meta">
-    Report v4.6 · Last refreshed: <b>July 15, 2026</b> · Window: July 13 → July 15 (v4.3 weekly + v4.4 delta + v4.6 HW-INTEL/cross-domain fold) · Lead (v4.6): <b>14 NVIDIA inference-server CVEs</b> folded into permanent §8.GPU history — TensorRT-LLM ×5 (bulletin 5840) + TensorRT ×3 + Triton ×6 (bulletin 5853), which arrived via GHSA/NVD (not the HW-INTEL inbox) so they'd otherwise be lost to the weekly reset — plus 2 MCP Highs (Grafana MCP 8.6, NetLicensing-MCP 8.1). Prior leads: v4.4 July-Patch-Tuesday tail (n8n-MCP 9.9, MS Copilot RCE 9.6); v4.3 MemGhost + Grok Build. All human-discovered ·
+    Report v4.7 · Last refreshed: <b>July 19, 2026</b> · Window: July 13 → July 19 (v4.3/v4.4 + v4.6 HW-INTEL fold + v4.7 lane consolidation) · Lead (v4.7): <b>5 AI-agent-adjacent lanes now sliceable</b> — use the new <b>Lane:</b> filter below (mcp-server / agent-framework / llm-serving / ai-browser / ai-sec-tooling). +2 grounding cluster rows (MCP-config-exec-sink: LiteLLM/Fay 9.8 + LangBot 8.8; IBM Langflow 8-CVE). Prior lead (v4.6): 14 NVIDIA inference-server CVEs folded to §8.GPU. All human-discovered ·
     Source: <code>Agentic-AI-MCP-Security-Research-Report.md</code>
   </div>
   <div class="meta" style="margin-top:6px">
@@ -73,7 +73,7 @@
 </header>
 
 <div class="tabs">
-  <div class="tab active" data-pane="latest">Latest run (July 13–15 — v4.3/v4.4 + v4.6 HW-INTEL fold)</div>
+  <div class="tab active" data-pane="latest">Latest run (July 13–19 — v4.3/v4.4 + v4.6 fold + v4.7 lanes)</div>
   <div class="tab" data-pane="cumulative">Cumulative (all findings)</div>
   <div class="tab" data-pane="themes">Themes &amp; Watchlist</div>
   <div class="tab" data-pane="people">People &amp; Orgs</div>
@@ -146,6 +146,7 @@
     <h2>All vulnerabilities tracked</h2>
     <div class="filter-bar" id="cum-filters"></div>
     <div class="filter-bar" id="cum-cat-filters"></div>
+    <div class="filter-bar" id="cum-lane-filters"></div>
     <div class="filter-bar" id="ai-disc-filters"></div>
     <div class="filter-bar" id="refs-filters"></div>
     <input id="cum-search" class="search" placeholder="Filter by ID, component, class, discoverer, AI system…"/>
@@ -190,7 +191,9 @@ var LATEST = [
   {"severity": "High", "id": "NVIDIA TensorRT July cluster (3 CVEs) [gpu]", "category": "GPU / inference-server", "title": "NVIDIA TensorRT July Cluster (improper validation + heap buffer + heap overflow, all 7.8)", "component": "NVIDIA TensorRT", "vector": "3x CVSS-7.8: CVE-2026-24238 (improper validation), -24268 (heap-based buffer), -24272 (heap overflow) -> memory corruption / code-exec-class", "date": "2026-07-14", "discoverer": "NVIDIA (via GHSA)", "ai_disc": "—", "technique": "not disclosed", "notes": "[gpu:inference-server][nvidia][tensorrt][ml-sec]. Folded from the 2026-07-15 daily via GHSA/NVD -> §8.GPU. Theme 24(b). [v4.6 HW-INTEL fold]", "advisory_url": "https://github.com/advisories/GHSA-8jxq-crv3-7q3x", "writeup_url": ""},
   {"severity": "High", "id": "NVIDIA Triton July cluster (6 CVEs) [gpu]", "category": "GPU / inference-server", "title": "NVIDIA Triton Inference Server July Cluster (6x DoS/OOB via crafted requests, all 7.5, Linux)", "component": "NVIDIA Triton Inference Server (PSIRT bulletin 5853)", "vector": "6x CVSS-7.5 Linux: CVE-2026-47476/-47477/-47478/-47479/-47480/-47482 -- DoS / out-of-bounds via crafted inference requests", "date": "2026-07-14", "discoverer": "NVIDIA PSIRT (via GHSA)", "ai_disc": "—", "technique": "not disclosed", "notes": "[gpu:inference-server][nvidia][triton][ml-sec]. Third major Triton wave (after Aug-2025 Wiz RCE chain + May-2026 auth-bypass). Folded from the 2026-07-15 daily via GHSA/NVD -> §8.GPU. Theme 24(b). [v4.6 HW-INTEL fold]", "advisory_url": "https://github.com/advisories/GHSA-4c5q-2cwp-vx9r", "writeup_url": "https://nvidia.custhelp.com/app/answers/detail/a_id/5853"},
   {"severity": "High", "id": "CVE-2026-15583 (Grafana MCP)", "category": "MCP", "title": "Grafana MCP Server Confused-Deputy (unauthenticated remote)", "component": "Grafana MCP Server", "vector": "unauthenticated remote attacker abuses the server's trust to act as a confused deputy -- requests executed with the server's own privileges/identity", "date": "2026-07-15", "discoverer": "GHSA (Grafana maintainers)", "ai_disc": "—", "technique": "manual code review", "notes": "CVSS 8.6. Same MCP-transport confused-deputy family as mcp-gitlab (this cycle). Themes 1+26. [v4.6 07-15 daily]", "advisory_url": "https://github.com/advisories/GHSA-7cfp-pmw3-4j7r", "writeup_url": ""},
-  {"severity": "High", "id": "CVE-2026-54446 (NetLicensing-MCP)", "category": "MCP", "title": "NetLicensing-MCP Uses Server-Side API Key With No Caller Auth (HTTP mode)", "component": "NetLicensing MCP server (Labs64)", "vector": "HTTP mode uses the server-side NetLicensing API key with no caller auth -> any client reaching the endpoint acts with operator licensing creds", "date": "2026-07-14", "discoverer": "GHSA (Labs64 maintainers)", "ai_disc": "—", "technique": "configuration review", "notes": "CVSS 8.1. Distinct from June path-traversal token-redaction bypass (GHSA-hxpf). MCP-transport-auth-bypass wave. Theme 1. [v4.6 07-15 daily]", "advisory_url": "https://github.com/advisories/GHSA-x9vc-9ffq-p3gj", "writeup_url": ""}
+  {"severity": "High", "id": "CVE-2026-54446 (NetLicensing-MCP)", "category": "MCP", "title": "NetLicensing-MCP Uses Server-Side API Key With No Caller Auth (HTTP mode)", "component": "NetLicensing MCP server (Labs64)", "vector": "HTTP mode uses the server-side NetLicensing API key with no caller auth -> any client reaching the endpoint acts with operator licensing creds", "date": "2026-07-14", "discoverer": "GHSA (Labs64 maintainers)", "ai_disc": "—", "technique": "configuration review", "notes": "CVSS 8.1. Distinct from June path-traversal token-redaction bypass (GHSA-hxpf). MCP-transport-auth-bypass wave. Theme 1. [v4.6 07-15 daily]", "advisory_url": "https://github.com/advisories/GHSA-x9vc-9ffq-p3gj", "writeup_url": ""},
+  {"severity": "Critical", "id": "MCP-config-exec-sink cluster (LiteLLM/Fay/LangBot)", "category": "MCP", "lane": ["mcp-server","llm-serving"], "title": "MCP-Config-as-Exec-Sink Cluster -- LiteLLM + Fay (both 9.8) + LangBot (8.8)", "component": "LiteLLM 1.18.10 / xszyou Fay 4.3.1 / LangBot", "vector": "operator/attacker-supplied MCP (STDIO) server definition with command+args executed without containment -> OS command exec; identical pattern in 3 products in a 2-day window", "date": "2026-07-16", "discoverer": "GHSA (reporters)", "ai_disc": "—", "technique": "manual code review / configuration review", "notes": "CVE-2026-30623 (LiteLLM 9.8) + CVE-2026-30618 (Fay 9.8) + CVE-2026-54449 (LangBot 8.8). MCP config treated as trusted, not untrusted input. Themes 1+14+26. [v4.7 lane-consolidation fold]", "advisory_url": "https://github.com/advisories/GHSA-gw7c-8jfv-4mj2", "writeup_url": "https://github.com/advisories/GHSA-3pvh-63gf-j9mw"},
+  {"severity": "High", "id": "IBM Langflow OSS July 8-CVE cluster", "category": "Agent ecosystem", "lane": ["agent-framework","mcp-server"], "title": "IBM Langflow OSS July 8-CVE High Cluster (interpreter-exec + param-override + unauth build RCE + JWT-key read)", "component": "IBM Langflow OSS", "vector": "Python-Interpreter cmd exec (14499), MCP-config RCE (7755), Content-Disposition file write (7667), apply_tweaks() override (8056), unauth build_public_tmp RCE (13448), SaveToFile cross-user (13445), JWT-signing-key read->forge (7872), SSRF (7754)", "date": "2026-07-18", "discoverer": "GHSA (IBM Langflow maintainers)", "ai_disc": "—", "technique": "manual code review", "notes": "8x High cluster. Themes 14+23+1. [v4.7 lane-consolidation fold]", "advisory_url": "https://github.com/advisories/GHSA-q4fv-x4j4-jx84", "writeup_url": ""}
 ];
 
 var LATEST_TOOLS = [
@@ -212,6 +215,7 @@ var LATEST_POSTS = [
 ];
 
 var HEADLINES = [
+  "<b>v4.7 AI-AGENT-ADJACENT LANE CONSOLIDATION -- 5 lanes now slice the historical catalog (Jul 19)</b> -- the cumulative view has a new <b>Lane:</b> filter (mcp-server 85 / agent-framework 47 / llm-serving 23 / ai-browser 4 / ai-sec-tooling 3) so lane CVEs accumulate week-over-week instead of falling off after a daily. Active lanes this cycle: <b>mcp-server</b> (MCP-config-as-exec-sink shipped in LiteLLM + Fay + LangBot in 2 days; + n8n cross-tenant / Grafana / NetLicensing), <b>agent-framework</b> (IBM Langflow 8-CVE cluster), <b>llm-serving</b> (14 NVIDIA TensorRT-LLM/Triton CVEs). ai-browser + ai-sec-tooling quiet. +2 grounding cluster rows; &sect;8 roster 229 -&gt; 231.",
   "<b>v4.6 HW-INTEL / CROSS-DOMAIN FOLD -- 14 NVIDIA inference-server CVEs enter permanent &sect;8.GPU history (Jul 15)</b> -- TensorRT-LLM x5 (CVE-2026-24233 8.4 restricted-unpickler model-load bypass + IPC / write-what-where / tensor-deser / orchestrator; PSIRT bulletin 5840), TensorRT x3 (all 7.8), Triton x6 (all 7.5, DoS/OOB; bulletin 5853). These arrived via the GHSA/NVD feed -- NOT the HW-INTEL inbox -- so without this fold they'd vanish at the weekly week-reset. Plus 2 MCP Highs: Grafana MCP confused-deputy (CVE-2026-15583, 8.6) + NetLicensing-MCP unauth server-side API key (CVE-2026-54446, 8.1). +5 rows, all human-discovered; &sect;8 roster 224 -&gt; 229.",
   "<b>LATE-DAY DELTA (v4.4) -- July Patch Tuesday + a Critical MCP cross-tenant CVE landed AFTER the v4.3 pass (Jul 14)</b> -- the 16:21 cache refresh added 4 in-scope items the earlier v4.3 pass had not seen: <b>n8n-MCP CVE-2026-54052 (9.9)</b> -- an authenticated tenant reads/destroys OTHER tenants' workflow-backup snapshots (credential refs + auth headers); <b>Microsoft Copilot CVE-2026-48561 (9.6)</b> command-injection -&gt; unauth network RCE (July Patch Tuesday, MSRC); yutu MCP arbitrary file write (7.7); M365 Copilot for iOS EoP (8.1, mobile-AI Theme 17). All human-discovered; MDASH contributed to this Patch Tuesday broadly but not to these CVEs.",
   "<b>LEAD -- MemGhost: one email plants a persistent, hidden false memory in a personal AI agent (Jul 13; No-CVSS-&gt;High; Themes 18+26)</b> -- an attacker model trained OFFLINE vs a shadow agent rewards emails that save a false 'fact' while keeping the visible reply quiet, aimed at the core files loaded every session. 56 cases: 87.5% vs OpenClaw/GPT-5.4, 71.4% vs Claude Code SDK/Sonnet 4.6; beat a purpose-built input filter &gt;9/10. = arXiv 2607.05189. OWASP ASI06 Memory Poisoning.",
@@ -658,6 +662,20 @@ function catOf(item){
   return "Agent ecosystem";
 }
 
+// 5-lane tag dimension (weekly consolidation, 2026-07-19). Multi-lane: an item can belong to several lanes.
+var LANES = ["mcp-server","agent-framework","llm-serving","ai-browser","ai-sec-tooling"];
+function laneOf(item){
+  if (item && item.lane) return Array.isArray(item.lane) ? item.lane : [item.lane];
+  var s = ((item.id||"")+" "+(item.title||"")+" "+(item.component||"")+" "+(item.vector||"")+" "+(item.notes||"")).toLowerCase();
+  var out = [];
+  if (/\bmcp\b|mcp-|-mcp|model context protocol|tool poisoning|line.?jump|tool description|tool metadata/.test(s)) out.push("mcp-server");
+  if (/crewai|praisonai|langflow|flowise|langroid|xagent|autogen|\bdify\b|langchain|langgraph|llamaindex|semantic.?kernel|haystack|\bdspy\b|pydanticai|agents sdk|google adk|agent.?framework|agent.?builder|\bn8n\b|composio|semantic-router|better.?auth/.test(s)) out.push("agent-framework");
+  if (/\bvllm\b|ollama|litellm|\btgi\b|llama\.cpp|tensorrt|triton|9router|lmdeploy|sglang|text-generation-inference|kserve|ray serve|inference server|inference-server|model.?serv|llm.?gateway|llm.?serv|\bnemo\b|megatron/.test(s)) out.push("llm-serving");
+  if (/ai browser|browser agent|browser-agent|browser-use|browseruse|browsing agent|perplexity|\bcomet\b|fellou|genspark|claude.?for.?chrome|gemini.?in.?chrome|chatgpt atlas|openai operator/.test(s)) out.push("ai-browser");
+  if (/\bgarak\b|\bpyrit\b|vulnhuntr|picklescan|modelscan|\bfickling\b|nemo.?guardrails|llama.?guard|model.?scanner|skill.?scanner|scanner.{0,6}(bypass|evasion|reliab|false.?neg)|guardrail.{0,6}(bypass|fail.?open)|classifier.?flip/.test(s)) out.push("ai-sec-tooling");
+  return out;
+}
+
 function init(){
   // Tab switching
   safe(function(){
@@ -838,6 +856,7 @@ function init(){
   var cumFilter = "All";
   var aiDiscFilter = "All";
   var cumCat = "All";
+  var cumLane = "All";
   safe(function(){
     var sevs = ["All","Critical","High","Medium","Low"];
     var cf = document.getElementById("cum-filters");
@@ -883,6 +902,32 @@ function init(){
       bar.appendChild(c);
     })(vals[i]);}
   }, "cumulative category filters");
+
+  // cumulative LANE filters (5-lane weekly consolidation, 2026-07-19)
+  safe(function(){
+    var counts={}, i, L, k;
+    for(i=0;i<CUMULATIVE.length;i++){ L=laneOf(CUMULATIVE[i]); for(k=0;k<L.length;k++) counts[L[k]]=(counts[L[k]]||0)+1; }
+    var bar=document.getElementById("cum-lane-filters");
+    if(!bar) return;
+    var lab=document.createElement("div");
+    lab.style.cssText="font-size:11px;color:#6b7280;align-self:center;margin-right:4px;text-transform:uppercase;letter-spacing:0.04em;";
+    lab.textContent="Lane:";
+    bar.appendChild(lab);
+    var vals=["All"].concat(LANES.filter(function(c){return counts[c];}));
+    for(i=0;i<vals.length;i++){(function(sv){
+      var c=document.createElement("div");
+      c.className="chip"+(sv==="All"?" active":"");
+      c.textContent=sv+(sv==="All"?"":" ("+(counts[sv]||0)+")");
+      c.addEventListener("click",function(){
+        cumLane=sv;
+        var chips=document.querySelectorAll("#cum-lane-filters .chip");
+        for(var j=0;j<chips.length;j++) chips[j].classList.remove("active");
+        c.classList.add("active");
+        renderCumulativeTable();
+      });
+      bar.appendChild(c);
+    })(vals[i]);}
+  }, "cumulative lane filters");
 
 
   // AI-Discovery filter chips
@@ -996,6 +1041,7 @@ function init(){
       var rows = CUMULATIVE.filter(function(r){
         if (cumFilter !== "All" && r.severity !== cumFilter) return false;
         if (cumCat !== "All" && catOf(r) !== cumCat) return false;
+        if (cumLane !== "All" && laneOf(r).indexOf(cumLane) < 0) return false;
         var aiVal = r.ai_disc || "—";
         if (aiVal === "—") aiVal = "Human";
         if (aiDiscFilter !== "All" && aiVal !== aiDiscFilter) return false;
