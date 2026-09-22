@@ -122,16 +122,550 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-09-22";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-09-29";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-09-22 11:15 EDT";  // weekly reset
-var CACHE_AGE_HOURS = 0.2;   // weekly reset 2026-09-22
+var LAST_UPDATED = "2026-09-22 18:05 EDT";  // daily scan (4-day catch-up 09-19 -> 09-22)
+var CACHE_AGE_HOURS = null;  // FEED OUTAGE: cache 0 bytes, 35/35 sources erroring (daily 2026-09-22)
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [];
+var DAILY_SCANS = [
+ {
+  "date": "2026-09-22",
+  "criticals": 1,
+  "highs": 13,
+  "others": 22,
+  "status": "critical",
+  "note": "4-DAY CATCH-UP (09-19 -> 09-22); the 09-19/09-20/09-21 slots never wrote. TOTAL FEED OUTAGE - cache 0 bytes, 35/35 sources erroring - 100% live subagent coverage. LEAD [AI-DISCOVERED]: ToB Miden Falcon forgery via agent-BUILT static analysis."
+ }
+];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
-var ITEMS = [];
+var ITEMS = [
+ {
+  "date": "2026-09-18",
+  "severity": "High",
+  "id": "no-CVE (ToB Miden)",
+  "title": "[AI-DISCOVERED] Miden zkVM mod_12289 unvalidated advice remainder -> Falcon signature forgery / account drain",
+  "component": "Miden VM core library (MASM)",
+  "source_name": "Trail of Bits",
+  "url": "https://blog.trailofbits.com/2026/09/18/auditing-in-the-age-of-good-enough-ai/",
+  "category": "Protocol / crypto-ZK",
+  "ai_discovered": true,
+  "ai_system": "Claude + Codex (Trail of Bits agent-built MASM tooling)",
+  "technique": "static-analysis",
+  "domain_tags": [
+   "web3",
+   "ml-sec",
+   "vr-harness",
+   "ai-finder"
+  ],
+  "note": "No CVE (pre-launch audit). No-CVSS escalation -> High; primitive is fund-draining. NEW AI-VR MODE: agents BUILT the analyzer (masm-lsp/masm-analysis, masm-decompiler, masm-lean, 95 Lean proofs) over 6 months; the analyzer found the bug. Also 400+ improvable type-validation sites. [attribution:vendor-confirmed]. Fredrik Dahlgren. Theme 16/19."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "Critical",
+  "id": "CVE-2026-77521",
+  "title": "MaxKB agent shell tool exposed with no human-approval gate",
+  "component": "MaxKB <2.10.5-lts",
+  "source_name": "NVD (GitHub CNA)",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77521",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack",
+   "mcp-server"
+  ],
+  "note": "CVSS 10.0. Any assistant using a tool/MCP tool/skill/sub-app gets SandboxShellBackend.execute; 'execute' omitted from interrupt_on so the approval gate never fires. Untrusted chat OR ingested content -> command execution. Official container runs as root. Purest Theme 13 instance yet: the approval mechanism exists, the dangerous tool simply isn't wired into it."
+ },
+ {
+  "date": "2026-09-19",
+  "severity": "High",
+  "id": "CVE-2026-77179",
+  "title": "Docker macOS hypervisor ('sailor') virtio-fs guest->host escape - full host FS read/write",
+  "component": "Docker Desktop <4.88.0 / Docker Sandboxes <0.42.0",
+  "source_name": "Accomplish AI",
+  "url": "https://www.accomplish.ai/blog/escaping-dockers-hypervisor/",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "coding-agent",
+   "agent",
+   "container",
+   "cloud-infra"
+  ],
+  "note": "nodeid/path-string confusion; host FS R/W from a container in 3 lines of bash. Framed explicitly as an AGENT-SANDBOX break. Accomplish's 5th sandbox escape in ~10 days (Beltdown, Beltdown2, Codex Overpatch, Heapjack) and the first with a CVE. Docker VMM becomes the Docker Desktop DEFAULT end of Oct 2026. No published CVSS -> escalated; arguably Critical. Pairs with ToB 'VMs won't contain cyber-capable agents' (Aug 26). Oren Yomtov. Theme 8."
+ },
+ {
+  "date": "2026-09-18",
+  "severity": "High",
+  "id": "no-CVE (Unit 42 AgentCore)",
+  "title": "AWS AgentCore Harness default config: prompt injection -> credential exfiltration",
+  "component": "AWS Bedrock AgentCore Harness (default config)",
+  "source_name": "Unit 42",
+  "url": "https://unit42.paloaltonetworks.com/securing-aws-agentcore-harness-credentials/",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "prompt-injection-demo",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack",
+   "cloud-infra"
+  ],
+  "note": "No CVE -> No-CVSS escalation. Niv Rabin. Same product family as the Stealth/CoreBreak AgentCore row (CVE-2026-18830) already in \u00a78. Theme 23 (agent-platform default-allow) + Theme 26. POST BODY NOT YET OPENED - weekly should read before writing the \u00a78 row."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-55563",
+  "title": "Feast CI pull_request_target label persistence -> fork code execution",
+  "component": "Feast <0.65.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-55563",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "configuration-review",
+  "domain_tags": [
+   "ml-sec",
+   "cloud-infra"
+  ],
+  "note": "CVSS 8.9. pr_integration_tests.yml keeps ok-to-test/approved/lgtm across new commits on 'synchronize' - fork contributor gets a benign rev approved then swaps the payload."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-55071",
+  "title": "MCP-for-Stata ado_package_install command injection",
+  "component": "stata-mcp <1.19.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-55071",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "tool-attack"
+  ],
+  "note": "CVSS 8.4. User-controlled input concatenated into a Stata command string, no validation; invocable by anyone who can call the MCP tool."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "GHSA-w8wf-3qvj-6xqf",
+  "title": "OpenClaw Feishu permission tools ignore per-account disablement",
+  "component": "@openclaw/feishu (npm), patched 2026.6.9",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-w8wf-3qvj-6xqf",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent",
+   "mcp-server",
+   "tool-attack"
+  ],
+  "note": "CVSS 8.1 AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N, CWE-863, NO CVE ASSIGNED. Lower-trust caller reaches a Feishu permission tool path that should have required stronger authz. Reporter: rexpository. Sibling advisory GHSA-2q7j-2vhx-56g8. PUBLISH DATE UNCONFIRMED (GH list view doesn't render dates in extractable text)."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "CVE-2026-95815",
+  "title": "OpenClaw iOS logs agent deep-link URLs including persistent bearer keys",
+  "component": "OpenClaw iOS, fixed 2026.8.11",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories?query=sort%3Apublished-desc+OpenClaw",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent",
+   "tool-attack"
+  ],
+  "note": "THEME 18 (agent memory/logging as a credential-disclosure primitive) - joins CVE-2026-43992 JunoClaw BIP-39, CVE-2026-40159 PraisonAI env-var, CVE-2026-41712 Spring AI. NVD page JS-gated ('Loading CVE Information') - CVSS vector + publish date UNCONFIRMED."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-94622",
+  "title": "vLLM NIXL connector DoS (incomplete kv_transfer_params)",
+  "component": "vLLM <=0.29.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94622",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm"
+  ],
+  "note": "CVSS 7.5. Uncaught exception in prefill/decode disaggregated metadata handling. Part of a 5-CVE KV-transfer cluster."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-94623",
+  "title": "vLLM NIXL connector DoS (prefill path)",
+  "component": "vLLM <=0.29.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94623",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm"
+  ],
+  "note": "CVSS 7.5. Second NIXL DoS sibling."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-94624",
+  "title": "vLLM P2P KV-offload DoS",
+  "component": "vLLM <=0.29.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94624",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm"
+  ],
+  "note": "CVSS 7.5. DoS in the P2P KV offloading path."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-94626",
+  "title": "vLLM tp_size unvalidated in kv_transfer_params (OpenAI-compatible API)",
+  "component": "vLLM <=0.29.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94626",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm"
+  ],
+  "note": "CVSS 7.5. Missing validation on a client-supplied tensor-parallel size."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-94627",
+  "title": "vLLM Mooncake connector GPU KV-cache block-ownership mismanagement",
+  "component": "vLLM <=0.29.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94627",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm",
+   "gpu"
+  ],
+  "note": "CVSS 7.5. Improper GPU KV cache block ownership. WEEKLY: carries a gpu tag - route to \u00a78.GPU."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-61647",
+  "title": "NotebookLM MCP path traversal in POST /batch-to-vault",
+  "component": "NotebookLM MCP 1.6.0-2.0.2",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61647",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "tool-attack"
+  ],
+  "note": "CVSS 7.1. Arbitrary write outside the vault dir via the export path."
+ },
+ {
+  "date": "2026-09-20",
+  "severity": "Medium",
+  "id": "CVE-2026-94111",
+  "title": "Tencent BrowserSkill local-daemon WebSocket origin bypass",
+  "component": "Tencent BrowserSkill <=0.3.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94111",
+  "category": "Coding agent / IDE",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "configuration-review",
+  "domain_tags": [
+   "ai-browser",
+   "agent",
+   "tool-attack"
+  ],
+  "note": "CVSS 6.6. Accepts ANY chrome-extension:// origin with a 32-char a-p ID -> a malicious extension registers as the browser client and intercepts/manipulates page traffic."
+ },
+ {
+  "date": "2026-09-20",
+  "severity": "Medium",
+  "id": "CVE-2026-93965 (+ -94031/-94037/-94044/-94046/-94051)",
+  "title": "Bulk MCP-server command-injection wave (6 CVEs, VulDB as CNA, alphabetical repo owners)",
+  "component": "SxDevOps, nexus-mcp, mcp-file-analyzer, ACE-MCP, cowork_bench, 03-lovepreetSingh MCP",
+  "source_name": "NVD / VulDB",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94031",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "tool-attack"
+  ],
+  "note": "CVSS 2.1-5.5. One class: unsanitized arg -> child_process.exec / subprocess.Popen in an MCP tool. Repo owners in STRICT ALPHABETICAL ORDER (0-Gaurav-0, 00Kisumi00, 03-lovepreetSingh, 0215AndrewFeng, 0717376) = signature of an automated, plausibly AI-assisted mass scan of GitHub MCP servers currently at the start of the alphabet -> large ongoing wave expected. AI ATTRIBUTION UNVERIFIED (VulDB entry pages login-walled). WEEKLY: chase the submitter credit; may become an [AI-DISCOVERED] cluster row."
+ },
+ {
+  "date": "2026-09-19",
+  "severity": "Medium",
+  "id": "CVE-2026-93989",
+  "title": "vLLM bad_words OOB token indices corrupt logits memory of concurrent requests",
+  "component": "vLLM <=0.29.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-93989",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm"
+  ],
+  "note": "Scored 3.1 LOW but arguably UNDER-SCORED: SamplingParams.update_from_tokenizer() fails to bound-check against generation output width, corrupting the logits memory of CONCURRENT requests - a cross-request integrity primitive."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "Medium",
+  "id": "CVE-2026-94625",
+  "title": "vLLM MooncakeConnector resource exhaustion",
+  "component": "vLLM <=0.29.0",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-94625",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm"
+  ],
+  "note": "CVSS 5.3."
+ },
+ {
+  "date": "2026-09-19",
+  "severity": "Low",
+  "id": "CVE-2026-93982",
+  "title": "OpenPanel logs MCP auth tokens in plaintext",
+  "component": "OpenPanel",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-93982",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp"
+  ],
+  "note": "CVSS 3.3-4.8. MCP auth tokens taken from URL query params written unredacted to app / centralized logs. THEME 18 sibling."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "Medium",
+  "id": "CVE-2026-61612",
+  "title": "CKAN MCP Server flaw (class not characterized)",
+  "component": "CKAN MCP Server",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-61612",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp"
+  ],
+  "note": "CVSS 5.7. NVD description truncated on pull - class uncharacterized. WEEKLY: re-pull."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "Medium",
+  "id": "CVE-2026-77519",
+  "title": "MaxKB /chat/api/mcp auth path resolves the wrong Application object",
+  "component": "MaxKB <=2.10.2-lts",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77519",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "agent-framework"
+  ],
+  "note": "CVSS 5.4. Sibling of the 10.0 CVE-2026-77521."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "Medium",
+  "id": "CVE-2026-77518",
+  "title": "MaxKB cross-user MCP session access",
+  "component": "MaxKB <=2.10.2-lts",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77518",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "agent-framework"
+  ],
+  "note": "CVSS 5.0. A normal workspace user who knows another user's active MCP session identifier can use it."
+ },
+ {
+  "date": "2026-09-19",
+  "severity": "Medium",
+  "id": "CVE-2026-9289",
+  "title": "WordLift AI-SEO plugin unauth JSON-LD REST info exposure",
+  "component": "WordLift <=3.54.10 (WordPress)",
+  "source_name": "NVD",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-9289",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "ml-sec"
+  ],
+  "note": "CVSS 5.3. WEAK AI NEXUS - borderline scope; weekly may drop."
+ },
+ {
+  "date": "2026-09-15",
+  "severity": "Low",
+  "id": "context (ToB vs 1Password)",
+  "title": "Trail of Bits: 1Password's AI patching benchmark is misleading - 86% of agent patches actually blocked the exploit",
+  "component": "FLAWED benchmark / Patch the Planet",
+  "source_name": "Trail of Bits",
+  "url": "https://blog.trailofbits.com/2026/09/15/1passwords-ai-patching-benchmark-is-misleading/",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder"
+  ],
+  "note": "NOT A VULN - Theme 19/20 calibration. Reanalysis: 2,634/3,067 (86%) blocked the exploit once misdirected + no-build/test trials excluded (vs the 26% headline). HUMAN BASELINE: 12.5% of developer first-fixes fail (2,265 vulns / 236 assessments). Patch the Planet: 126/186 PRs merged (67.7%), 91/126 (72.2%) unrevised, 0 exploitable vulns across ~33,500 follow-on commits. Grader disagreement 36.8%; self-grading matched humans 65.9%. freenginx: human maintainer and agent independently made the SAME cleanup-path crash. Ships 2 new skills: post-patch-validation, review-walkthrough."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "Low",
+  "id": "context (OpenAI GPT-6 Sol/Luna)",
+  "title": "OpenAI introduces GPT-6 Sol and Luna",
+  "component": "OpenAI frontier tier",
+  "source_name": "OpenAI",
+  "url": "https://openai.com/news/",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness",
+   "ai-attacker"
+  ],
+  "note": "NOT A VULN. 'Sol' is the model name tied to the 2026-07 Hugging Face autonomous-AI breach row in \u00a78. Cyber-capability tier / Preparedness classification UNREAD - weekly should open the post. Theme 16/25 trigger. Same day: 'Better prompt caching for GPT-6' + 'Priorities and principles for effective third party assessments' (external-eval lane)."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "Low",
+  "id": "context (Claude Opus 5.5)",
+  "title": "Anthropic introduces Claude Opus 5.5",
+  "component": "Anthropic frontier tier",
+  "source_name": "Anthropic",
+  "url": "https://www.anthropic.com/news",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness"
+  ],
+  "note": "NOT A VULN. 'Performs at the level of Claude Fable 5.1 on most work and costs 40% less to run than Opus 5.' Theme 19 cost-curve context."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "Low",
+  "id": "context (abliteration count)",
+  "title": "Abliterated open-weight models reach 8,128 on HuggingFace; now shipping same-week in GGUF/OpenVINO/NVFP4",
+  "component": "HuggingFace open-weight ecosystem",
+  "source_name": "HuggingFace",
+  "url": "https://huggingface.co/models?sort=modified&search=abliterated",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness",
+   "ai-attacker"
+  ],
+  "note": "NOT A VULN - proliferation/Theme 25. 8,128 live vs a secondary ~7,970 baseline on ~Sep 3 = +160 in ~3 weeks [verify baseline]. In-window builds on MiMo-V2.6, GLM-5.3-Flash, Hemmingway-1, Qwen3.8. STRUCTURALLY NEW: abliteration now tracks base-model releases within hours-to-days AND arrives pre-packaged in deployment formats, not raw safetensors."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "Low",
+  "id": "context (ToB agentic-RE tools)",
+  "title": "Trail of Bits ships agentcov / idac / coop + agent-built MASM toolchain",
+  "component": "trailofbits OSS",
+  "source_name": "Trail of Bits (GitHub)",
+  "url": "https://github.com/orgs/trailofbits/repositories",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder"
+  ],
+  "note": "NOT A VULN - \u00a710/\u00a714 tool candidates. agentcov = 'gcov for what lines of code agents read' (Apache-2.0, pushed 09-16) - NAME CORRECTION: the roster carries this as 'aicov'. idac = 'IDA Pro command line tool for agents and humans' (pushed 09-21), agentic-RE alongside pyghidra-mcp/ghidriff. coop = 'Isolated VM environment for running Claude Code and Codex' (Rust, 249 stars, pushed 09-17), containment counterpart to the Aug 26 'VMs won't contain cyber-capable agents' post. Plus masm-lsp/masm-analysis, masm-decompiler, masm-lean. buttercup actively pushed 09-21 (no new blog post)."
+ }
+];
 
-var ALERTS = [];
+var ALERTS = [
+ {
+  "date": "2026-09-22 1805",
+  "title": "CVE-2026-77521 MaxKB agent shell tool, no approval gate (CVSS 10.0) + feed outage",
+  "drive_url": "https://docs.google.com/document/d/1eLt8zmWN_t-uP4X_PxhF3nJb-JiyEBt3AKvujLQZSr0/edit"
+ }
+];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
 // RESTORED 2026-08-15: this const and FULL_DASHBOARD_URL below were referenced by buildFilters()/init()
