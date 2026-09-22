@@ -122,8 +122,8 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-09-22";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-09-29";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-09-22 18:05 EDT";  // daily scan (4-day catch-up 09-19 -> 09-22)
-var CACHE_AGE_HOURS = null;  // FEED OUTAGE: cache 0 bytes, 35/35 sources erroring (daily 2026-09-22)
+var LAST_UPDATED = "2026-09-22 18:45 EDT";  // daily scan (SUPPLEMENTAL post-recovery re-triage)
+var CACHE_AGE_HOURS = 0.7;  // RECOVERED: 345 items, 30/35 sources ok (was 0 bytes / 35 erroring at 07:32)
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
@@ -134,6 +134,14 @@ var DAILY_SCANS = [
   "others": 22,
   "status": "critical",
   "note": "4-DAY CATCH-UP (09-19 -> 09-22); the 09-19/09-20/09-21 slots never wrote. TOTAL FEED OUTAGE - cache 0 bytes, 35/35 sources erroring - 100% live subagent coverage. LEAD [AI-DISCOVERED]: ToB Miden Falcon forgery via agent-BUILT static analysis."
+ },
+ {
+  "date": "2026-09-22",
+  "criticals": 5,
+  "highs": 35,
+  "others": 30,
+  "status": "critical",
+  "note": "SUPPLEMENTAL post-recovery re-triage (2nd run today). Cache recovered 0 bytes -> 345 items / 30-of-35 sources ok, confirming the outage was transient HOST NETWORK FAILURE, not silent-feed-death. Nearly all findings net-new vs the 07:32 degraded run. LEAD: Talos CLOSEDQUORUM, first publicly documented autonomous-AI C2 implant - a 4-model LLM plurality vote selects the post-compromise action - but it is a SAMPLE, NOT an observed ITW operation, so deliberately NOT ai-attacker tagged. Also: mcp-atlassian advisory SWARM (~25-34 advisories, CVE-2026-77243->-77274, 11 distinct reporters, one CVSS 10.0 auth bypass), Bifrost CVE-2026-90898 9.8 unauth RCE via MCP stdio registration, GPUThor defeats ECC on GPU Rowhammer (Saileshwar/SITH, CCS 2026). RETRACTION REVERSED: the 07:32 run wrongly struck the Project Zero / Forshaw post as hallucinated - it is real; a year-stale index page fooled the checker. Feed caveat: hn-aisec + hn-hwsec still fail with a PARSE error while 30 sources recovered = genuine silent-feed-death, needs a fix not a re-run."
  }
 ];
 
@@ -656,10 +664,335 @@ var ITEMS = [
    "ai-finder"
   ],
   "note": "NOT A VULN - \u00a710/\u00a714 tool candidates. agentcov = 'gcov for what lines of code agents read' (Apache-2.0, pushed 09-16) - NAME CORRECTION: the roster carries this as 'aicov'. idac = 'IDA Pro command line tool for agents and humans' (pushed 09-21), agentic-RE alongside pyghidra-mcp/ghidriff. coop = 'Isolated VM environment for running Claude Code and Codex' (Rust, 249 stars, pushed 09-17), containment counterpart to the Aug 26 'VMs won't contain cyber-capable agents' post. Plus masm-lsp/masm-analysis, masm-decompiler, masm-lean. buttercup actively pushed 09-21 (no new blog post)."
+ },
+
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "CLOSEDQUORUM (no CVE)",
+  "title": "CLOSEDQUORUM - first publicly documented autonomous AI C2 implant (Windows Go stealer)",
+  "component": "CLOSEDQUORUM malware (ex-BALZAK)",
+  "source_name": "Cisco Talos",
+  "url": "https://blog.talosintelligence.com/the-closed-quorum-inside-the-first-reported-autonomous-ai-c2-implant/",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "re-symbolic-taint",
+  "domain_tags": [
+   "agent",
+   "ml-sec",
+   "cloud-infra"
+  ],
+  "note": "Ryan Fetterman, Cisco Talos. ModelOrchestrator queries DeepSeek + Qwen + Mistral + Gemini hosted APIs in sequence; interModelDiscussion() resolves the []LLMDecision slice by PLURALITY VOTE into steal/inject/persist/move. Host context injected as TARGET:%s; system prompt 'You are an advanced malware strategist. Provide ONLY executable decisions.' LLM providers REPLACE attacker-run C2 infrastructure; no local weights. Tie-break biased toward DeepSeek. CAVEAT: Talos states 'we do not have confirmation of in-the-wild deployment'; the public build is inert (dummy_api_key/dummy_webhook_url) and no end-to-end execution was observed. Capability demonstration -> deliberately NOT ai-attacker tagged. Ghidra static analysis of VirusTotal samples; renamed from BALZAK 2026-07-03. YARA rule CLOSEDQUORUM_LLM_Autonomous_Implant + 6 SHA256 published. Exfil AES-256-GCM with the key derived from the current DATE, 1900-byte chunks to Discord. Theme 27."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "CAIRN (tool, not a vuln)",
+  "title": "CAIRN - OSS toolkit + 3-tier ontology for tracking AI-integrated malware",
+  "component": "Cisco Talos CAIRN",
+  "source_name": "Cisco Talos",
+  "url": "https://blog.talosintelligence.com/introducing-cairn-frontier-tracking-for-ai-integrated-malware/",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "ml-sec",
+   "vr-harness"
+  ],
+  "note": "NOT A VULN - section-10 tool candidate. Cognitive Artifact Intelligence Research Network, Ryan Fetterman. OSS: github.com/Cisco-Talos/Cognitive-Artifact-Intelligence-Research-Network. Metadata-first by design (no binary download or execution), up to 24 VirusTotal-metadata acquisition filters (provider-api-integration, python-ai-scripts, ai-analysis-evasion, local-llm-runtime, agentic-tooling), SQLite corpus with auto-YARA on import, three-tier ontology (T1 primitive AI artifacts / T2 behavioral context / T3 operational families), UMAP+HDBSCAN clustering, relationship-graph explorer, agent-driven workflows with published skills. First TRACKING/MEASUREMENT framework for Theme 27 rather than another datapoint in it. Findings: an autonomy-escalation arc that closed inside one calendar year; an AI-analysis-evasion technique traced to a named red-team instructor spreading to unrelated actors within 12 months. Baseline first-ITW AI-integrated sample = LAMEHUG (CERT-UA, July 2025)."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "Critical",
+  "id": "CVE-2026-77244",
+  "title": "mcp-atlassian: AtlassianOpaqueTokenVerifier accepts ANY non-empty token (auth bypass)",
+  "component": "sooperset/mcp-atlassian < 0.22.0",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-wrhw-j3f9-8vc6",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "tool-attack"
+  ],
+  "note": "CVSS 10.0 AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:N; CWE-287 + CWE-303 + CWE-862. verify_token() in src/mcp_atlassian/utils/token_verifier.py returns a valid AccessToken for ANY non-empty string - the docstring admits it. Three defects compound: OAUTH_PROXY_ENABLE_ENV defaults false so _build_auth_provider() returns None and FastMCP issues NO auth challenge at all; UserTokenMiddleware._parse_auth_header does not reject a request with no Authorization header; JiraFetcher/ConfluenceFetcher then fall back to JiraConfig.from_env() = the operator's own JIRA_API_TOKEN. Net: no header at all, OR a garbage Bearer, both yield full operator-level Jira/Confluence read+write, with the audit trail naming the operator. Reporter: crazydude123. Fixed 0.22.0. Advisory itself cites CVE-2026-27825 (Arctic Wolf) as the same class - already in section 8 via Pluto Security 'MCPwnfluence'."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "CVE-2026-77243 -> -77274 (cluster)",
+  "title": "mcp-atlassian advisory SWARM - ~25-34 advisories in one day, 11 distinct reporters",
+  "component": "sooperset/mcp-atlassian < 0.22.0",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/sooperset/mcp-atlassian/security/advisories?state=published",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "tool-attack"
+  ],
+  "note": "LARGEST single-package MCP advisory cluster this project has recorded. 36 repo advisories / 30 in the GitHub Advisory DB / 25 in the contiguous CVE block CVE-2026-77243 through CVE-2026-77274; ALL fixed 0.22.0. Distinct classes: arbitrary local file READ via unconstrained file_path in upload_attachment, the symmetric counterpart of the file-WRITE fixed as CVE-2026-27825 (write fixed, read left open); /proc/self/environ yields all runtime secrets in one call (GHSA-6cr4-ccf3-x7h4, 7.7); UNAUTHENTICATED arbitrary file read chained with missing auth on streamable-http reaching ~/.ssh/id_rsa (GHSA-cc5h-2pwp-pvcc, 8.6); Confused Deputy in JIRA update_issue via absolute paths in the attachments parameter (GHSA-2xj6-xx86-cwwc, 8.6); INCOMPLETE path-traversal fix where validate_safe_path() defaults base_dir to os.getcwd()=/app so the app's own Python modules pass validation -> overwrite a module -> RCE on next import (GHSA-6vmq-24h2-pj7j); ENABLED_TOOLS/TOOLSETS enforced only at tools/list while tools/call dispatches from the full unfiltered 73-tool registry (GHSA-3r68-hf9h-887v, 8.8); JIRA_PROJECTS_FILTER/CONFLUENCE_SPACES_FILTER escape with one sub-bug LIVE-PROVEN on Atlassian Cloud (GHSA-w66g-j6c4-hcfc); and THREE separate incomplete SSRF remediations. Reporters: crazydude123, b-hermes, CorsenAI, hypnguyen1209, koonnamchok, junbyjun1238, EQSTLab, 0xmagic0, rainfantry, sondt99 (x3), aurelienp-alt, RacerZ-fighting, Hakon Amdal = a BOUNTY SWARM converging on one popular MCP server, NOT a single systematic audit. WARNING: the name 'Sean Valentine' appears in one cache body but on NONE of the 15 advisories inspected - do not publish it. EQSTLab (SK Shieldus) now has a 2nd dated output -> PROMOTE."
+ },
+ {
+  "date": "2026-09-14",
+  "severity": "Critical",
+  "id": "CVE-2026-90898",
+  "title": "Bifrost AI Gateway: unauthenticated RCE via MCP stdio client registration",
+  "component": "maximhq/bifrost transports < 2.1.0",
+  "source_name": "JFrog Security Research",
+  "url": "https://research.jfrog.com/vulnerabilities/bifrost-is-vulnerable-to-unauthenticated-remote-code-execution-via-mcp-stdio-client-registration-cve-2026-90898/",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "llm-serving",
+   "mcp-server",
+   "mcp",
+   "tool-attack"
+  ],
+  "note": "CVSS 9.8. Yuval Moravchick, JFrog Security Research (JFSA-2026-001686326), published 2026-09-14; The Hacker News coverage 09-22 is what surfaced it. A stdio MCP client is a command plus args and Bifrost STARTS THAT PROGRAM THE MOMENT THE CLIENT IS REGISTERED - no MCP handshake required. governance.auth_config.is_enabled defaults FALSE, so every caller is treated as local admin: one POST /api/mcp/client with no auth header runs arbitrary commands as the gateway process user. The HTTP request then times out waiting for the handshake - the process is already running. Blast radius: the gateway stores API keys for every connected provider (20+ LLM providers). VERSION TRAP: 'before 2.1.0' is misleading - transports/v2.0.0 is STILL VULNERABLE and the 1.6.x line through 1.6.11 does NOT contain the fix. Patched transports/v2.1.0 (PR #6757, now returns 403). NOT in CISA KEV as of 2026-09-22. Mitigating: stock binary binds management to localhost:8080; exposure comes from Docker port mapping / reverse proxies / tunnels. JFrog advises treating any auth-disabled instance as compromised and rotating virtual keys + provider credentials."
+ },
+ {
+  "date": "2026-09-15",
+  "severity": "High",
+  "id": "no CVE (arXiv 2609.16546)",
+  "title": "GPUThor - first Rowhammer exploits on ECC-PROTECTED GPUs via non-uniform hammering",
+  "component": "NVIDIA A4000 / A4500 / A5000 / A6000",
+  "source_name": "U. Toronto SITH Lab",
+  "url": "https://arxiv.org/abs/2609.16546",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "gpu",
+   "nvidia",
+   "kernel",
+   "ml-sec"
+  ],
+  "note": "No-CVSS escalation. Chris S. Lin, Joyce Qu, Aditya Rajeev, GURURAJ SAILESHWAR (tracked roster entry / SITH Lab, U. Toronto). ACM CCS 2026, arXiv submitted 2026-09-15, mirrored at gururaj-s.github.io/assets/pdf/CCS26_GPUThor.pdf. Reverse-engineers GPU memory-access COALESCING behaviour to build non-uniform hammering patterns (aggressor rows activated harder than decoy rows), then identifies refresh instances where in-DRAM mitigations fire and builds longer patterns that escape mitigation across refresh intervals. Result: 500x to 23,500x more bit flips than prior GPU Rowhammer, approaching CPU-Rowhammer rates. Headline: 'the first Rowhammer exploits on ECC-protected GPUs, inducing uncorrectable double and triple bit flips, making denial-of-service and privilege-escalation attacks practical even on GPUs with ECC enabled.' DIRECT SUCCESSOR TO GPUBREACH, same lab one venue cycle later - REMOVES ECC AS A THEME 24 MITIGATION. NVIDIA-notification and CVE status UNVERIFIED from the abstract; the disclosure paragraph is in the PDF body - weekly must read it. Expect no CVE per the GPUBreach precedent. Caught via semiengineering + arXiv, i.e. the post-GPUBreach academic-lane remediation WORKED."
+ },
+ {
+  "date": "2026-09-21",
+  "severity": "High",
+  "id": "CVE-2026-66804",
+  "title": "Windows dangling COM object registration privesc - incomplete fix of Calif's 'Dark Elevator'",
+  "component": "Windows CrossDevice COM {E9F83CF2-E0C0-4CA7-AF01-E90C70BEF496}",
+  "source_name": "Google Project Zero",
+  "url": "https://projectzero.google/2026/09/windows-dangling-com.html",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "kernel",
+   "ml-sec"
+  ],
+  "note": "*** THE 07:32 RUN STRUCK THIS AS HALLUCINATED - THAT STRIKE IS HEREBY REVERSED. *** The post is real: James Forshaw, Project Zero, 2026-09-21, verified live. CVE-2026-66804 tracked at project-zero.issues.chromium.org/issues/538151139 with a working updated exploit attached. Verbatim: 'This issue is an incomplete fix for CVE-2026-50343', a bug 'dubbed Dark Elevator by Calif' - and the post's own hyperlink resolves to github.com/califio/publications/blob/main/MADBugs/windows-CVE-2026-50343/blog.md, i.e. Calif's MONTH OF AI-DISCOVERED BUGS collection. Calif / Thai Duong is a tracked roster entry. Forshaw's follow-on makes NO AI claim; Calif's AI attribution on the PARENT CVE-2026-50343 is [attribution:claimed] pending a read of the MADBugs page. Forshaw states 'I and 14 others reported it' and never explains the 15-reporter collision. Technique: the original abused weak registry permissions + InstallService (since fixed), so Forshaw pivots to custom COM marshaling (fake IMarshal::GetUnmarshalClass returning the dangling CLSID) via Shell Create Object Handler {135fd325-45b7-4c30-89f8-4386961669f0}. ROOT CAUSE OF THE BAD STRIKE: the morning checker read the projectzero.google INDEX page, which serves a year-stale newest item (Jann Horn, 2025-09-26). LESSON: resolve the article URL directly before striking a claim."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "Critical",
+  "id": "GHSA-p55v-42rh-35pg",
+  "title": "NVIDIA Infrastructure Controller for Linux - hard-coded credentials (head of a 7-advisory cluster)",
+  "component": "NVIDIA Infrastructure Controller for Linux",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-p55v-42rh-35pg",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "gpu",
+   "nvidia",
+   "cloud-infra",
+   "kernel"
+  ],
+  "note": "CVSS 9.8 - use of hard-coded credentials; privesc, data tampering, DoS, info disclosure. Head of a SEVEN-advisory NVIDIA Infrastructure Controller cluster this window: SQL injection 8.8 (GHSA-3w47-qr97-2jcc), OS command injection 8.0 (GHSA-2g9m-qm5f-75qx), improper authentication 8.2 (GHSA-34c9-g45q-gppm), missing authentication for a critical function 8.3 (GHSA-m2fq-f459-9586), improper certificate validation 7.5 (GHSA-g3hv-53xc-3r85), plus one further 7.5. ARRIVED VIA THE AGENT FEED, not via an _hw-intel-inbox drop - weekly STEP 3c must fold these into section 8.GPU from this daily log or they are lost."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "GHSA-4v72-rpj8-4xq7 (+4 NeMo)",
+  "title": "NVIDIA NeMo TabularTokenizer pickle.load() RCE + NeMo dataset-loading / Speech cluster",
+  "component": "NVIDIA NeMo / NeMo Speech",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-4v72-rpj8-4xq7",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "ml-sec",
+   "nvidia",
+   "safetensors"
+  ],
+  "note": "CVSS 8.8 - the TabularTokenizer class deserializes an untrusted, attacker-controlled .pkl via pickle.load() with no validation -> code execution, data tampering, DoS, info disclosure. Four siblings at 7.8: dataset-loading workflow where a maliciously crafted model_config.yaml injects unsafe parameters (GHSA-mmmc-pj37-37jg); NeMo Speech data-explorer RCE (GHSA-ppxr-3gm5-9vjr); two further NeMo Speech code-injection / RCE paths (GHSA-2g8g-m865-fcjx, GHSA-gpx2-vwq6-g33m). Classic ML-tooling deserialization lane - pairs with the picklescan / Fickling / modelscan cluster."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "Critical",
+  "id": "GHSA-wj8c-932v-h34p / GHSA-x62r-p8c2-p53f",
+  "title": "Moore Threads MTT S80 driver - mtdispkm64.sys IOCTL heap overflow + improper privilege mgmt",
+  "component": "Moore Threads MTT S80 Driver Package <= 340.150",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-wj8c-932v-h34p",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "re-symbolic-taint",
+  "domain_tags": [
+   "gpu",
+   "kernel",
+   "container"
+  ],
+  "note": "CVSS 8.8 x2, local attacker. sub_140001000 heap-based buffer overflow; sub_140006F0C improper privilege management. Both in the IOCTL handler of mtdispkm64.sys. Advisory text: 'The vendor was contacted early about this disclosure but did not respond in any way.' FIRST CHINESE-GPU-VENDOR kernel-driver rows in this catalog - a genuine widening of Theme 24 classes (c)/(d) beyond NVIDIA/AMD/Intel/Apple. Function-name-level detail implies reverse engineering of the driver binary."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "GHSA-5mj8-gf6m-fhw8",
+  "title": "9Router: auth bypass in public LLM API via spoofable X-9r-Real-Ip header",
+  "component": "9router",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-5mj8-gf6m-fhw8",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "llm-serving",
+   "tool-attack"
+  ],
+  "note": "CVSS 7.3. 9router decides whether an incoming request originates from localhost by TRUSTING the X-9r-Real-Ip HTTP header - a header intended to be produced and sanitized exclusively by the bundled custom-server.js layer from the TCP socket address. In deployment modes where requests reach Next.js directly the header is never stripped or regenerated, so a remote unauthenticated attacker simply sends X-9r-Real-Ip: 127.0.0.1 and is treated as a local client, bypassing API-key authentication."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "GHSA-vv3m-f8x4-7377",
+  "title": "lightrag-hku: SSRF via IPv6-transition address bypass (NAT64 / IPv4-compatible / 6to4)",
+  "component": "LightRAG native markdown parser",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-vv3m-f8x4-7377",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "agent-framework",
+   "tool-attack"
+  ],
+  "note": "CVSS 7.1. LightRAG's native markdown parser downloads external images referenced by an uploaded markdown or textpack document. The only SSRF guard, _validated_addresses() in lightrag/parser/markdown/parser.py, resolves the image host and rejects it when the resolved IP is not is_global - but that check runs on the RAW resolved address and never decodes IPv6 transition wrappers embedding an internal IPv4. Python's ipaddress classifies NAT64 (64:ff9b::/96 and the RFC 8215 prefix) as global. Part of this window's 'the security control IS the defect' pattern."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "GHSA-r3r9-wp5j-pq5g",
+  "title": "request-filtering-agent: SSRF guard's synchronous throw crashes the Node.js process",
+  "component": "request-filtering-agent (RequestFilteringHttp/HttpsAgent)",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-r3r9-wp5j-pq5g",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "cloud-infra",
+   "ml-sec"
+  ],
+  "note": "CVSS 7.5. The agents block requests to private IPs, but the blocking happens via a SYNCHRONOUS throw inside createConnection() for literal private-IP hostnames (169.254.169.254, 127.0.0.1). Node's http.request/http.get expects createConnection to emit an error asynchronously; a synchronous throw instead escapes the caller's req.on('error', ...) handler entirely and becomes an unhandled exception that crashes the process. The SSRF DEFENSE is itself the DoS. Widely used as an SSRF guard in JS agent/LLM stacks."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "GHSA-59w7-v8rr-pr4p",
+  "title": "OpenBao templated ACL policies allow privilege escalation via wildcard characters",
+  "component": "OpenBao",
+  "source_name": "GitHub Advisory DB",
+  "url": "https://github.com/advisories/GHSA-59w7-v8rr-pr4p",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "manual-code-review",
+  "domain_tags": [
+   "cloud-infra"
+  ],
+  "note": "Templated policies substitute placeholders at evaluation time (e.g. grant alice access to alice/ prefixed KV entries). Where the templated data is attacker-controllable - such as a system letting users freely choose their own username - globbing characters in that value widen the resulting policy beyond the intended prefix. Secrets-management substrate for agent credential isolation."
+ },
+ {
+  "date": "2026-09-20",
+  "severity": "Other",
+  "id": "eprint 2026/2124",
+  "title": "Every Signing Leaks: Breaking Falcon via Floating-Point Conversion Leakage",
+  "component": "Falcon post-quantum signature Gaussian sampler",
+  "source_name": "IACR ePrint",
+  "url": "https://eprint.iacr.org/2026/2124",
+  "category": "Protocol / crypto-ZK",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "web3",
+   "ml-sec"
+  ],
+  "note": "SECOND independent Falcon break in this window - pairs with Trail of Bits' Miden zkVM mod_12289 unvalidated-remainder signature forgery (the 07:32 entry's LEAD). Different layers - side-channel leakage in the floating-point Gaussian sampler vs an implementation-constraint gap - but the same primitive falls twice in four days. Candidate section 9 / section 14 note on post-quantum signature fragility in agent and crypto infrastructure."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "High",
+  "id": "VU#738147",
+  "title": "Vendor-signed UEFI Shell applications allow Secure Boot bypass",
+  "component": "Vendor-signed UEFI Shell applications",
+  "source_name": "CERT/CC",
+  "url": "https://kb.cert.org/vuls/id/738147",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "kernel",
+   "confidential-computing"
+  ],
+  "note": "Vendor-signed UEFI Shell applications expose direct memory-access commands such as mm (Memory Modify). On systems that trust the affected vendor's certificate or carry the application's Authenticode hash in the UEFI Authorized Signature Database, an attacker with sufficient access can disable or circumvent Secure Boot enforcement and execute untrusted UEFI code. Boot-integrity substrate lane alongside the Apple Private Cloud Compute attestation row."
+ },
+ {
+  "date": "2026-09-22",
+  "severity": "Other",
+  "id": "arXiv cluster (7 papers)",
+  "title": "AI-VR benchmark / harness paper cluster - 7 papers in 4 days",
+  "component": "arXiv 2026-09-19..22",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/list/cs.CR/recent",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder",
+   "agent",
+   "mcp",
+   "ml-sec"
+  ],
+  "note": "NOT VULNS - the strongest argument yet for formalizing the AI-VR benchmark/eval category nominated 2026-07-28 and still unformalized. MobileCybench (Evaluating Agent Vulnerability Discovery via Executable Probes); DUMA-Bench (Dual-Control Multi-Agent Benchmark for Evaluating LLM Agent Security); MCP-GRANITE (GRANularity Interface TEsting for MCP-Based LLM Agents); SyzHarness (Patch-Based Kernel Bug Reproduction with LLM-Synthesized Fuzzing Harnesses); State-Aware Fuzzing of JavaScript Engines with LLM-Guided Instrumentation; Harness-Zero (Harness Distillation via Agent-as-Harness); RRSI (Regularized Recursive Self-Improvement of Agent Harnesses). Adjacent section-13 candidates the same window: 'When the Agent Becomes the Kernel'; 'Runtime Authorization Consistency Checking for MCP-based Agentic Workflows'; 'Forgeable Confirmation: Deterministic Rules versus AI Judges' (speaks directly to the ToB grader-unreliability numbers); 'Self-Healing Harness for Runtime Oversight of Agent Self-Modification' (pairs with the Irregular self-modification finding rostered 09-22)."
  }
 ];
 
 var ALERTS = [
+ {
+  "date": "2026-09-22 1845",
+  "title": "SUPPLEMENTAL: mcp-atlassian CVE-2026-77244 CVSS 10.0 auth bypass (in a ~25-34 advisory swarm) + Bifrost CVE-2026-90898 9.8 unauth RCE; feed RECOVERED",
+  "drive_url": "https://docs.google.com/document/d/1WsonPRHuE3FSmBomxdWaYIvGVWBKeoKGFSi-lQWqC6k/edit"
+ },
  {
   "date": "2026-09-22 1805",
   "title": "CVE-2026-77521 MaxKB agent shell tool, no approval gate (CVSS 10.0) + feed outage",
