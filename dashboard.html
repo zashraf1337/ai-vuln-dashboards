@@ -1106,7 +1106,11 @@ function catOf(item){
 }
 
 // 5-lane tag dimension (weekly consolidation, 2026-07-19). Multi-lane: an item can belong to several lanes.
-var LANES = ["mcp-server","agent-framework","llm-serving","ai-browser","ai-sec-tooling"];
+var LANES = ["mcp-server","agent-framework","llm-serving","ai-browser","ai-sec-tooling","agent-escape"];
+// agent-escape (2026-09-24) is a PRECONDITION lane, not a product surface: it classifies by the
+// containment CLAIM that broke, so it CROSS-CUTS the five lanes above and LAYERS on them rather
+// than replacing them. A row keeps its product lane as primary and gains agent-escape as a
+// cross-reference -- laneOf() returns an array precisely so a row can be both.
 function laneOf(item){
   if (item && item.lane) return Array.isArray(item.lane) ? item.lane : [item.lane];
   var s = ((item.id||"")+" "+(item.title||"")+" "+(item.component||"")+" "+(item.vector||"")+" "+(item.notes||"")).toLowerCase();
@@ -1116,6 +1120,23 @@ function laneOf(item){
   if (/\bvllm\b|ollama|litellm|\btgi\b|llama\.cpp|tensorrt|triton|9router|lmdeploy|sglang|text-generation-inference|kserve|ray serve|inference server|inference-server|model.?serv|llm.?gateway|llm.?serv|\bnemo\b|megatron/.test(s)) out.push("llm-serving");
   if (/ai browser|browser agent|browser-agent|browser-use|browseruse|browsing agent|perplexity|\bcomet\b|fellou|genspark|claude.?for.?chrome|gemini.?in.?chrome|chatgpt atlas|openai operator/.test(s)) out.push("ai-browser");
   if (/\bgarak\b|\bpyrit\b|vulnhuntr|picklescan|modelscan|\bfickling\b|nemo.?guardrails|llama.?guard|model.?scanner|skill.?scanner|scanner.{0,6}(bypass|evasion|reliab|false.?neg)|guardrail.{0,6}(bypass|fail.?open)|classifier.?flip/.test(s)) out.push("ai-sec-tooling");
+  // agent-escape: an agent crosses a containment boundary it was expected to stay inside.
+  // Deliberately NOT "any agent RCE" -- the broken containment claim has to be the point, or
+  // this lane just duplicates the five above. Sub-values follow the corpus's three preconditions:
+  //   P1 the config file IS the instruction   P2 guard on one path, payload on another
+  //   P3 loopback / same-origin treated as identity
+  // Pushed WITHOUT returning, so the product lane already collected above is preserved.
+  if (/sandbox escape|container escape|agent escape|escape[sd]? the sandbox|escape to (the )?host|namespace escape|seccomp bypass|bubblewrap|gvisor|kata.?container|workspace.?trust bypass|config.?planting|hook file|tool.?description poisoning|plugin4shell|overpatch|heapjack|miasma|bragjack|\bpluto\b/.test(s)) {
+    out.push("agent-escape");
+    if (/config.?planting|hook file|\.claude|\.gemini|miasma|config file is the instruction/.test(s))       out.push("agent-escape:P1");
+    else if (/parser|pin check|scope check|patch content|scanner|plugin4shell|overpatch|heapjack|\bpluto\b/.test(s)) out.push("agent-escape:P2");
+    else if (/loopback|same.?origin|localhost|127\.0\.0\.1|extension|bragjack|locality/.test(s))            out.push("agent-escape:P3");
+    // Weekly decision 2026-09-24 #2: a case fitting NONE of the three preconditions is a P4
+    // SIGNAL -- flag it, do not force it into the nearest bucket. P4 accumulating is the
+    // interesting result (it means the corpus has grown a fourth shape), so it must be
+    // visible rather than silently absent, which is what an unlabelled row would be.
+    else out.push("agent-escape:P4");
+  }
   return out;
 }
 
