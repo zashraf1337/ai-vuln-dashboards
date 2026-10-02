@@ -122,13 +122,14 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-09-29";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-10-06";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-10-01 09:55 EDT";
-var CACHE_AGE_HOURS = 0.5;
+var LAST_UPDATED = "2026-10-02 07:50 EDT";
+var CACHE_AGE_HOURS = 0.8;
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
   {"date": "2026-09-30", "criticals": 5, "highs": 7, "others": 11, "status": "critical", "note": "Lead: 3 AI-discovered (XBOW kernel LPE, Saarinen NGCC sweep, GLM-5.3 FRT). No HW-INTEL. Feed-light blogs unchecked."},
-  {"date": "2026-10-01", "criticals": 1, "highs": 10, "others": 11, "status": "critical", "note": "Lead: PromptArmor Copilot Cowork AI-gateway sandbox escape (P2). LightLLM CVE-2026-103395; Elastic EASE unpatched; NVIDIA Oct driver ~31 CVEs. No AI-discovered. No HW-INTEL."}
+  {"date": "2026-10-01", "criticals": 1, "highs": 10, "others": 11, "status": "critical", "note": "Lead: PromptArmor Copilot Cowork AI-gateway sandbox escape (P2). LightLLM CVE-2026-103395; Elastic EASE unpatched; NVIDIA Oct driver ~31 CVEs. No AI-discovered. No HW-INTEL."},
+  {"date": "2026-10-02", "criticals": 1, "highs": 1, "others": 14, "status": "critical", "note": "Lead: DIVD hacked by suspected agentic-AI operator via Zammad 0-days CVE-2026-102489/-102490 (ai-attacker). Office-PowerPoint-MCP traversal. No HW-INTEL."},
 ];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
@@ -160,12 +161,17 @@ var ITEMS = [
   {"date": "2026-09-30", "severity": "High", "id": "arXiv 2609.38830", "title": "SparLeak: sparse-attention GPU side channel leaks cross-tenant LLM inputs", "component": "Shared-GPU LLM inference", "source_name": "arXiv", "url": "https://arxiv.org/abs/2609.38830v1", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "research", "domain_tags": ["gpu", "llm-serving", "ml-sec"], "note": "No CVE; No-CVSS escalation"},
   {"date": "2026-10-01", "severity": "Medium", "id": "Gemini-4-Argon", "title": "Google Gemini 4 Argon to Fairwind defenders; guardrail-free variant planned [verify]", "component": "Google Gemini 4 Argon", "source_name": "Google / THN", "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/", "category": "Model / multimodal", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["vr-harness", "ai-finder", "guardrail-bypass"], "note": "Capability claim, not a vuln"},
   {"date": "2026-09-30", "severity": "Medium", "id": "arXiv 2609.39607", "title": "Pretext: adaptive attacks defeat static + LLM-judge skill scanners (SkillSpector)", "component": "Skill scanners", "source_name": "arXiv", "url": "https://arxiv.org/abs/2609.39607v1", "category": "Skills / plugins", "ai_discovered": false, "ai_system": "", "technique": "research", "domain_tags": ["ai-sec-tooling", "agent", "guardrail-bypass"], "note": "Research"},
-  {"date": "2026-09-30", "severity": "Low", "id": "CVE-2026-65669-writeup", "title": "Rehberger: From SELECT to SYSADMIN with SQL Copilot (BlueHat Asia)", "component": "SSMS Copilot", "source_name": "Embrace The Red", "url": "https://embracethered.com/blog/posts/2026/from-select-to-sysadmin-sql-copilot-bluehat-asia/", "category": "Coding agent / IDE", "ai_discovered": false, "ai_system": "", "technique": "prompt-injection-demo", "domain_tags": ["agent", "coding-agent", "tool-attack"], "note": "Enrichment of existing §8 row"}
+  {"date": "2026-09-30", "severity": "Low", "id": "CVE-2026-65669-writeup", "title": "Rehberger: From SELECT to SYSADMIN with SQL Copilot (BlueHat Asia)", "component": "SSMS Copilot", "source_name": "Embrace The Red", "url": "https://embracethered.com/blog/posts/2026/from-select-to-sysadmin-sql-copilot-bluehat-asia/", "category": "Coding agent / IDE", "ai_discovered": false, "ai_system": "", "technique": "prompt-injection-demo", "domain_tags": ["agent", "coding-agent", "tool-attack"], "note": "Enrichment of existing §8 row"},
+  {"date": "2026-10-02", "severity": "Critical", "id": "CVE-2026-102489 / CVE-2026-102490", "title": "DIVD breached by suspected agentic-AI operator via Zammad 0-days (unauth RCE + root LPE)", "component": "Zammad 6.3.0–6.5.4 (all for LPE)", "source_name": "The Register / DIVD", "url": "https://www.theregister.com/security/2026/10/01/ai-agents-hacked-the-hackers-stealing-email-addresses-from-security-research-org/5300652", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "runtime-telemetry", "domain_tags": ["ai-attacker", "agent", "cloud-infra"], "note": "CVSS4 9.4 chained; intrusion 2026-09-21; volunteer data stolen; agent self-justifying script comments; model undisclosed; AI-found 0-days unconfirmed [attribution:claimed]. Theme 27."},
+  {"date": "2026-10-02", "severity": "High", "id": "GHSA-xpvr-6r3p-gm34", "title": "Office-PowerPoint-MCP-Server path traversal (PI-steered file read/write)", "component": "Office-PowerPoint-MCP-Server ≤2.0.7", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-xpvr-6r3p-gm34", "category": "MCP", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["mcp-server", "mcp", "tool-attack"], "note": "CVSS 6.8 (GHSA high); save_presentation/open_presentation/manage_image."},
+  {"date": "2026-10-01", "severity": "Medium", "id": "arXiv 2610.00977", "title": "ABSENTIA — LLM-agent broken-access-control finder", "component": "research", "source_name": "arXiv", "url": "https://arxiv.org/abs/2610.00977v1", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "research", "domain_tags": ["ai-finder", "vr-harness"], "note": "VR-harness pass; no CVEs claimed."},
+  {"date": "2026-10-01", "severity": "Low", "id": "Saxe 2026-10-01", "title": "Saxe: alternatives to trusted cyber access programs + open-weights restrictions", "component": "essay", "source_name": "Joshua Saxe", "url": "https://joshuasaxe181906.substack.com/p/what-we-should-do-instead-of-trusted", "category": "Model / multimodal", "ai_discovered": false, "ai_system": "", "technique": "research", "domain_tags": ["ai-attacker", "ml-sec"], "note": "Theme 25 policy essay → inbox."}
 ];
 
 var ALERTS = [
   {"date": "2026-09-30 0810", "title": "5 Critical: MetaMCP, ogx-ai, LightLLM x2, pi-llm-wiki", "drive_url": "https://docs.google.com/document/d/1MVh_xhzogZe5l5AtKZWu4AYhW0nugh2_LpEnzcqIZeo/edit"},
-  {"date": "2026-10-01 0815", "title": "1 Critical: LightLLM CVE-2026-103395", "drive_url": "https://docs.google.com/document/d/1l25hllfuBGJfqgJBSV5T9LRL0bD0Qm5KFvVVCSMzG90/edit"}
+  {"date": "2026-10-01 0815", "title": "1 Critical: LightLLM CVE-2026-103395", "drive_url": "https://docs.google.com/document/d/1l25hllfuBGJfqgJBSV5T9LRL0bD0Qm5KFvVVCSMzG90/edit"},
+  {"date": "2026-10-02 0750", "title": "DIVD agentic-AI intrusion via Zammad 0-days", "drive_url": "https://docs.google.com/document/d/1eSj6K3tW1HWFarVvc1CZ_5D7kH1U8GwJpJyJyF33EgY/edit"}
 ];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
