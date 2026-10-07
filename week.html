@@ -122,16 +122,313 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-10-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-10-13";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-10-06 12:10 EDT";
-var CACHE_AGE_HOURS = 3.4;
+var LAST_UPDATED = "2026-10-07 07:58 EDT";
+var CACHE_AGE_HOURS = 0.3;
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [];
+var DAILY_SCANS = [
+ {
+  "date": "2026-10-07",
+  "criticals": 3,
+  "highs": 24,
+  "others": 12,
+  "status": "critical",
+  "note": "IBM Langflow 21-advisory batch; Glasswing 129k lead; feed-light blogs UNCHECKED (fetch-restricted)"
+ }
+];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
-var ITEMS = [];
+var ITEMS = [
+ {
+  "date": "2026-10-06",
+  "severity": "High",
+  "id": "Anthropic CVP/Glasswing",
+  "title": "Anthropic merges Glasswing + CVP into 3 tiers; ≥129k partner-found vulns (Apr–Jul) + 5.5k Anthropic OSS finds",
+  "component": "Project Glasswing / Cyber Verification Program",
+  "source_name": "Anthropic",
+  "url": "https://www.anthropic.com/news/cyber-verification-program",
+  "category": "Model / multimodal",
+  "ai_discovered": true,
+  "ai_system": "Glasswing",
+  "technique": "ai-assisted-scanning",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder",
+   "ml-sec"
+  ],
+  "note": "LEAD [AI-DISCOVERED] aggregate; counts self-reported [attribution:claimed]; no per-CVE roster; 2/~300 Glasswing CVEs ITW (VulnCheck)"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Critical",
+  "id": "CVE-2026-104334",
+  "title": "IBM Langflow ≤1.12.2 unauthenticated code-generation RCE",
+  "component": "IBM Langflow OSS",
+  "source_name": "GHSA",
+  "url": "https://github.com/advisories/GHSA-74xw-7rg4-6p4c",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack"
+  ],
+  "note": "CVSS 9.8; heads 21-advisory IBM batch"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Critical",
+  "id": "CVE-2026-93674",
+  "title": "IBM Langflow ≤1.12.2 unauthenticated OS-command injection",
+  "component": "IBM Langflow OSS",
+  "source_name": "GHSA",
+  "url": "https://github.com/advisories/GHSA-xhw9-mf2x-qh4j",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack"
+  ],
+  "note": "CVSS 9.8"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "Critical",
+  "id": "CVE-2026-91140",
+  "title": "Progress ARCGenAI-Generator 2.0 OS command injection via crafted OpenAPI doc",
+  "component": "Progress Autonomous REST Connector GenAI Agents",
+  "source_name": "GHSA",
+  "url": "https://github.com/advisories/GHSA-w86g-q6vw-5mw6",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack"
+  ],
+  "note": "CVSS 9.6; dev-machine RCE"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "IBM Langflow cluster (19)",
+  "title": "IBM Langflow ≤1.12.2 High cluster: auth'd RCE, sandbox escape CVE-2026-97676, scanner bypass CVE-2026-97655, dep-confusion CVE-2026-93675, Redis deser CVE-2026-93447",
+  "component": "IBM Langflow OSS",
+  "source_name": "GHSA",
+  "url": "https://github.com/advisories/GHSA-jm65-m624-cgvm",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack"
+  ],
+  "note": "CVSS 7.5–8.8; 19 advisories; agent-escape held pending writeup"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "CVE-2026-65142",
+  "title": "NVIDIA Model-Optimizer untrusted deserialization → code exec",
+  "component": "NVIDIA Model-Optimizer",
+  "source_name": "GHSA",
+  "url": "https://github.com/advisories/GHSA-4hxf-v5w4-4vm6",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "nvidia",
+   "ml-sec",
+   "tensorrt"
+  ],
+  "note": "CVSS 7.8"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "High",
+  "id": "CVE-2026-43598",
+  "title": "AMD ROCm RCCL peer-rank attacker-pointer dereference → possible RCE",
+  "component": "AMD RCCL",
+  "source_name": "GHSA",
+  "url": "https://github.com/advisories/GHSA-h97m-6c64-h5x2",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "gpu",
+   "amd",
+   "kernel"
+  ],
+  "note": "multi-node training substrate"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "High",
+  "id": "CVE-2026-105811",
+  "title": "QnABot Amazon Q Business Lambda hook sample — arbitrary S3 read",
+  "component": "QnABot on AWS 7.0.0–7.4.5",
+  "source_name": "GHSA",
+  "url": "https://github.com/advisories/GHSA-r223-2773-wq4w",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent",
+   "cloud-infra"
+  ],
+  "note": "CVSS 6.5 (GH high)"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "High",
+  "id": "Wikimedia/OpenAI agents",
+  "title": "Wikimedia confirms rogue OpenAI agents tried to exploit Etherpad, edited wikis, used wiki tools as proxies",
+  "component": "Wikimedia / Etherpad",
+  "source_name": "The Hacker News",
+  "url": "https://thehackernews.com/2026/10/wikimedia-says-openai-agents-tried-to.html",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "runtime-telemetry",
+  "domain_tags": [
+   "ai-attacker",
+   "agent",
+   "tool-attack"
+  ],
+  "note": "Theme 27; no CVE; No-CVSS escalation"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "Ars MCP/A2A flaw",
+  "title": "Ars: vulnerability in agents from Google and others exposes structural flaw in MCP agent-to-agent comms",
+  "component": "MCP / A2A",
+  "source_name": "Ars Technica (via HN)",
+  "url": "https://arstechnica.com/security/2026/10/vulnerability-in-agents-from-google-and-others-exposes-structural-flaw-in-mcp/",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp",
+   "agent",
+   "tool-attack"
+  ],
+  "note": "[verify] page unreadable; weekly to confirm"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "Medium",
+  "id": "OX 15,465 MCP",
+  "title": "OX Security: what we found inside 15,465 public MCP servers",
+  "component": "MCP ecosystem",
+  "source_name": "OX Security / THN",
+  "url": "https://thehackernews.com/2026/10/welcome-to-jungle-what-we-found-inside.html",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "mcp-server",
+   "mcp"
+  ],
+  "note": "measurement study"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "Medium",
+  "id": "arXiv 2610.07639",
+  "title": "HarnessSecurity-Bench: do security mechanisms protect coding-agent harnesses?",
+  "component": "coding-agent harnesses",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/abs/2610.07639v1",
+  "category": "Coding agent / IDE",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "coding-agent",
+   "agent-escape",
+   "ai-sec-tooling"
+  ],
+  "note": "agent-escape lane research (benchmark, no Pn)"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "Low",
+  "id": "arXiv SkillPoison/Router",
+  "title": "SkillPoison + Surviving the Router: skill-library poisoning / injection",
+  "component": "agent skills",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/abs/2610.07645v1",
+  "category": "Skills / plugins",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "agent",
+   "tool-attack"
+  ],
+  "note": "2610.07645 + 2610.08098"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "Low",
+  "id": "Saxe essay",
+  "title": "Saxe: Even superintelligent AI can't just fix all the security bugs",
+  "component": "essay",
+  "source_name": "Joshua Saxe",
+  "url": "https://joshuasaxe181906.substack.com/p/even-superintelligent-ai-cant-just",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness",
+   "ml-sec"
+  ],
+  "note": "Theme 20 voice essay"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "Low",
+  "id": "KVM/Firecracker claim",
+  "title": "Researcher claims KVM guest-host escape affecting Firecracker microVMs",
+  "component": "KVM / Firecracker",
+  "source_name": "The Register",
+  "url": "https://www.theregister.com/offbeat/2026/10/06/security-researcher-claims-they-found-kvm-guest-host-escape-flaw/5301267",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "cloud-infra",
+   "container",
+   "kernel"
+  ],
+  "note": "[verify]; agent-sandbox substrate"
+ }
+];
 
-var ALERTS = [];
+var ALERTS = [
+ {
+  "date": "2026-10-07 0750",
+  "title": "IBM Langflow 2×9.8 + Progress ARCGenAI 9.6",
+  "drive_url": "https://docs.google.com/document/d/1c4rL-A43ersCYYGQUNMvmJ6AZvA2RXH8ldPyb1hojrE/edit?usp=drivesdk"
+ }
+];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
 // RESTORED 2026-08-15: this const and FULL_DASHBOARD_URL below were referenced by buildFilters()/init()
