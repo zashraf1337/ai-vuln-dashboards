@@ -122,8 +122,8 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-10-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-10-13";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-10-07 07:58 EDT";
-var CACHE_AGE_HOURS = 0.3;
+var LAST_UPDATED = "2026-10-08 08:10 EDT";
+var CACHE_AGE_HOURS = 5.3;
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
@@ -134,6 +134,14 @@ var DAILY_SCANS = [
   "others": 12,
   "status": "critical",
   "note": "IBM Langflow 21-advisory batch; Glasswing 129k lead; feed-light blogs UNCHECKED (fetch-restricted)"
+ },
+ {
+  "date": "2026-10-08",
+  "criticals": 5,
+  "highs": 9,
+  "others": 14,
+  "status": "critical",
+  "note": "Langflow MCP-stdio 9.9 + LMCache unpatched 9.8 + Flowise ×2 + PraisonAI; lead MSFT FORGE/MDASH [AI-DISCOVERED]; cache 5.3h stale"
  }
 ];
 
@@ -419,6 +427,393 @@ var ITEMS = [
    "kernel"
   ],
   "note": "[verify]; agent-sandbox substrate"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Medium",
+  "id": "MSFT FORGE Lab",
+  "title": "Microsoft FORGE Lab (MDASH): 140 Windows CVEs May–Sep + 155 OSS reports/23 projects incl. Linux kernel; GPT-5.5 privesc exploits ~$8.56 each",
+  "component": "MDASH / FORGE Lab",
+  "source_name": "Microsoft Security Blog",
+  "url": "https://www.microsoft.com/en-us/security/blog/2026/10/07/3-lessons-from-frontier-ai-vulnerability-research/",
+  "category": "AI infra",
+  "ai_discovered": true,
+  "ai_system": "MDASH",
+  "technique": "ai-assisted-scanning",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder",
+   "kernel"
+  ],
+  "note": "LEAD [AI-DISCOVERED] [attribution:vendor-confirmed] aggregate; ex-Team Atlanta; curl CVE-2026-9545/-13608, Node CVE-2026-56848, Linux CVE-2026-64563; 9 via Akrites; crash PoC $3.61/21.5min"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Critical",
+  "id": "CVE-2026-105697",
+  "title": "Langflow <1.10.3: MCP stdio server config runs arbitrary OS command (RCE)",
+  "component": "Langflow",
+  "source_name": "GitHub Security Advisories",
+  "url": "https://github.com/advisories/GHSA-w794-rj3p-xv45",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "mcp",
+   "tool-attack"
+  ],
+  "note": "CVSS 9.9; bash -c exec of user-set command, no allowlist"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Critical",
+  "id": "CVE-2026-105192",
+  "title": "LMCache multiprocess mode: unauthenticated ZeroMQ msgpack→pickle.loads RCE (port 5555), UNPATCHED",
+  "component": "LMCache",
+  "source_name": "GitHub Security Advisories / THN",
+  "url": "https://github.com/advisories/GHSA-vv44-hjm2-qw2f",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm",
+   "cloud-infra"
+  ],
+  "note": "CVSS 9.8; KV-cache sidecar for vLLM; no fixed version (THN 10-07)"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Critical",
+  "id": "CVE-2026-62176",
+  "title": "PraisonAI deploy API: f-string code injection via agents_file → subprocess exec",
+  "component": "PraisonAI",
+  "source_name": "GitHub Security Advisories",
+  "url": "https://github.com/advisories/GHSA-g6j7-pffp-8whg",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent"
+  ],
+  "note": "CVSS 9.1"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Critical",
+  "id": "CVE-2026-73487",
+  "title": "Flowise ≤3.1.2 CSV/Airtable agent: prompt injection → RCE/SSRF via Python validator bypass (unauth prediction API)",
+  "component": "Flowise",
+  "source_name": "GitHub Security Advisories",
+  "url": "https://github.com/advisories/GHSA-w7x8-q2gp-5cgg",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "prompt-injection-demo",
+  "domain_tags": [
+   "agent-framework",
+   "tool-attack",
+   "guardrail-bypass"
+  ],
+  "note": "regex blocklist on LLM-generated Pyodide code bypassed; data exfil + SSRF"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Critical",
+  "id": "CVE-2026-73483",
+  "title": "Flowise ≤3.1.2 NodeVM sandbox escape via puppeteer executablePath/args → authenticated RCE + file read",
+  "component": "Flowise",
+  "source_name": "GitHub Security Advisories",
+  "url": "https://github.com/advisories/GHSA-9gvv-qjj3-2p6g",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "container"
+  ],
+  "note": "user-code sandbox escape (not an agent crossing; P2-shaped, held from agent-escape)"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "High",
+  "id": "Pwn2Own IE 2026 AI",
+  "title": "Pwn2Own Ireland 2026 Day 1: first AI-infra category — OpenAI Codex (Ikotas Labs, arg injection), LiteLLM ×2 (Xint RCE; Out of Bounds), Oracle Autonomous AI DB (VinSOC 5-bug chain)",
+  "component": "OpenAI Codex / LiteLLM / Oracle AI DB",
+  "source_name": "ZDI / r/netsec",
+  "url": "https://www.reddit.com/r/netsec/comments/1x0jgp0/pwn2own_ireland_2026_day_1_32_zerodays_388500/",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "competition",
+   "coding-agent",
+   "llm-serving"
+  ],
+  "note": "No-CVSS escalation; no CVEs yet (90-day ZDI window); Chroma attempt failed; Day 2/3 AI targets pending"
+ },
+ {
+  "date": "2026-10-06",
+  "severity": "High",
+  "id": "CVE-2026-105752..-105760",
+  "title": "vLLM ×8: cross-tenant prefix-cache membership oracle (Harmony drops cache_salt), /score+/rerank integrity, 3 engine-fatal DoS, disagg multimodal trust",
+  "component": "vLLM",
+  "source_name": "HW-INTEL-2026-10-07 (GHSA)",
+  "url": "https://github.com/vllm-project/vllm/security/advisories",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "vllm"
+  ],
+  "note": "merged from _hw-intel-inbox; cross-tenant → High"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "CVE-2026-105699",
+  "title": "Langflow: cross-project file disclosure via unscoped MCP resources/read handler",
+  "component": "Langflow",
+  "source_name": "GitHub Security Advisories",
+  "url": "https://github.com/advisories/GHSA-4hmc-cfm3-w43c",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "agent-framework"
+  ],
+  "note": "authenticated cross-user read; project auth not applied to resource URI"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "CVE-2026-105741",
+  "title": "Langflow: X-Forwarded-For 127.0.0.1 spoof bypasses local-only MCP config install → remote config write",
+  "component": "Langflow",
+  "source_name": "GitHub Security Advisories",
+  "url": "https://github.com/advisories/GHSA-4f6c-2vvp-gw82",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "agent-framework"
+  ],
+  "note": "CVSS 7.1; P3-shaped (loopback-as-identity) but no agent crossing — not tagged agent-escape"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "CVE-2026-61429",
+  "title": "PraisonAI web_crawl SSRF bypass also via Crawl4AI/Chromium backend (DNS rebinding + redirects)",
+  "component": "PraisonAI",
+  "source_name": "GitHub Security Advisories",
+  "url": "https://github.com/advisories/GHSA-6g59-gm2v-qhvq",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "dynamic-verification",
+  "domain_tags": [
+   "agent-framework",
+   "tool-attack"
+  ],
+  "note": "CVSS 8.5; addendum to PRAI-05"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "CVE-2026-61439",
+  "title": "PraisonAI Injection Defense misconfigured by default: HIGH-level PI threats not blocked",
+  "component": "PraisonAI",
+  "source_name": "GitHub Security Advisories",
+  "url": "https://github.com/advisories/GHSA-fj8f-m44g-c479",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "configuration-review",
+  "domain_tags": [
+   "agent-framework",
+   "ai-sec-tooling",
+   "guardrail-bypass"
+  ],
+  "note": "CVSS 7.5; block threshold = CRITICAL (3+ checks)"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "S.Korea AI-agent intrusions",
+  "title": "Hackers used AI agents against Yoido Full Gospel Church (850K members) + Sarang Church; linked Korean wave (Shinhan Bank, ARTEX agentic console)",
+  "component": "AI-run intrusion campaign",
+  "source_name": "Decrypt",
+  "url": "https://decrypt.co/380339/hackers-ai-agents-megachurch-database",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "runtime-telemetry",
+  "domain_tags": [
+   "ai-attacker",
+   "agent"
+  ],
+  "note": "[attribution:claimed], circumstantial (sub-agent logs); 'Oasis Security' (oasis-security.io, may differ from rostered oasis.security); CrowdStrike ARTEX+Claude claim [verify]; Theme 27"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "High",
+  "id": "PoeLLM / Canto Incognito",
+  "title": "PoeLLM botnet: 3,400+ exposed LiteLLM/Ollama/Gotenberg/Gitea/Ivanti hosts → XMRig, poem-derived C2",
+  "component": "LiteLLM / Ollama exposed infra",
+  "source_name": "Lumen Black Lotus Labs (via THN)",
+  "url": "https://thehackernews.com/2026/10/poellm-malware-infects-3400-servers-to.html",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "runtime-telemetry",
+  "domain_tags": [
+   "llm-serving",
+   "cloud-infra"
+  ],
+  "note": "quadrant (d) AI-targeting botnet; known vulns, no CVEs named"
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "PromptArmor Databricks Genie",
+  "title": "Databricks Genie: malicious Skills can phish users + exfiltrate data; vendor calls it user's responsibility",
+  "component": "Databricks Genie",
+  "source_name": "PromptArmor",
+  "url": "https://www.promptarmor.com/resources",
+  "category": "Skills / plugins",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "prompt-injection-demo",
+  "domain_tags": [
+   "agent",
+   "tool-attack"
+  ],
+  "note": "No-CVSS escalation (exfil); top of PromptArmor index, date [verify]; plus new 'What is WebMCP' risk post"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Medium",
+  "id": "Snyk Evo COS vs Claude Security",
+  "title": "Snyk benchmark: Evo COS confirmed 10/15 exploit chains vs 0/15 for Claude Security (Mythos) on TaintedPort; F1 91.7% vs 75.5%",
+  "component": "Evo COS / Claude Security",
+  "source_name": "Snyk",
+  "url": "https://snyk.io/blog/frontier-models-vulnerabilities-attacker-chains/",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "ai-assisted-scanning",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder"
+  ],
+  "note": "vendor self-run, single run [verify]"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Low",
+  "id": "AWS Strands Box",
+  "title": "AWS open-sources Strands Box agent sandbox; Microsoft Execution Containers (MXC) policy-driven containment post",
+  "component": "Agent containment tooling",
+  "source_name": "The Register / Windows blog",
+  "url": "https://www.theregister.com/ai-and-ml/2026/10/07/aws-launches-open-source-ai-agent-sandbox-to-prevent-yolo-mode-disasters/5301687",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "agent",
+   "container"
+  ],
+  "note": "defensive §10 tooling; pairs with agent-escape stream"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Low",
+  "id": "arXiv 2610.09264",
+  "title": "Package hallucination attacks on coding agents via prompt injection in rule files (AGENTS.md/.cursorrules)",
+  "component": "coding agents",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/abs/2610.09264v1",
+  "category": "Coding agent / IDE",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "coding-agent",
+   "tool-attack"
+  ],
+  "note": "P1-adjacent (config-as-instruction) but supply-chain swap, no containment claim; also Secure-CUA 2610.09469, patching-benchmark reliability 2610.10150"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Low",
+  "id": "Zcash ZCG × V12",
+  "title": "Zcash Community Grants funds V12 (Zellic) autonomous AI audit credits — PoC + patch per finding",
+  "component": "V12 (Zellic)",
+  "source_name": "Zcash forum",
+  "url": "https://forum.zcashcommunity.com/t/zcg-funded-v12-credits-for-ai-security-scans-applications-open/58069",
+  "category": "Protocol / crypto-ZK",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "ai-assisted-scanning",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder",
+   "web3"
+  ],
+  "note": "V12 nominated 2026-09-08 → 2nd dated output, promotable"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Low",
+  "id": "Google Android AI enclave",
+  "title": "Google: next-gen enclave architecture for on-device AI on Android",
+  "component": "Android",
+  "source_name": "Google Security",
+  "url": "https://blog.google/security/enabling-the-next-gen-enclave-architecture-for-on-device-ai-on-android/",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "confidential-computing",
+   "ml-sec"
+  ],
+  "note": "defensive architecture"
+ },
+ {
+  "date": "2026-10-07",
+  "severity": "Low",
+  "id": "Knostic Duck Song",
+  "title": "Five malicious Solidity/Hardhat VS Code extensions hide cross-platform payload in an MP4",
+  "component": "IDE extensions",
+  "source_name": "Knostic",
+  "url": "https://www.knostic.ai/blog/the-duck-song-malicious-solidity-extensions-hide-a-cross-platform-payload-in-an-mp4",
+  "category": "Skills / plugins",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "web3",
+   "coding-agent"
+  ],
+  "note": "IDE extension supply chain"
  }
 ];
 
@@ -427,6 +822,11 @@ var ALERTS = [
   "date": "2026-10-07 0750",
   "title": "IBM Langflow 2×9.8 + Progress ARCGenAI 9.6",
   "drive_url": "https://docs.google.com/document/d/1c4rL-A43ersCYYGQUNMvmJ6AZvA2RXH8ldPyb1hojrE/edit?usp=drivesdk"
+ },
+ {
+  "date": "2026-10-08 0805",
+  "title": "Langflow MCP-stdio 9.9 + LMCache unpatched 9.8 + Flowise ×2 + PraisonAI 9.1",
+  "drive_url": "https://docs.google.com/document/d/1d8EI5KB57L32ywGOBm6twH52oeFN83va5ZZCylYBCXw/edit?usp=drivesdk"
  }
 ];
 
