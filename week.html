@@ -122,8 +122,8 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-10-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-10-13";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-10-08 08:10 EDT";
-var CACHE_AGE_HOURS = 5.3;
+var LAST_UPDATED = "2026-10-09 08:15 EDT";
+var CACHE_AGE_HOURS = 0.2;
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
@@ -142,6 +142,14 @@ var DAILY_SCANS = [
   "others": 14,
   "status": "critical",
   "note": "Langflow MCP-stdio 9.9 + LMCache unpatched 9.8 + Flowise ×2 + PraisonAI; lead MSFT FORGE/MDASH [AI-DISCOVERED]; cache 5.3h stale"
+ },
+ {
+  "date": "2026-10-09",
+  "criticals": 3,
+  "highs": 13,
+  "others": 7,
+  "status": "critical",
+  "note": "Lead [AI-DISCOVERED] Anthropic OSS Scanner + Glasswing→CVP merge; PraisonAI 10-GHSA batch; feed-light blogs UNCHECKED (Chrome disconnected)"
  }
 ];
 
@@ -814,6 +822,433 @@ var ITEMS = [
    "coding-agent"
   ],
   "note": "IDE extension supply chain"
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "Anthropic OSS Scanner",
+  "title": "[AI-DISCOVERED] Anthropic opt-in OSS vuln-finding service (OSS Scanner): 29k+ candidates, 88% CVD-bar on 97 C/H sample",
+  "component": "Claude Mythos / Anthropic models",
+  "source_name": "Anthropic Research",
+  "url": "https://www.anthropic.com/research/launching-opt-in-vuln-finding-service-for-open-source",
+  "category": "Agent ecosystem",
+  "ai_discovered": true,
+  "ai_system": "Anthropic OSS Scanner (Claude Mythos)",
+  "technique": "ai-assisted-scanning",
+  "domain_tags": [
+   "ai-finder",
+   "vr-harness"
+  ],
+  "note": "Lead. Unreviewed model reports w/ reproducer+bisect+patch; wolfSSL 72/74 valid (5 CVEs), curl severe find; chained unauth RCEs. Glasswing merged into CVP (Anthropic Cyber Mission, 10-08). [attribution:vendor-confirmed] aggregate."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Critical",
+  "id": "GHSA-2xv2-w8cq-5gxw",
+  "title": "PraisonAI CodeAgent executes LLM code unsandboxed even with sandbox=True; leaks all env secrets",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-2xv2-w8cq-5gxw",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack",
+   "agent-escape:P2"
+  ],
+  "note": "CVSS 10.0. Sandbox flag accepted but not enforced (containment claim broken)."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Critical",
+  "id": "GHSA-9mp3-24cc-77mg",
+  "title": "PraisonAI AICoder arbitrary file write + command exec via LLM tool calls (PI)",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-9mp3-24cc-77mg",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack"
+  ],
+  "note": "CVSS 9.9; root in Docker."
+ },
+ {
+  "date": "2026-10-09",
+  "severity": "Critical",
+  "id": "GHSA-cqq5-w7g3-vc36",
+  "title": "Azure SRE Agent missing authorization → network privilege elevation",
+  "component": "Azure SRE Agent",
+  "source_name": "GitHub Advisory / MSRC",
+  "url": "https://github.com/advisories/GHSA-cqq5-w7g3-vc36",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent",
+   "cloud-infra"
+  ],
+  "note": "CVSS 9.6. Sibling of CVE-2026-32173 (Enclave AI) class."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-5r6c-gj4g-r697",
+  "title": "PraisonAI SecurityPolicy restrictions unenforced by default SubprocessSandbox",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-5r6c-gj4g-r697",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "agent-escape:P2"
+  ],
+  "note": "strict() policy for untrusted code silently ignored."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-cv3g-hj65-pcfh",
+  "title": "PraisonAI shell allowlist bypass via find -exec (incomplete fix of GHSA-5jv7/-vjv9)",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-cv3g-hj65-pcfh",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack",
+   "agent-escape:P2"
+  ],
+  "note": "CVSS 8.8; SandboxExecutor guard bypass, 4 implementations."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-6wjp-v33h-5cvq",
+  "title": "PraisonAI AgentOS (npm) binds 0.0.0.0 no-auth, CORS * → unauth agent invocation + system-prompt disclosure",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-6wjp-v33h-5cvq",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent"
+  ],
+  "note": "CVSS 8.6."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-2gpf-2492-q9jh",
+  "title": "PraisonAI Call API localhost-only auth bypass via spoofed Host header",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-2gpf-2492-q9jh",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent"
+  ],
+  "note": "CVSS 8.2; loopback-as-identity pattern (not an agent escape)."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-79fv-7hq9-w7xg",
+  "title": "PraisonAI API deploy generator embeds unescaped YAML into Python source (codegen injection)",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-79fv-7hq9-w7xg",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent"
+  ],
+  "note": "CVSS 7.8."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-hc5v-gxvj-58wh",
+  "title": "PraisonAI MCP HTTP-stream transport unauthenticated by default; unvalidated tool-call args",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-hc5v-gxvj-58wh",
+  "category": "MCP",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "mcp-server",
+   "mcp",
+   "tool-attack",
+   "agent-framework"
+  ],
+  "note": "CVSS 7.3; ~50 tools exposed."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-4w49-gwv8-fpjg",
+  "title": "PraisonAI Jobs API unauthenticated by default + webhook SSRF",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-4w49-gwv8-fpjg",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent"
+  ],
+  "note": "CVSS 7.2."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-c78w-2q4r-68r7",
+  "title": "PraisonAI platform member PATCH routes allow owner resource rewrites / lead-reassignment delete bypass",
+  "component": "PraisonAI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-c78w-2q4r-68r7",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent"
+  ],
+  "note": "CVSS 7.1; tenancy/authz (Theme 23)."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "GHSA-h4xc-3qfq-jf93",
+  "title": "Pydantic AI web chat UI (Agent.to_web / clai web): visited website triggers local agent runs + tool exec",
+  "component": "Pydantic AI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-h4xc-3qfq-jf93",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent",
+   "tool-attack",
+   "agent-escape:P3"
+  ],
+  "note": "CVSS 7.6; localhost binding claimed as boundary, cross-origin request reaches it."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "CVE-2026-47483",
+  "title": "NVIDIA DCGM Exporter unauth resource exhaustion → crash GPU monitoring; thousands exposed",
+  "component": "NVIDIA DCGM Exporter",
+  "source_name": "r/netsec / The Register",
+  "url": "https://www.theregister.com/security/2026/10/08/high-severity-nvidia-bug-could-crash-gpu-monitoring-on-exposed-servers/5302077",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "gpu",
+   "nvidia",
+   "dcgm",
+   "cloud-infra"
+  ],
+  "note": "CVSS 8.2; fixed. Researcher writeup via r/netsec."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "High",
+  "id": "tensorlake-0.5.144",
+  "title": "Shai-Hulud worm hits tensorlake npm (AI infra) — credential stealer",
+  "component": "tensorlake (npm)",
+  "source_name": "OX Security / The Register",
+  "url": "https://www.ox.security/blog/shai-hulud-here-we-go-again-tensorlake-npm-package-hit-with-malware/",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "runtime-telemetry",
+  "domain_tags": [
+   "ml-sec",
+   "cloud-infra"
+  ],
+  "note": "Supply-chain; 12k weekly downloads."
+ },
+ {
+  "date": "2026-10-09",
+  "severity": "High",
+  "id": "GHSA-fmqx-854h-cfff",
+  "title": "FalkorDB (GraphRAG backend) heap OOB read via crafted RDB replication stream",
+  "component": "FalkorDB <4.18.4",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-fmqx-854h-cfff",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "ml-sec",
+   "cloud-infra"
+  ],
+  "note": "CVSS 9.1 (feed sev high); heap disclosure/DoS on no-password instances."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Medium",
+  "id": "GHSA-6fqq-452j-qhrp",
+  "title": "Pydantic AI concurrency-limited models keep slot when stream ends early (DoS)",
+  "component": "Pydantic AI",
+  "source_name": "GitHub Advisory",
+  "url": "https://github.com/advisories/GHSA-6fqq-452j-qhrp",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "agent-framework",
+   "agent"
+  ],
+  "note": "CVSS 7.5 availability-only."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Low",
+  "id": "arXiv 2610.12292",
+  "title": "One Word Opens the Gate: option-channel attack on typed decision models as agent guardrails",
+  "component": "open-weight guard models",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/abs/2610.12292v1",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "ai-sec-tooling",
+   "guardrail-bypass",
+   "agent"
+  ],
+  "note": "Guard fail-open across 7 models."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Low",
+  "id": "arXiv 2610.11602",
+  "title": "Where Do the Tokens Go? Costs/failures of LLM agents for vuln discovery (200 CyberGym traces)",
+  "component": "AI-VR agents",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/abs/2610.11602v1",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder"
+  ],
+  "note": "Theme 19 cost-curve."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Low",
+  "id": "arXiv 2610.12463",
+  "title": "Lessons from OpenAI/Anthropic/Google agent security incidents (reactive containment → assurance)",
+  "component": "frontier eval agents",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/abs/2610.12463v1",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "agent",
+   "ai-attacker"
+  ],
+  "note": "Theme 27 synthesis."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Low",
+  "id": "arXiv 2610.11467",
+  "title": "GROB: multi-agent public-trace investigation of candidate agentic activity",
+  "component": "forensics",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/abs/2610.11467v1",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "agent",
+   "ai-attacker"
+  ],
+  "note": "Theme 27 behavioural-IOC method."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Low",
+  "id": "arXiv 2610.11169",
+  "title": "Skill Constellations: tracing the supply chain of agent skills on GitHub",
+  "component": "Claude Code / Codex skills",
+  "source_name": "arXiv",
+  "url": "https://arxiv.org/abs/2610.11169v1",
+  "category": "Skills / plugins",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "coding-agent",
+   "agent"
+  ],
+  "note": "Theme 15."
+ },
+ {
+  "date": "2026-10-08",
+  "severity": "Low",
+  "id": "Talos AI-analysis evasion",
+  "title": "Ignore all instructions and read this blog: AI-analysis evasion in malware",
+  "component": "AI malware triage",
+  "source_name": "Cisco Talos",
+  "url": "https://blog.talosintelligence.com/ignore-all-instructions-and-read-this-blog-the-state-of-ai-analysis-evasion-in-malware/",
+  "category": "Model / multimodal",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "ai-sec-tooling",
+   "guardrail-bypass"
+  ],
+  "note": "PI against AI analyzers."
  }
 ];
 
@@ -827,6 +1262,11 @@ var ALERTS = [
   "date": "2026-10-08 0805",
   "title": "Langflow MCP-stdio 9.9 + LMCache unpatched 9.8 + Flowise ×2 + PraisonAI 9.1",
   "drive_url": "https://docs.google.com/document/d/1d8EI5KB57L32ywGOBm6twH52oeFN83va5ZZCylYBCXw/edit?usp=drivesdk"
+ },
+ {
+  "date": "2026-10-09 0815",
+  "title": "PraisonAI CodeAgent 10.0 + AICoder 9.9; Azure SRE Agent 9.6; lead Anthropic OSS Scanner",
+  "drive_url": "https://docs.google.com/document/d/17PB7po1kkZLk5FaBb9DzQAVGhmwk7wy0wHYlFfkNd9c/edit?usp=drivesdk"
  }
 ];
 
