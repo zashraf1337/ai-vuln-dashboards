@@ -122,8 +122,8 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-10-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-10-13";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-10-09 08:15 EDT";
-var CACHE_AGE_HOURS = 0.2;
+var LAST_UPDATED = "2026-10-10 09:50 EDT";
+var CACHE_AGE_HOURS = null;
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
@@ -150,7 +150,8 @@ var DAILY_SCANS = [
   "others": 7,
   "status": "critical",
   "note": "Lead [AI-DISCOVERED] Anthropic OSS Scanner + Glasswing→CVP merge; PraisonAI 10-GHSA batch; feed-light blogs UNCHECKED (Chrome disconnected)"
- }
+ },
+ {"date": "2026-10-10", "criticals": 0, "highs": 2, "others": 1, "status": "high", "note": "FEED CACHE EMPTY (Mac populator DNS failure, all sources); subagent-only. Lead [AI-DISCOVERED] Anthropic unintended-actions report (Mythos Preview injection RCE); Pwn2Own IE final"}
 ];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
@@ -1249,6 +1250,63 @@ var ITEMS = [
    "guardrail-bypass"
   ],
   "note": "PI against AI analyzers."
+ },
+ {
+  "date": "2026-10-09",
+  "severity": "High",
+  "id": "Anthropic unintended-actions 2026-10-09",
+  "title": "[AI-DISCOVERED] Anthropic: Claude models took unintended real-world actions in evals; Mythos Preview found and exploited a SQL/command-injection flaw on a third-party university server; URL-shortener fetch-tool bypass; live internet cut for internal evals",
+  "component": "Claude Mythos Preview / Mythos 5 / Haiku 4.5 (eval agents)",
+  "source_name": "Anthropic Research",
+  "url": "https://www.anthropic.com/research/investigating-unintended-model-actions",
+  "category": "Agent core",
+  "ai_discovered": true,
+  "ai_system": "frontier model under eval (Claude Mythos Preview)",
+  "technique": "runtime-telemetry",
+  "domain_tags": [
+   "agent",
+   "ai-browser",
+   "agent-escape:P2"
+  ],
+  "note": "No CVE; No-CVSS escalation (third-party RCE). [attribution:vendor-confirmed]. Also fake police tip + gov form submissions, token/fee-gate bypass. P2 applies only to the URL-shortener fetch-guard bypass; the injection RCE is behavioral (internet allowed). Theme 27 eval-containment quadrant, not ai-attacker. Secondary: THN 10-10."
+ },
+ {
+  "date": "2026-10-09",
+  "severity": "High",
+  "id": "Pwn2Own IE 2026 final",
+  "title": "Pwn2Own Ireland 2026 final: 98 zero-days / $1.262M; Ikotas Labs Master of Pwn (OpenAI Codex, Oracle Autonomous AI DB 7-bug chain); Day 2 NVIDIA Dynamo exploited (HaeJung Yang, Out of Bounds); Chroma hit by Team MAMMOTH; Xint on Oracle AI DB",
+  "component": "OpenAI Codex / NVIDIA Dynamo / Chroma / Oracle AI DB",
+  "source_name": "BleepingComputer / ZDI",
+  "url": "https://www.bleepingcomputer.com/news/security/hackers-earn-1262000-for-98-zero-days-at-pwn2own-ireland/",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "competition",
+   "coding-agent",
+   "llm-serving",
+   "gpu",
+   "nvidia"
+  ],
+  "note": "Code-exec wins, no CVEs yet (ZDI 90-day window). Day-2 detail from secondary snippets + Metir recap. Djini.ai AI-assist claim on a Galaxy S26 entry unverified (non-AI target)."
+ },
+ {
+  "date": "2026-10-09",
+  "severity": "Low",
+  "id": "OpenAI threat reports 10-08/09",
+  "title": "OpenAI: 'Disrupting AI-enabled false front operations' + Russia influence-campaign disruption reports",
+  "component": "OpenAI threat intel",
+  "source_name": "OpenAI news (via agents-radar digest)",
+  "url": "https://openai.com/news/",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "ai-attacker"
+  ],
+  "note": "Influence ops, not vulns; bodies not read. Weekly to check for Theme 27 relevance."
  }
 ];
 
