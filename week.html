@@ -122,8 +122,8 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-10-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-10-13";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-10-10 09:50 EDT";
-var CACHE_AGE_HOURS = null;
+var LAST_UPDATED = "2026-10-11 08:05 EDT";
+var CACHE_AGE_HOURS = 0.4;
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
@@ -151,7 +151,8 @@ var DAILY_SCANS = [
   "status": "critical",
   "note": "Lead [AI-DISCOVERED] Anthropic OSS Scanner + Glasswing→CVP merge; PraisonAI 10-GHSA batch; feed-light blogs UNCHECKED (Chrome disconnected)"
  },
- {"date": "2026-10-10", "criticals": 0, "highs": 2, "others": 1, "status": "high", "note": "FEED CACHE EMPTY (Mac populator DNS failure, all sources); subagent-only. Lead [AI-DISCOVERED] Anthropic unintended-actions report (Mythos Preview injection RCE); Pwn2Own IE final"}
+ {"date": "2026-10-10", "criticals": 0, "highs": 2, "others": 1, "status": "high", "note": "FEED CACHE EMPTY (Mac populator DNS failure, all sources); subagent-only. Lead [AI-DISCOVERED] Anthropic unintended-actions report (Mythos Preview injection RCE); Pwn2Own IE final"},
+ {"date": "2026-10-11", "criticals": 0, "highs": 4, "others": 6, "status": "high", "note": "Cache recovered (0.4h); window widened to 10-09 catch-up. Lead Zenity AgentCorruption (AWS AgentCore IMDS cred theft, agent-escape:P3, AWS disputes). No AI-discovered items. Feed-light blogs search-only (fetch-gated)."}
 ];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
@@ -1307,7 +1308,13 @@ var ITEMS = [
    "ai-attacker"
   ],
   "note": "Influence ops, not vulns; bodies not read. Weekly to check for Theme 27 relevance."
- }
+ },
+ {"date": "2026-10-09", "severity": "High", "id": "AgentCorruption (no CVE)", "title": "Zenity Labs AgentCorruption: one prompt to a public AWS Bedrock AgentCore agent reaches IMDS and steals role credentials", "component": "AWS Bedrock AgentCore", "source_name": "Zenity Labs / Dark Reading / The Register", "url": "https://labs.zenity.io/post/agentcorruption-how-a-single-prompt-collapsed-the-entire-cloud-security-model", "category": "Agent core", "ai_discovered": false, "ai_system": "", "technique": "prompt-injection-demo", "domain_tags": ["agent", "cloud-infra", "tool-attack", "agent-escape:P3"], "note": "Zenity (Tamir Ishay Sharbat, Lana Salameh), 10-08 SecTor; AWS statement 10-09 calls it expected/documented behaviour [attribution:disputed]. Firecracker microVM -> IMDS creds -> invoke other agents, read Secrets Manager, poison memory. Reported Dec; IMDSv2 default Feb. No CVE; No-CVSS escalation."},
+ {"date": "2026-10-10", "severity": "High", "id": "CVE-2026-108593", "title": "9router hermes-settings config injection writes hooks_auto_accept + post_llm_call shell hook into Hermes Agent config", "component": "9router 0.4.1-0.5.99 / Hermes Agent", "source_name": "GitHub Security Advisories", "url": "https://github.com/advisories/GHSA-chcq-pfxc-99ww", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["llm-serving", "agent-framework", "agent", "agent-escape:P1"], "note": "CVSS 6.4 (auth'd dashboard user) escalated: injected hook runs a shell command after each LLM call with approval disabled = config-is-instruction (P1)."},
+ {"date": "2026-10-10", "severity": "High", "id": "CVE-2026-108550", "title": "SkillHub account-merge flow returns verification token to attacker: takeover of victim API tokens, roles, namespace ownership", "component": "SkillHub < 0.2.22", "source_name": "GitHub Security Advisories", "url": "https://github.com/advisories/GHSA-wq7r-c6mg-rqv2", "category": "Skills / plugins", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent", "tool-attack"], "note": "CVSS 8.8. Agent-skill registry account takeover -> namespace ownership = skill supply-chain primitive (Theme 15)."},
+ {"date": "2026-10-10", "severity": "High", "id": "CVE-2026-108581", "title": "TencentCloud Octop missing authz on /api/providers leaks plaintext LLM + voice provider API keys", "component": "TencentCloud Octop <= 1.0.2b6", "source_name": "GitHub Security Advisories", "url": "https://github.com/advisories/GHSA-c344-c8vm-8rxv", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent", "llm-serving"], "note": "CVSS 6.5, escalated to High for key leakage (low-priv JWT -> upstream provider keys)."},
+ {"date": "2026-10-10", "severity": "Medium", "id": "CVE-2026-39801", "title": "AIWU (AI content plugin for WordPress) subscriber privilege escalation", "component": "AIWU <= 1.5.9", "source_name": "GitHub Security Advisories", "url": "https://github.com/advisories/GHSA-f2rq-v4f6-5f5j", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["ml-sec"], "note": "CVSS 9.8 but the AI nexus is thin (WP role bug in an AI-plugin, not an AI surface); logged as Other."},
+ {"date": "2026-10-09", "severity": "Low", "id": "ARTEX update", "title": "ARTEX developer closes the open-source multi-agent pentest tool after CrowdStrike links it to Korean bank intrusions", "component": "ARTEX (Autumn-27)", "source_name": "AI Weekly / The Hacker News", "url": "https://aiweekly.co/alerts/artex-developer-closes-ai-pentest-tool-after-korea-bank-hacks", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "runtime-telemetry", "domain_tags": ["ai-attacker", "vr-harness"], "note": "Update to the 10-07/08 Korean AI-agent intrusion wave; AhnLab/Yonhap say ARTEX use not confirmed [verify]."}
 ];
 
 var ALERTS = [
