@@ -122,8 +122,8 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-10-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-10-13";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-10-17 08:55 EDT";
-var CACHE_AGE_HOURS = 1.4;
+var LAST_UPDATED = "2026-10-18 09:30 EDT";
+var CACHE_AGE_HOURS = 1.5;
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
@@ -156,7 +156,8 @@ var DAILY_SCANS = [
  {"date": "2026-10-12", "criticals": 0, "highs": 13, "others": 4, "status": "high", "note": "No Critical in scope; MCP SDK/gateway cluster (hyper-mcp sig bypass x2, Unla OAuth, mcp-go/Kotlin DoS); mistral.rs sandbox escape agent-escape:P2; ai-attacker: CyberXero (SOCRadar) + 'Hands Off the Keyboard' (source unverified)"},
  {"date": "2026-10-13", "criticals": 2, "highs": 2, "others": 6, "status": "critical", "note": "LEAD [AI-DISCOVERED] Veria Labs AI agent: XRPL payment-engine counterfeiting bug (no CVE, fixed xrpld 3.4.1, $250K). sandboxed.sh container escape CVE-2026-109569 (agent-escape:P2). GitLab AI-agent instruction injection; Open WebUI terminal privesc. Direct blog checks blocked (provenance/browser)."},
  {"date": "2026-10-16", "criticals": 6, "highs": 6, "others": 10, "status": "critical", "note": "Catch-up 10-14→16 (10-14 died IN-PROGRESS, 10-15 missed). Lead [AI-DISCOVERED] XBOW Chrome chain; Claude Agent SDK + Archon + LangChat. Feed-light blogs mostly UNCHECKED."},
- {"date": "2026-10-17", "criticals": 4, "highs": 7, "others": 4, "status": "critical", "note": "HW-INTEL drop: NVIDIA AIStore 7-CVE cluster (10.0) + SGLang 9.8 + Ollama 9.4; Anthropic ECDSA-origins [AI-DISCOVERED, no vuln]"}
+ {"date": "2026-10-17", "criticals": 4, "highs": 7, "others": 4, "status": "critical", "note": "HW-INTEL drop: NVIDIA AIStore 7-CVE cluster (10.0) + SGLang 9.8 + Ollama 9.4; Anthropic ECDSA-origins [AI-DISCOVERED, no vuln]"},
+ {"date": "2026-10-18", "criticals": 2, "highs": 2, "others": 14, "status": "critical", "note": "LEAD [AI-DISCOVERED] Podman CVE-2026-94603 (ADA Logics + Claude, catch-up); Mage 9.8; Omnigent + Claude Code agent-escape:P2"}
 ];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
@@ -1369,7 +1370,14 @@ var ITEMS = [
  {"date": "2026-10-07", "severity": "High", "id": "CVE-2026-107183", "title": "llama.cpp < b11393 UAF/double free in common_chat_peg_mapper::map (unauth remote)", "component": "llama.cpp", "source_name": "NVD (HW-INTEL-2026-10-16)", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-107183", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["llm-serving", "gguf"], "note": "CVSS 8.1"},
  {"date": "2026-10-13", "severity": "High", "id": "CVE-2026-65103", "title": "NVIDIA AIStore object-rename path traversal (unauth)", "component": "NVIDIA AIStore", "source_name": "NVD (HW-INTEL-2026-10-16)", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-65103", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["gpu", "nvidia", "cloud-infra"], "note": "CVSS 8.1"},
  {"date": "2026-10-13", "severity": "High", "id": "CVE-2026-65164", "title": "NVIDIA AIStore dSort archive-extraction path traversal", "component": "NVIDIA AIStore", "source_name": "NVD (HW-INTEL-2026-10-16)", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-65164", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["gpu", "nvidia", "cloud-infra"], "note": "CVSS 8.1"},
- {"date": "2026-10-16", "severity": "Low", "id": "ANT-ECDSA-ORIGINS", "title": "[AI-DISCOVERED] Claude traced NIST P-curve seeds to lrand48 seeded with a Unix timestamp (not a break)", "component": "NIST P-192..P-521", "source_name": "Anthropic Research", "url": "https://www.anthropic.com/research/ecdsa-curve-origins", "category": "Protocol / crypto-ZK", "ai_discovered": true, "ai_system": "Claude (Anthropic Research, internal model)", "technique": "ai-assisted-scanning", "domain_tags": ["ai-finder"], "note": "No vuln per Anthropic; Theme 16 cryptanalysis datapoint; [attribution:vendor-confirmed]"}
+ {"date": "2026-10-16", "severity": "Low", "id": "ANT-ECDSA-ORIGINS", "title": "[AI-DISCOVERED] Claude traced NIST P-curve seeds to lrand48 seeded with a Unix timestamp (not a break)", "component": "NIST P-192..P-521", "source_name": "Anthropic Research", "url": "https://www.anthropic.com/research/ecdsa-curve-origins", "category": "Protocol / crypto-ZK", "ai_discovered": true, "ai_system": "Claude (Anthropic Research, internal model)", "technique": "ai-assisted-scanning", "domain_tags": ["ai-finder"], "note": "No vuln per Anthropic; Theme 16 cryptanalysis datapoint; [attribution:vendor-confirmed]"},
+ {"date": "2026-10-15", "severity": "Critical", "id": "CVE-2026-94603", "title": "[AI-DISCOVERED] Podman checkpoint image disables sandboxing", "component": "Podman", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-2cvf-wqm6-wr9g", "category": "AI infra", "ai_discovered": true, "ai_system": "Claude (ADA Logics)", "technique": "ai-assisted-scanning", "domain_tags": ["container", "ai-finder"], "note": "Catch-up; credit 'ADA Logics Ltd using Anthropic's Claude models' [attribution:vendor-confirmed, verify]"},
+ {"date": "2026-10-17", "severity": "Critical", "id": "CVE-2026-111823", "title": "Mage OSS OAuth unknown-provider auth bypass", "component": "mage-ai", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-93gm-r5p2-wxq7", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["ml-sec"], "note": "9.8 vector; borderline AI nexus"},
+ {"date": "2026-10-18", "severity": "High", "id": "CVE-2026-112015", "title": "Omnigent nested sub-agent os_env.cwd workspace escape", "component": "Omnigent", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-vg9j-3mjv-5cq3", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent-framework", "agent", "agent-escape:P2"], "note": "Root-only validation; check credits (Aeon)"},
+ {"date": "2026-10-15", "severity": "High", "id": "CVE-2026-86063", "title": "Claude Code plugin hash-pin bypass", "component": "Claude Code", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-pq7j-f95f-qfcv", "category": "Coding agent / IDE", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["coding-agent", "agent-escape:P2"], "note": "Plugin4Shell sibling; catch-up"},
+ {"date": "2026-10-17", "severity": "Medium", "id": "CVE-2026-111926", "title": "Coder agent debug server leaks template secrets via loopback", "component": "Coder", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-3gj5-9m6g-289w", "category": "Coding agent / IDE", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["coding-agent", "cloud-infra", "agent-escape:P3"], "note": "127.0.0.1:2113 unauth"},
+ {"date": "2026-10-18", "severity": "Medium", "id": "CVE-2026-112014", "title": "LobsterAI hardcoded export key exposes AI provider API keys", "component": "LobsterAI", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-rpw3-ccp2-4v8w", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent-framework", "agent"], "note": ""},
+ {"date": "2026-10-18", "severity": "Low", "id": "CVE-2026-111985", "title": "A1111 SD-webui safetensors header DoS", "component": "stable-diffusion-webui", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-q7gh-5v92-ww7h", "category": "Model / multimodal", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["safetensors", "ml-sec"], "note": "public PoC"}
 ];
 
 var ALERTS = [
@@ -1390,7 +1398,8 @@ var ALERTS = [
  },
  {"date": "2026-10-13 0800", "title": "[AI-DISCOVERED] XRPL counterfeiting bug (Veria AI) + sandboxed.sh agent container escape", "drive_url": "https://docs.google.com/document/d/1u4L-aCO_KWxrrIREpfb_FbtitQH3utB0DuhLFMh6WpM/edit?usp=drivesdk"},
  {"date": "2026-10-16 2230", "title": "[AI-DISCOVERED] XBOW Chrome chain + Claude Agent SDK / Archon / LangChat criticals", "drive_url": "https://docs.google.com/document/d/1IWLxWOYeYOxgJi809BIMK9kud28Fl-ZOUIvWGNnsroQ/edit?usp=drivesdk"},
- {"date": "2026-10-17 0845", "title": "NVIDIA AIStore 10.0 cluster + SGLang 9.8 + Ollama 9.4", "drive_url": "https://docs.google.com/document/d/14oHmE_el8JvFcBBNhdBzbh2LsbajLAVJgxMZZjQajvg/edit?usp=drivesdk"}
+ {"date": "2026-10-17 0845", "title": "NVIDIA AIStore 10.0 cluster + SGLang 9.8 + Ollama 9.4", "drive_url": "https://docs.google.com/document/d/14oHmE_el8JvFcBBNhdBzbh2LsbajLAVJgxMZZjQajvg/edit?usp=drivesdk"},
+ {"date": "2026-10-18 0930", "title": "[AI-DISCOVERED] Podman CVE-2026-94603 (ADA Logics+Claude) + Mage 9.8", "drive_url": "https://docs.google.com/document/d/13v-IwrIoJBUyD3fRWSeWboNPjNryumny3D4gJP3Sk5U/edit?usp=drivesdk"}
 ];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
