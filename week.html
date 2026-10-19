@@ -122,8 +122,8 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-10-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-10-13";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-10-18 09:30 EDT";
-var CACHE_AGE_HOURS = 1.5;
+var LAST_UPDATED = "2026-10-19 08:05 EDT";
+var CACHE_AGE_HOURS = 3.2;
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
@@ -157,7 +157,8 @@ var DAILY_SCANS = [
  {"date": "2026-10-13", "criticals": 2, "highs": 2, "others": 6, "status": "critical", "note": "LEAD [AI-DISCOVERED] Veria Labs AI agent: XRPL payment-engine counterfeiting bug (no CVE, fixed xrpld 3.4.1, $250K). sandboxed.sh container escape CVE-2026-109569 (agent-escape:P2). GitLab AI-agent instruction injection; Open WebUI terminal privesc. Direct blog checks blocked (provenance/browser)."},
  {"date": "2026-10-16", "criticals": 6, "highs": 6, "others": 10, "status": "critical", "note": "Catch-up 10-14→16 (10-14 died IN-PROGRESS, 10-15 missed). Lead [AI-DISCOVERED] XBOW Chrome chain; Claude Agent SDK + Archon + LangChat. Feed-light blogs mostly UNCHECKED."},
  {"date": "2026-10-17", "criticals": 4, "highs": 7, "others": 4, "status": "critical", "note": "HW-INTEL drop: NVIDIA AIStore 7-CVE cluster (10.0) + SGLang 9.8 + Ollama 9.4; Anthropic ECDSA-origins [AI-DISCOVERED, no vuln]"},
- {"date": "2026-10-18", "criticals": 2, "highs": 2, "others": 14, "status": "critical", "note": "LEAD [AI-DISCOVERED] Podman CVE-2026-94603 (ADA Logics + Claude, catch-up); Mage 9.8; Omnigent + Claude Code agent-escape:P2"}
+ {"date": "2026-10-18", "criticals": 2, "highs": 2, "others": 14, "status": "critical", "note": "LEAD [AI-DISCOVERED] Podman CVE-2026-94603 (ADA Logics + Claude, catch-up); Mage 9.8; Omnigent + Claude Code agent-escape:P2"},
+ {"date": "2026-10-19", "criticals": 3, "highs": 1, "others": 7, "status": "critical", "note": "LEAD [AI-DISCOVERED] PwnEscape CVE-2026-99999 KVM guest-to-host (Omega-Pwn + GPT-5.6 Sol, catch-up); Google Agent Mesh MCP authz x2; core-voice/feed-light direct-checks UNCHECKED (fetch blocked)"}
 ];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
@@ -1377,7 +1378,11 @@ var ITEMS = [
  {"date": "2026-10-15", "severity": "High", "id": "CVE-2026-86063", "title": "Claude Code plugin hash-pin bypass", "component": "Claude Code", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-pq7j-f95f-qfcv", "category": "Coding agent / IDE", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["coding-agent", "agent-escape:P2"], "note": "Plugin4Shell sibling; catch-up"},
  {"date": "2026-10-17", "severity": "Medium", "id": "CVE-2026-111926", "title": "Coder agent debug server leaks template secrets via loopback", "component": "Coder", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-3gj5-9m6g-289w", "category": "Coding agent / IDE", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["coding-agent", "cloud-infra", "agent-escape:P3"], "note": "127.0.0.1:2113 unauth"},
  {"date": "2026-10-18", "severity": "Medium", "id": "CVE-2026-112014", "title": "LobsterAI hardcoded export key exposes AI provider API keys", "component": "LobsterAI", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-rpw3-ccp2-4v8w", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent-framework", "agent"], "note": ""},
- {"date": "2026-10-18", "severity": "Low", "id": "CVE-2026-111985", "title": "A1111 SD-webui safetensors header DoS", "component": "stable-diffusion-webui", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-q7gh-5v92-ww7h", "category": "Model / multimodal", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["safetensors", "ml-sec"], "note": "public PoC"}
+ {"date": "2026-10-18", "severity": "Low", "id": "CVE-2026-111985", "title": "A1111 SD-webui safetensors header DoS", "component": "stable-diffusion-webui", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-q7gh-5v92-ww7h", "category": "Model / multimodal", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["safetensors", "ml-sec"], "note": "public PoC"},
+ {"date": "2026-10-15", "severity": "Critical", "id": "CVE-2026-99999", "title": "PwnEscape: Linux KVM guest-to-host escape via checksum-metadata IPv4 header rewrite", "component": "Linux kernel (net/ipv4, virtio-net)", "source_name": "pwn.ai", "url": "https://pwn.ai/blog/pwnescape", "category": "AI infra", "ai_discovered": true, "ai_system": "Omega-Pwn (pwn.ai, GPT-5.6 Sol)", "technique": "ai-assisted-scanning", "domain_tags": ["kernel", "cloud-infra", "container", "ai-finder", "vr-harness"], "note": "CVSS 9.3; [AI-DISCOVERED] [attribution:vendor-confirmed self-credited]; Vercel $1M Sandbox challenge; fix 6785011f8b16; catch-up (Register follow-up 10-19)"},
+ {"date": "2026-10-19", "severity": "Critical", "id": "GHSA-vc9x-qg3j-cxg6", "title": "Google OSS Agent Mesh (SAM) libp2p ingress missing auth: invoke any MCP/A2A/inference backend", "component": "google/agentmesh (SAM) alpha.1-alpha.2", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-vc9x-qg3j-cxg6", "category": "MCP", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["mcp-server", "mcp", "agent-framework", "tool-attack"], "note": "CWE-306/862; CVE pending lookup"},
+ {"date": "2026-10-19", "severity": "Critical", "id": "GHSA-qx8v-pq9p-7g7v", "title": "Google OSS Agent Mesh (SAM) MCP proxy + OIDC self-registration: invoke tools across all nodes", "component": "google/agentmesh (SAM) alpha.1-alpha.8", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-qx8v-pq9p-7g7v", "category": "MCP", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["mcp-server", "mcp", "agent-framework", "tool-attack"], "note": "CWE-862/1188; CVE pending lookup"},
+ {"date": "2026-10-19", "severity": "High", "id": "GHSA-j823-x22q-54wf", "title": "SGLang <=0.5.19 expert-distribution endpoint remote DoS", "component": "SGLang", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-j823-x22q-54wf", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["llm-serving", "ml-sec"], "note": "CVSS 7.5; public exploit; fix PR unmerged"}
 ];
 
 var ALERTS = [
@@ -1399,7 +1404,8 @@ var ALERTS = [
  {"date": "2026-10-13 0800", "title": "[AI-DISCOVERED] XRPL counterfeiting bug (Veria AI) + sandboxed.sh agent container escape", "drive_url": "https://docs.google.com/document/d/1u4L-aCO_KWxrrIREpfb_FbtitQH3utB0DuhLFMh6WpM/edit?usp=drivesdk"},
  {"date": "2026-10-16 2230", "title": "[AI-DISCOVERED] XBOW Chrome chain + Claude Agent SDK / Archon / LangChat criticals", "drive_url": "https://docs.google.com/document/d/1IWLxWOYeYOxgJi809BIMK9kud28Fl-ZOUIvWGNnsroQ/edit?usp=drivesdk"},
  {"date": "2026-10-17 0845", "title": "NVIDIA AIStore 10.0 cluster + SGLang 9.8 + Ollama 9.4", "drive_url": "https://docs.google.com/document/d/14oHmE_el8JvFcBBNhdBzbh2LsbajLAVJgxMZZjQajvg/edit?usp=drivesdk"},
- {"date": "2026-10-18 0930", "title": "[AI-DISCOVERED] Podman CVE-2026-94603 (ADA Logics+Claude) + Mage 9.8", "drive_url": "https://docs.google.com/document/d/13v-IwrIoJBUyD3fRWSeWboNPjNryumny3D4gJP3Sk5U/edit?usp=drivesdk"}
+ {"date": "2026-10-18 0930", "title": "[AI-DISCOVERED] Podman CVE-2026-94603 (ADA Logics+Claude) + Mage 9.8", "drive_url": "https://docs.google.com/document/d/13v-IwrIoJBUyD3fRWSeWboNPjNryumny3D4gJP3Sk5U/edit?usp=drivesdk"},
+ {"date": "2026-10-19 0805", "title": "PwnEscape KVM escape [AI-DISCOVERED] + Google Agent Mesh MCP authz x2", "drive_url": "https://docs.google.com/document/d/1ggdX8l1rhZ_zv6DhNNTqPgjbCBp2U6UPlMGwAJ_4ut0/edit"}
 ];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
