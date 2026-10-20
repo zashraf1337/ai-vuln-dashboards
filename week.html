@@ -126,10 +126,18 @@ var LAST_UPDATED = "2026-10-20 12:45 EDT";
 var CACHE_AGE_HOURS = 0.1;
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [];
+var DAILY_SCANS = [
+ {"date": "2026-10-20", "criticals": 1, "highs": 4, "others": 0, "status": "critical", "note": "Re-seeded after the weekly reset: only the 10-20 daily items the weekly did NOT fold into \u00a78 (Mercury 10.0, Wiz CIRT ai-attacker, crewai SSRF, LoopX, Elastic npm). The rest of the 10-20 daily is in \u00a78 v4.20."}
+];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
-var ITEMS = [];
+var ITEMS = [
+ {"date": "2026-10-19", "severity": "Critical", "id": "CVE-2026-111057", "title": "Mercury unauth RCE via /api/terminals (blocklist missing comma)", "component": "Mercury", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-f8c7-rwf9-fmgm", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent-framework", "agent"], "note": "CVSS 10.0; NOT yet in §8 (missed by the 10-20 weekly fold)"},
+ {"date": "2026-10-19", "severity": "High", "id": "wiz-ai-driven-cloud-attack", "title": "Wiz CIRT: AI agent ran end-to-end multi-cloud intrusion (Kafka UI RCE → AWS org admin)", "component": "Kafka UI / AWS / GCP / K8s", "source_name": "Wiz", "url": "https://www.wiz.io/blog/anatomy-of-ai-driven-cloud-attacks", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "runtime-telemetry", "domain_tags": ["ai-attacker", "agent", "cloud-infra", "container"], "note": "Theme 27 quadrant (b); 600+ envs scanned; NOT yet in §8"},
+ {"date": "2026-10-19", "severity": "High", "id": "CVE-2026-112308", "title": "crewai-tools SeleniumScrapingTool SSRF (no validate_url)", "component": "crewai-tools <=1.15.28", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-5595-9g9c-5cc4", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent-framework", "tool-attack", "cloud-infra"], "note": "CVSS 7.4; NOT yet in §8"},
+ {"date": "2026-10-19", "severity": "High", "id": "CVE-2026-108372", "title": "LoopX serve-status ACAO:* on loopback leaks control-plane + repo Markdown", "component": "LoopX", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-vx2m-gpq4-8j5q", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent-framework", "agent"], "note": "P3-shaped, not tagged; NOT yet in §8"},
+ {"date": "2026-10-19", "severity": "High", "id": "elastic-fake-web3-npm", "title": "Fake Web3 accelerator npm packages deliver stealers + hijack AI agent traffic", "component": "npm", "source_name": "The Hacker News (Elastic)", "url": "https://thehackernews.com/2026/10/fake-web3-accelerator-uses-npm-packages.html", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "runtime-telemetry", "domain_tags": ["agent", "web3", "tool-attack"], "note": "NOT yet in §8"}
+];
 
 var ALERTS = [];
 
