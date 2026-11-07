@@ -122,16 +122,183 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-11-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-11-10";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-11-06 14:00 EST";
-var CACHE_AGE_HOURS = 0.05;
+var LAST_UPDATED = "2026-11-07 07:50 EST";
+var CACHE_AGE_HOURS = 0.2;
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [];
+var DAILY_SCANS = [{"date": "2026-11-07", "criticals": 3, "highs": 4, "others": 7, "status": "critical", "note": "GPUStack ×2 + MLflow via HW-INTEL; Apiiro Claude Code secrets; ARTEX Storm-3358; Knostic Doomsday Escrow"}];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
-var ITEMS = [];
+var ITEMS = [
+ {
+  "date": "2026-11-04",
+  "severity": "Critical",
+  "id": "CVE-2026-102895",
+  "title": "GPUStack get_current_user auth flaw",
+  "component": "GPUStack <2.2.0",
+  "source_name": "NVD (HW-INTEL)",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-102895",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "gpu",
+   "cloud-infra"
+  ],
+  "note": "CVSS 9.8; HW-INTEL 2026-11-06"
+ },
+ {
+  "date": "2026-11-04",
+  "severity": "Critical",
+  "id": "CVE-2026-102894",
+  "title": "GPUStack /auth/saml/callback flaw",
+  "component": "GPUStack 0.7.1–2.2.2",
+  "source_name": "NVD (HW-INTEL)",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-102894",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "gpu",
+   "cloud-infra"
+  ],
+  "note": "CVSS 9.1"
+ },
+ {
+  "date": "2026-11-04",
+  "severity": "High",
+  "id": "CVE-2026-103002",
+  "title": "GPUStack cluster_apiserver_proxy flaw",
+  "component": "GPUStack 2.2.0–2.2.2",
+  "source_name": "NVD (HW-INTEL)",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-103002",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "llm-serving",
+   "gpu",
+   "cloud-infra"
+  ],
+  "note": "CVSS 8.8"
+ },
+ {
+  "date": "2026-10-27",
+  "severity": "Critical",
+  "id": "CVE-2026-116692",
+  "title": "MLflow critical (3.12.0rc0–<3.17.0)",
+  "component": "MLflow",
+  "source_name": "NVD (HW-INTEL)",
+  "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-116692",
+  "category": "AI infra",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "not-disclosed",
+  "domain_tags": [
+   "ml-sec",
+   "llm-serving"
+  ],
+  "note": "CVSS 9.8; fixed 3.17.0; summary truncated in drop"
+ },
+ {
+  "date": "2026-11-06",
+  "severity": "High",
+  "id": "no-CVE (Apiiro)",
+  "title": "Claude Code 'don't ask again' file exposes secrets in 1,122 public GitHub copies",
+  "component": "Claude Code .claude/settings.local.json",
+  "source_name": "Apiiro via The Hacker News",
+  "url": "https://thehackernews.com/2026/11/claude-codes-dont-ask-again-file.html",
+  "category": "Coding agent / IDE",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "coding-agent",
+   "agent"
+  ],
+  "note": "2,539 secrets / 1,994 repos incl. history+forks; 1 live key confirmed; only 1 of 16 agents saves full command by default"
+ },
+ {
+  "date": "2026-11-06",
+  "severity": "High",
+  "id": "no-CVE (MS TI)",
+  "title": "ARTEX abuse expands: Storm-3358 targets financial sector",
+  "component": "ARTEX offensive agent framework",
+  "source_name": "Microsoft Threat Intelligence",
+  "url": "https://www.microsoft.com/en-us/security/blog/2026/11/06/artex-abuse-expands-as-cybercriminals-target-financial-sector/",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "runtime-telemetry",
+  "domain_tags": [
+   "ai-attacker",
+   "agent",
+   "vr-harness"
+  ],
+  "note": "Theme 27; 2nd named ARTEX operator; SSRF + anon upload → WISP/vshell/AdaptixC2 RATs"
+ },
+ {
+  "date": "2026-11-07",
+  "severity": "High",
+  "id": "no-CVE (Knostic)",
+  "title": "Doomsday Escrow skill: self-certified 'on-chain' escrow + private key sent to backend",
+  "component": "doomsday-escrow agent skill",
+  "source_name": "Knostic",
+  "url": "https://www.knostic.ai/blog/doomsday-escrow-when-a-bounty-verifier-certifies-its-own-claims",
+  "category": "Skills / plugins",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "static-analysis",
+  "domain_tags": [
+   "agent",
+   "tool-attack",
+   "web3"
+  ],
+  "note": "Flagged by Knostic AgentMesh; static analysis; repo gone; conditional key exposure"
+ },
+ {
+  "date": "2026-11-06",
+  "severity": "Low",
+  "id": "—",
+  "title": "Hacktron AI × OpenAI partnership (Daybreak Red access)",
+  "component": "OpenAI third-party connections",
+  "source_name": "Hacktron AI",
+  "url": "https://www.hacktron.ai/blog/openai-partnership",
+  "category": "Agent ecosystem",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "vr-harness",
+   "ai-finder"
+  ],
+  "note": "Track-record update"
+ },
+ {
+  "date": "2026-11-06",
+  "severity": "Low",
+  "id": "—",
+  "title": "Agents reveal secrets when offered to team up",
+  "component": "multi-agent systems",
+  "source_name": "The Register",
+  "url": "https://www.theregister.com/security/2026/11/06/agents-reveal-secrets-when-offered-to-team-up-with-each-other/5308260",
+  "category": "Agent core",
+  "ai_discovered": false,
+  "ai_system": "",
+  "technique": "research",
+  "domain_tags": [
+   "agent"
+  ],
+  "note": "Collusion research; paper unconfirmed"
+ }
+];
 
-var ALERTS = [];
+var ALERTS = [{"date": "2026-11-07 0745", "title": "GPUStack \u00d72 + MLflow critical", "drive_url": "https://docs.google.com/document/d/1N0FzhtazJ1m2W3HUqIYg7K1ZWVCZH8xS_dnDU9lraN0/edit?usp=drivesdk&ouid=113026484200967021090"}];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
 // RESTORED 2026-08-15: this const and FULL_DASHBOARD_URL below were referenced by buildFilters()/init()
