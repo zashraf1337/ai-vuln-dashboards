@@ -122,14 +122,17 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-11-06";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-11-10";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-11-07 07:50 EST";
-var CACHE_AGE_HOURS = 0.2;
+var LAST_UPDATED = "2026-11-08 08:55 EST";
+var CACHE_AGE_HOURS = 7.7;
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [{"date": "2026-11-07", "criticals": 3, "highs": 4, "others": 7, "status": "critical", "note": "GPUStack ×2 + MLflow via HW-INTEL; Apiiro Claude Code secrets; ARTEX Storm-3358; Knostic Doomsday Escrow"}];
+var DAILY_SCANS = [{"date": "2026-11-07", "criticals": 3, "highs": 4, "others": 7, "status": "critical", "note": "GPUStack ×2 + MLflow via HW-INTEL; Apiiro Claude Code secrets; ARTEX Storm-3358; Knostic Doomsday Escrow"}, {"date": "2026-11-08", "criticals": 0, "highs": 3, "others": 14, "status": "high", "note": "Feed cache stale (Mac DNS outage); main-thread search sweep. Lead: Strix AI-found n8n CVE-2026-59208 (not in catalog). mcp-go + ChatCLI OAuth resource-indicator confusion."}];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
 var ITEMS = [
+{"date": "2026-07-15", "severity": "High", "id": "CVE-2026-59208", "title": "n8n token-exchange cross-issuer account takeover (identity keyed on sub only)", "component": "n8n <2.28.1 / <2.27.4", "source_name": "Strix blog", "url": "https://www.strix.ai/blog/n8n-cross-issuer-account-takeover", "category": "Agent ecosystem", "ai_discovered": true, "ai_system": "Strix (OmniSecure)", "technique": "ai-assisted-scanning", "domain_tags": ["agent-framework", "agent", "ai-finder", "vr-harness"], "note": "GHSA-mq3m-f8x3-579w (High). Found autonomously by a 32-agent Strix run, dynamically validated; [attribution:claimed]. Not in §8 — catch-up surfaced 11-08."},
+{"date": "2026-11-05", "severity": "High", "id": "CVE-2026-123272", "title": "mcp-go OAuth: malicious MCP server declares another server as RFC 8707 resource → token replay", "component": "mark3labs mcp-go <1.2.1", "source_name": "NVD / VulnCheck", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-123272", "category": "MCP", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["mcp-server", "mcp", "tool-attack"], "note": "CVSS 3.1 8.0 / 4.0 5.1, CWE-346, GHSA-xf6j-693p-wqxx. Missed 11-06/11-07 (feed); catch-up."},
+{"date": "2026-11-05", "severity": "High", "id": "CVE-2026-123271", "title": "ChatCLI improper validation (8.0) — likely same OAuth-metadata class as mcp-go", "component": "ChatCLI <1.215.2", "source_name": "NVD (via Strix CVE DB)", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-123271", "category": "Coding agent / IDE", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["mcp", "agent", "tool-attack"], "note": "CVSS 8.0; description truncated in source — [verify] class before §8."},
  {
   "date": "2026-11-04",
   "severity": "Critical",
