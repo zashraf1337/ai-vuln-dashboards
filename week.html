@@ -122,16 +122,183 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-11-10";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-11-17";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-11-10 13:30 EST";
-var CACHE_AGE_HOURS = 0.4;
+var LAST_UPDATED = "2026-11-11 09:50 EST";
+var CACHE_AGE_HOURS = 0.3;
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [];
+var DAILY_SCANS = [{"date": "2026-11-11", "criticals": 3, "highs": 4, "others": 9, "status": "critical", "note": "No AI-discovered items; GPUStack -102894 SAML is an update (already in \u00a78)."}];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
-var ITEMS = [];
+var ITEMS = [
+{
+"date": "2026-11-10",
+"severity": "Critical",
+"id": "NEAR-AI-SGLang-ITW",
+"title": "SGLang RCE exploited ITW vs NEAR AI inference server (18 agents, ~100 users; TEE confidential-mode traffic visible)",
+"component": "SGLang",
+"source_name": "The Hacker News",
+"url": "https://thehackernews.com/2026/11/sglang-rce-exploit-breaches-near-ai.html",
+"category": "AI infra",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "runtime-telemetry",
+"domain_tags": [
+"llm-serving",
+"gpu",
+"confidential-computing",
+"agent"
+],
+"note": "In-the-wild 11-08; CVE not named in coverage (weekly to pin)."
+},
+{
+"date": "2026-11-10",
+"severity": "Critical",
+"id": "CVE-2026-119990",
+"title": "Azure OpenAI missing auth for critical function (EoP)",
+"component": "Azure OpenAI",
+"source_name": "Cisco Talos / MSRC",
+"url": "https://blog.talosintelligence.com/microsoft-patch-tuesday-for-november-2026/",
+"category": "AI infra",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "not-disclosed",
+"domain_tags": [
+"llm-serving",
+"cloud-infra"
+],
+"note": "CVSS 9.8; Nov 2026 Patch Tuesday (1095 CVEs). MDASH credit unchecked."
+},
+{
+"date": "2026-11-10",
+"severity": "Critical",
+"id": "CVE-2026-44685 / -61473 / -61887",
+"title": "Intel TDX MigTD authentication bypass x3 (spoofing, capture-replay, SPDM rebind)",
+"component": "Intel TDX MigTD",
+"source_name": "GitHub Security Advisories",
+"url": "https://github.com/advisories/GHSA-qqpw-8vxp-rgj6",
+"category": "AI infra",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "not-disclosed",
+"domain_tags": [
+"confidential-computing",
+"kernel"
+],
+"note": "GHSA critical, no CVSS; -61887 adjacent-network RCE."
+},
+{
+"date": "2026-11-11",
+"severity": "High",
+"id": "CVE-2026-92544 (+4)",
+"title": "Kong AI Gateway: SQLi via crafted model name in LLM usage counters + cross-caller cache leaks + CRLF smuggling",
+"component": "Kong AI Gateway",
+"source_name": "GitHub Security Advisories",
+"url": "https://github.com/advisories/GHSA-jvch-w6fx-vccj",
+"category": "AI infra",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "not-disclosed",
+"domain_tags": [
+"llm-serving",
+"cloud-infra"
+],
+"note": "Cluster: -92544, -123041, -92443, -92545, -92441."
+},
+{
+"date": "2026-11-11",
+"severity": "High",
+"id": "CVE-2026-24269",
+"title": "TensorRT-LLM disaggregated serving: unauth encoded_opaque_state \u2192 SSRF / KV-cache injection / RDMA exposure",
+"component": "NVIDIA TensorRT-LLM",
+"source_name": "Mindgard",
+"url": "https://mindgard.ai/blog/nvidia-tensorrt-llm-hidden-execution-layer",
+"category": "AI infra",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "manual-code-review",
+"domain_tags": [
+"llm-serving",
+"tensorrt",
+"nvidia",
+"gpu"
+],
+"note": "CVSS 7.1; Aaron Portnoy; NVIDIA bulletin 5883."
+},
+{
+"date": "2026-11-09",
+"severity": "High",
+"id": "Knostic-ifasn-mcp",
+"title": "Malicious npm MCP servers @ifasn/mmdd-doc-mcp + ms-doc-mcp harvest cmdlines, cloud metadata, env secrets",
+"component": "@ifasn MCP packages",
+"source_name": "Knostic",
+"url": "https://www.knostic.ai/blog/more-than-markdown-hidden-data-collection-in-two-mcp-packages",
+"category": "MCP",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "static-analysis",
+"domain_tags": [
+"mcp-server",
+"mcp",
+"tool-attack"
+],
+"note": "No CVE; AgentMesh (rule-based) + human review; exfil IP 121.199.24.94."
+},
+{
+"date": "2026-11-11",
+"severity": "High",
+"id": "GHSA-376f-cc2v-g94c",
+"title": "Ledger Zcash app 3.9.3: non-ASCII memo crash wipes Ledger Stax pre-review",
+"component": "Ledger Zcash app",
+"source_name": "Zcash forum",
+"url": "https://forum.zcashcommunity.com/t/retroactive-grant-application-ledger-zcash-app-vulnerability-disclosure-memo-crash-and-device-wipe-ghsa-376f-cc2v-g94c/59194",
+"category": "Protocol / crypto-ZK",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "manual-code-review",
+"domain_tags": [
+"web3"
+],
+"note": "Vendor Critical; fixed 3.9.4 Sep; disclosed via retro grant 11-11; piatoss3612."
+},
+{
+"date": "2026-11-10",
+"severity": "Medium",
+"id": "MSR-sleeper-neurons",
+"title": "Sleeper-agent backdoor by editing <10 neurons (detection by frontier agents)",
+"component": "LLM weights",
+"source_name": "Microsoft Security Blog",
+"url": "https://www.microsoft.com/en-us/security/blog/2026/11/10/detecting-sleeper-agents-hiding-in-ai-model-neurons/",
+"category": "Model / multimodal",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "research",
+"domain_tags": [
+"ml-sec",
+"agent"
+],
+"note": "Needs weight-write access; research."
+},
+{
+"date": "2026-11-10",
+"severity": "Low",
+"id": "arXiv-2611.13684",
+"title": "BypassGym: benchmark for AI agents' EDR evasion",
+"component": "benchmark",
+"source_name": "arXiv",
+"url": "https://arxiv.org/abs/2611.13684v1",
+"category": "Agent core",
+"ai_discovered": false,
+"ai_system": "",
+"technique": "research",
+"domain_tags": [
+"vr-harness",
+"ai-attacker"
+],
+"note": "Offensive-AI capability benchmark."
+}
+];
 
-var ALERTS = [];
+var ALERTS = [{"date": "2026-11-11 0948", "title": "SGLang ITW (NEAR AI) + Azure OpenAI 9.8 + Intel MigTD", "drive_url": "https://docs.google.com/document/d/1jdNzeshShn4r88iZv1X1Qnafj13Da3fsJz9oOagp4BA/edit"}];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
 // RESTORED 2026-08-15: this const and FULL_DASHBOARD_URL below were referenced by buildFilters()/init()
