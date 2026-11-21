@@ -122,14 +122,15 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-11-17";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-11-24";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-11-20 07:49 EST";
-var CACHE_AGE_HOURS = 0.2;
+var LAST_UPDATED = "2026-11-21 08:20 EST";
+var CACHE_AGE_HOURS = 1.5;
 
 // One entry per daily scan run — reset for new cycle
 var DAILY_SCANS = [
 {"date": "2026-11-18", "criticals": 1, "highs": 17, "others": 7, "status": "critical", "note": "MS agent-framework PyPI hijack; NVIDIA OpenShell 13 CVEs (agent-escape P2)"},
 {"date": "2026-11-19", "criticals": 3, "highs": 17, "others": 13, "status": "critical", "note": "[AI-DISCOVERED] nginx2root (Xint automated scan); Todoist MCP 9.3; Zyrabit 9.1; LiteLLM -40217 to KEV"},
-{"date": "2026-11-20", "criticals": 3, "highs": 7, "others": 28, "status": "critical", "note": "jupyter-mcp-server DNS-rebind hijack; Flyto2 incomplete fix; NVIDIA BlueField 9.0; Junie agent-escape P2; mcp-doctor StealC"}
+{"date": "2026-11-20", "criticals": 3, "highs": 7, "others": 28, "status": "critical", "note": "jupyter-mcp-server DNS-rebind hijack; Flyto2 incomplete fix; NVIDIA BlueField 9.0; Junie agent-escape P2; mcp-doctor StealC"},
+{"date": "2026-11-21", "criticals": 1, "highs": 0, "others": 8, "status": "critical", "note": "[AI-DISCOVERED + ai-attacker] Cairn agents found+exploited MONAI Label 0-day (Amazon TI); [AI-DISCOVERED] Bitcoin Core CVE-2026-117348 (Loupe)"}
 ];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
@@ -193,13 +194,18 @@ var ITEMS = [
 {"date": "2026-11-20", "severity": "High", "id": "SOCRadar-BabidiGhost", "title": "BabidiGhost: AI-augmented cybercrime operation vs European banks/insurers", "component": "\u2014", "source_name": "SOCRadar", "url": "https://socradar.io/blog/babidighost-ai-augmented-cybercrime/", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "runtime-telemetry", "domain_tags": ["ai-attacker", "agent"], "note": "Theme 27; body unread"},
 {"date": "2026-11-19", "severity": "High", "id": "CVE-2026-128135", "title": "NLTK ZipFile follows in-root hardlinks \u2192 overwrite outside data root", "component": "NLTK", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-wr3g-j6qj-xpgh", "category": "Model / multimodal", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["ml-sec"], "note": "7.1"},
 {"date": "2026-11-19", "severity": "Medium", "id": "CVE-2026-133505", "title": "Pydantic AI rebuilds file-shaped tool results as files on history reload", "component": "Pydantic AI", "source_name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133505", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["agent-framework", "tool-attack"], "note": "5.9; Theme 26"},
-{"date": "2026-11-20", "severity": "Medium", "id": "CVE-2026-24205", "title": "NVIDIA TensorRT-LLM race condition \u2192 data tampering", "component": "TensorRT-LLM", "source_name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-24205", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["nvidia", "tensorrt", "llm-serving"], "note": "6.4"}
+{"date": "2026-11-20", "severity": "Medium", "id": "CVE-2026-24205", "title": "NVIDIA TensorRT-LLM race condition \u2192 data tampering", "component": "TensorRT-LLM", "source_name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-24205", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["nvidia", "tensorrt", "llm-serving"], "note": "6.4"},
+{"date": "2026-11-20", "severity": "Critical", "id": "GHSA-qc22-rmgc-vg94", "title": "Cairn AI agents autonomously found + exploited MONAI Label path-traversal 0-day \u2192 root on university server", "component": "MONAI Label", "source_name": "The Register / Amazon TI", "url": "https://www.theregister.com/security/2026/11/20/china-attackers-deployed-ai-agents-that-autonomously-found-and-exploited-a-0-day-to-take-over-a-university-server/5311382", "category": "AI infra", "ai_discovered": true, "ai_system": "autonomous offensive AI agent (LLM undisclosed) \u2014 Cairn", "technique": "ai-assisted-scanning", "domain_tags": ["ai-attacker", "ai-finder", "agent-orchestrator", "llm-serving", "ml-sec"], "note": "ITW Sep 8\u201310 2026, China-nexus; file write in ~11 min \u2192 root reverse shell; Theme 27 quadrant (a); AWS primary post blocked by provenance"},
+{"date": "2026-11-20", "severity": "Medium", "id": "CVE-2026-117348", "title": "Bitcoin Core node stall via one txid repeated 50,000 times (found by Project Loupe AI scanner)", "component": "Bitcoin Core <30.5 / <31.3", "source_name": "CoinDesk", "url": "https://www.coindesk.com/markets/2026/11/21/bitcoin-nodes-could-be-stalled-by-repeating-one-id-50-000-times-ai-found-the-bug", "category": "Protocol / crypto-ZK", "ai_discovered": true, "ai_system": "Project Loupe (Spiral)", "technique": "ai-assisted-scanning", "domain_tags": ["web3", "ai-finder"], "note": "Medium per devs; CVE id press-sourced, not yet on bitcoincore.org index [verify]; 29.x EOL"},
+{"date": "2026-11-20", "severity": "Medium", "id": "CVE-2026-133853", "title": "FlowIntel chatbot shared MCP session leaks per-user API credentials", "component": "FlowIntel", "source_name": "GitHub Security Advisories", "url": "https://github.com/advisories/GHSA-w3q8-9828-cgcr", "category": "MCP", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["mcp-server", "mcp", "tool-attack"], "note": "shared MCP session + process-wide env var \u2192 cross-user creds"},
+{"date": "2026-11-20", "severity": "Low", "id": "Sysdig-ARTEX-LLMjacking", "title": "Sysdig: ARTEX and the offensive tool powered by LLMjacking five months earlier", "component": "ARTEX", "source_name": "Sysdig", "url": "https://webflow.sysdig.com/blog/artex-and-the-offensive-tool-powered-by-llmjacking-five-months-earlier", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "runtime-telemetry", "domain_tags": ["ai-attacker", "vr-harness"], "note": "Theme 27 lineage"}
 ];
 
 var ALERTS = [
 {"date": "2026-11-18 0750", "title": "MS agent-framework PyPI hijack (GHSA-764m-3ppc-5m73)", "drive_url": "https://docs.google.com/document/d/1isXwzyS1HriD3IGTyezP_pO2qI9pol0G1ln7V2_uiEA/edit"},
 {"date": "2026-11-19 0950", "title": "nginx2root [AI-DISCOVERED]; Todoist MCP 9.3; Zyrabit 9.1", "drive_url": "https://docs.google.com/document/d/1aWFPCUqDhJgZorGttyahlyJflHbFRLoAYSUkhSlMoTs/edit"},
-{"date": "2026-11-20 0748", "title": "jupyter-mcp-server 9.3; Flyto2 incomplete fix; NVIDIA BlueField 9.0", "drive_url": "https://docs.google.com/document/d/1y20TN-1bsPxN82mkURDH-MB8v6r0KD5XmfxqouML52o/edit"}
+{"date": "2026-11-20 0748", "title": "jupyter-mcp-server 9.3; Flyto2 incomplete fix; NVIDIA BlueField 9.0", "drive_url": "https://docs.google.com/document/d/1y20TN-1bsPxN82mkURDH-MB8v6r0KD5XmfxqouML52o/edit"},
+{"date": "2026-11-21 0805", "title": "[AI-DISCOVERED + ai-attacker] Cairn agents \u00d7 MONAI Label 0-day (Amazon TI)", "drive_url": "https://docs.google.com/document/d/1N2wZ5xoZ890xnu6ncFtDPpoqHWnzygEVm0Nv1gXrXg0/edit"}
 ];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
