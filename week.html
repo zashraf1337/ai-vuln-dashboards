@@ -122,16 +122,32 @@
 // Window of the current week — RESET on weekly run for new cycle
 var WEEK_START = "2026-11-24";       // YYYY-MM-DD (start of new cycle = today)
 var WEEK_END   = "2026-12-01";       // next weekly-run date (resets this view)
-var LAST_UPDATED = "2026-11-24 12:30 EST";
-var CACHE_AGE_HOURS = 1.5;
+var LAST_UPDATED = "2026-11-25 11:45 EST";
+var CACHE_AGE_HOURS = 0.0;
 
 // One entry per daily scan run — reset for new cycle
-var DAILY_SCANS = [];
+var DAILY_SCANS = [
+  {"date": "2026-11-25", "criticals": 2, "highs": 5, "others": 7, "status": "critical", "note": "NVIDIA AIStore + Video Codec SDK 9.8s; OpenCode-driven intrusion attempt (Theme 27); NVD partial read"}
+];
 
 // Findings + alerts — reset for new cycle (repopulated by the next daily scan)
-var ITEMS = [];
+var ITEMS = [
+  {"date": "2026-11-24", "severity": "Critical", "id": "CVE-2026-65175", "title": "NVIDIA AIStore storage-target node-control authorization", "component": "NVIDIA AIStore", "source_name": "GHSA/NVIDIA", "url": "https://github.com/advisories/GHSA-7f42-7xr6-v2xj", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["nvidia", "cloud-infra", "llm-serving"], "note": "CVSS 9.8; unauth admin functions via target public interface; continues Oct-13 AIStore cluster"},
+  {"date": "2026-11-24", "severity": "Critical", "id": "CVE-2026-65135", "title": "NVIDIA Video Codec SDK for Linux heap overflow", "component": "NVIDIA Video Codec SDK", "source_name": "GHSA/NVIDIA", "url": "https://github.com/advisories/GHSA-qqr3-5f8g-fp66", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["gpu", "nvidia", "cuda"], "note": "CVSS 9.8; heap overflow -> code exec"},
+  {"date": "2026-11-24", "severity": "High", "id": "CVE-2026-65154", "title": "NVIDIA Open GPU Kernel Module use-after-free", "component": "NVIDIA open-gpu-kernel-modules", "source_name": "GHSA/NVIDIA", "url": "https://github.com/advisories/GHSA-9hgr-jrjp-2ch9", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["gpu", "nvidia", "kernel"], "note": "CVSS 7.8; local UAF -> privesc [gpu:driver]"},
+  {"date": "2026-11-24", "severity": "High", "id": "CVE-2026-65136", "title": "NVIDIA Jetson Linux out-of-bounds write", "component": "NVIDIA Jetson Linux", "source_name": "GHSA/NVIDIA", "url": "https://github.com/advisories/GHSA-f4mq-w72c-g5h3", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["nvidia", "kernel", "drone"], "note": "CVSS 8.8; OOB write -> privesc"},
+  {"date": "2026-11-24", "severity": "High", "id": "CVE-2026-136185", "title": "Prismor <1.57.0 wildcard CORS + unauth local API disables agent guardrails", "component": "Prismor", "source_name": "GHSA", "url": "https://github.com/advisories/GHSA-7c69-jrh3-rvpc", "category": "Coding agent / IDE", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["ai-sec-tooling", "coding-agent", "guardrail-bypass", "agent-escape:P3"], "note": "CVSS 7.1; web page PUTs /api/policy/* -> guardrails off + session data read; agent-escape:P3 tentative"},
+  {"date": "2026-11-24", "severity": "High", "id": "GHSA-8q2p-w9w5-552h / GHSA-vfqh-3659-q56x", "title": "Malware in @apexfdn/copilot-mcp and @guangnao/claude-cli (npm)", "component": "npm", "source_name": "GHSA (malware)", "url": "https://github.com/advisories/GHSA-8q2p-w9w5-552h", "category": "MCP", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["mcp", "coding-agent", "tool-attack"], "note": "Malicious packages, not vulns; look-alike names, not hijacked official packages"},
+  {"date": "2026-11-24", "severity": "High", "id": "no-CVE", "title": "OpenCode coding agent drives 5m44s intrusion attempt on a financial firm (Jesta)", "component": "OpenCode (stock coding agent)", "source_name": "The Register / Jesta", "url": "https://www.theregister.com/security/2026/11/24/an-ai-coding-agent-a-browser-and-a-mac-tool-found-a-financial-firms-access-key-in-under-6-minutes/5311922", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "runtime-telemetry", "domain_tags": ["ai-attacker", "coding-agent", "agent"], "note": "Theme 27; decoy key used, contained in deception env, nothing stolen; model unknown"},
+  {"date": "2026-11-24", "severity": "Low", "id": "CVE-2026-65157 et al.", "title": "NVIDIA Video Codec SDK / CUVID / Jetson DoS cluster (6 CVEs)", "component": "NVIDIA Video Codec SDK", "source_name": "GHSA/NVIDIA", "url": "https://github.com/advisories/GHSA-4xr7-cfq7-c77w", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["gpu", "nvidia", "cuda"], "note": "CVSS 7.1-7.5 DoS-class: -65157/-65158/-65159/-65155/-65156/-65137"},
+  {"date": "2026-11-24", "severity": "Medium", "id": "CVE-2026-100991", "title": "NVIDIA Jetson OS command injection", "component": "NVIDIA Jetson", "source_name": "GHSA/NVIDIA", "url": "https://github.com/advisories/GHSA-hcwm-9pqc-9r4r", "category": "AI infra", "ai_discovered": false, "ai_system": "", "technique": "not-disclosed", "domain_tags": ["nvidia", "drone"], "note": "CVSS 6.8"},
+  {"date": "2026-11-23", "severity": "Low", "id": "no-CVE", "title": "AIR WebSec benchmark: agent web-search providers serve malicious content", "component": "agent search APIs", "source_name": "AIR Security", "url": "https://www.air.security/blog-posts/websec", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "research", "domain_tags": ["agent", "ai-browser", "tool-attack"], "note": "282k results, 1,026 malicious hits, >4x spread"},
+  {"date": "2026-11-24", "severity": "Low", "id": "no-CVE", "title": "Novee: Inside ARTEX shared memory and 'no issue found'", "component": "ARTEX", "source_name": "Novee", "url": "https://novee.security/blog/inside-artex-ai-pentest-framework/", "category": "Agent ecosystem", "ai_discovered": false, "ai_system": "", "technique": "research", "domain_tags": ["vr-harness", "ai-attacker"], "note": "Offensive-harness analysis (feed summary only)"}
+];
 
-var ALERTS = [];
+var ALERTS = [
+  {"date": "2026-11-25 1145", "title": "NVIDIA AIStore + Video Codec SDK 9.8s", "drive_url": "https://docs.google.com/document/d/1t-VpFJtTx4_SZ6to0v0yb9chI3HjajwZm7hbBzvIGJY/edit"}
+];
 
 // Controlled §8 category vocabulary (CLAUDE.md → "Controlled Vocabularies (SOURCE OF TRUTH)" item 5).
 // RESTORED 2026-08-15: this const and FULL_DASHBOARD_URL below were referenced by buildFilters()/init()
