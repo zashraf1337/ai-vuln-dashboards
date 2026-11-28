@@ -1,0 +1,705 @@
+{
+ "alerts": [
+  {
+   "date": "2026-11-25 1145",
+   "drive_url": "https://docs.google.com/document/d/1t-VpFJtTx4_SZ6to0v0yb9chI3HjajwZm7hbBzvIGJY/edit",
+   "title": "NVIDIA AIStore + Video Codec SDK 9.8s"
+  }
+ ],
+ "cache_age_hours": 0.9,
+ "categories": [
+  "MCP",
+  "Agent core",
+  "Agent ecosystem",
+  "Skills / plugins",
+  "Coding agent / IDE",
+  "AI infra",
+  "Protocol / crypto-ZK",
+  "Model / multimodal"
+ ],
+ "daily_scans": [
+  {
+   "criticals": 2,
+   "date": "2026-11-25",
+   "highs": 5,
+   "note": "NVIDIA AIStore + Video Codec SDK 9.8s; OpenCode-driven intrusion attempt (Theme 27); NVD partial read",
+   "others": 7,
+   "status": "critical"
+  },
+  {
+   "criticals": 0,
+   "date": "2026-11-26",
+   "highs": 13,
+   "note": "Unit 42 agentic-AI ITW campaigns + Microsoft ARTEX actor list (Theme 27); MCP-server cluster; DeepSeek-Reasonix agent-escape:P2",
+   "others": 8,
+   "status": "high"
+  },
+  {
+   "criticals": 0,
+   "date": "2026-11-27",
+   "highs": 5,
+   "note": "Swiss AI-agent intrusions on CI operators (Theme 27, unverified); SiYuan agent-chat XSS; Budibase LiteLLM creds; LMDeploy DoS; tzero-mcp malware",
+   "others": 7,
+   "status": "high"
+  }
+ ],
+ "generated_from": "week.html",
+ "item_count": 35,
+ "items": [
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "NVIDIA AIStore",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "nvidia",
+    "cloud-infra",
+    "llm-serving"
+   ],
+   "id": "CVE-2026-65175",
+   "note": "CVSS 9.8; unauth admin functions via target public interface; continues Oct-13 AIStore cluster",
+   "severity": "Critical",
+   "source_name": "GHSA/NVIDIA",
+   "technique": "not-disclosed",
+   "title": "NVIDIA AIStore storage-target node-control authorization",
+   "url": "https://github.com/advisories/GHSA-7f42-7xr6-v2xj"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "NVIDIA Video Codec SDK",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "gpu",
+    "nvidia",
+    "cuda"
+   ],
+   "id": "CVE-2026-65135",
+   "note": "CVSS 9.8; heap overflow -> code exec",
+   "severity": "Critical",
+   "source_name": "GHSA/NVIDIA",
+   "technique": "not-disclosed",
+   "title": "NVIDIA Video Codec SDK for Linux heap overflow",
+   "url": "https://github.com/advisories/GHSA-qqr3-5f8g-fp66"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "NVIDIA open-gpu-kernel-modules",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "gpu",
+    "nvidia",
+    "kernel"
+   ],
+   "id": "CVE-2026-65154",
+   "note": "CVSS 7.8; local UAF -> privesc [gpu:driver]",
+   "severity": "High",
+   "source_name": "GHSA/NVIDIA",
+   "technique": "not-disclosed",
+   "title": "NVIDIA Open GPU Kernel Module use-after-free",
+   "url": "https://github.com/advisories/GHSA-9hgr-jrjp-2ch9"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "NVIDIA Jetson Linux",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "nvidia",
+    "kernel",
+    "drone"
+   ],
+   "id": "CVE-2026-65136",
+   "note": "CVSS 8.8; OOB write -> privesc",
+   "severity": "High",
+   "source_name": "GHSA/NVIDIA",
+   "technique": "not-disclosed",
+   "title": "NVIDIA Jetson Linux out-of-bounds write",
+   "url": "https://github.com/advisories/GHSA-f4mq-w72c-g5h3"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Coding agent / IDE",
+   "component": "Prismor",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "ai-sec-tooling",
+    "coding-agent",
+    "guardrail-bypass",
+    "agent-escape:P3"
+   ],
+   "id": "CVE-2026-136185",
+   "note": "CVSS 7.1; web page PUTs /api/policy/* -> guardrails off + session data read; agent-escape:P3 tentative",
+   "severity": "High",
+   "source_name": "GHSA",
+   "technique": "not-disclosed",
+   "title": "Prismor <1.57.0 wildcard CORS + unauth local API disables agent guardrails",
+   "url": "https://github.com/advisories/GHSA-7c69-jrh3-rvpc"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "MCP",
+   "component": "npm",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "mcp",
+    "coding-agent",
+    "tool-attack"
+   ],
+   "id": "GHSA-8q2p-w9w5-552h / GHSA-vfqh-3659-q56x",
+   "note": "Malicious packages, not vulns; look-alike names, not hijacked official packages",
+   "severity": "High",
+   "source_name": "GHSA (malware)",
+   "technique": "not-disclosed",
+   "title": "Malware in @apexfdn/copilot-mcp and @guangnao/claude-cli (npm)",
+   "url": "https://github.com/advisories/GHSA-8q2p-w9w5-552h"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent ecosystem",
+   "component": "OpenCode (stock coding agent)",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "ai-attacker",
+    "coding-agent",
+    "agent"
+   ],
+   "id": "no-CVE",
+   "note": "Theme 27; decoy key used, contained in deception env, nothing stolen; model unknown",
+   "severity": "High",
+   "source_name": "The Register / Jesta",
+   "technique": "runtime-telemetry",
+   "title": "OpenCode coding agent drives 5m44s intrusion attempt on a financial firm (Jesta)",
+   "url": "https://www.theregister.com/security/2026/11/24/an-ai-coding-agent-a-browser-and-a-mac-tool-found-a-financial-firms-access-key-in-under-6-minutes/5311922"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "NVIDIA Video Codec SDK",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "gpu",
+    "nvidia",
+    "cuda"
+   ],
+   "id": "CVE-2026-65157 et al.",
+   "note": "CVSS 7.1-7.5 DoS-class: -65157/-65158/-65159/-65155/-65156/-65137",
+   "severity": "Low",
+   "source_name": "GHSA/NVIDIA",
+   "technique": "not-disclosed",
+   "title": "NVIDIA Video Codec SDK / CUVID / Jetson DoS cluster (6 CVEs)",
+   "url": "https://github.com/advisories/GHSA-4xr7-cfq7-c77w"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "NVIDIA Jetson",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "nvidia",
+    "drone"
+   ],
+   "id": "CVE-2026-100991",
+   "note": "CVSS 6.8",
+   "severity": "Medium",
+   "source_name": "GHSA/NVIDIA",
+   "technique": "not-disclosed",
+   "title": "NVIDIA Jetson OS command injection",
+   "url": "https://github.com/advisories/GHSA-hcwm-9pqc-9r4r"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent ecosystem",
+   "component": "agent search APIs",
+   "date": "2026-11-23",
+   "domain_tags": [
+    "agent",
+    "ai-browser",
+    "tool-attack"
+   ],
+   "id": "no-CVE",
+   "note": "282k results, 1,026 malicious hits, >4x spread",
+   "severity": "Low",
+   "source_name": "AIR Security",
+   "technique": "research",
+   "title": "AIR WebSec benchmark: agent web-search providers serve malicious content",
+   "url": "https://www.air.security/blog-posts/websec"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent ecosystem",
+   "component": "ARTEX",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "vr-harness",
+    "ai-attacker"
+   ],
+   "id": "no-CVE",
+   "note": "Offensive-harness analysis (feed summary only)",
+   "severity": "Low",
+   "source_name": "Novee",
+   "technique": "research",
+   "title": "Novee: Inside ARTEX shared memory and 'no issue found'",
+   "url": "https://novee.security/blog/inside-artex-ai-pentest-framework/"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent core",
+   "component": "autonomous agents (model unnamed)",
+   "date": "2026-11-24",
+   "domain_tags": [
+    "agent",
+    "ai-attacker",
+    "cloud-infra"
+   ],
+   "id": "no-CVE",
+   "note": "Jul-Sep 2026; behavioural IOCs; Theme 27",
+   "severity": "High",
+   "source_name": "Unit 42",
+   "technique": "runtime-telemetry",
+   "title": "Unit 42: 10+ ITW campaigns run by autonomous AI agents",
+   "url": "https://unit42.paloaltonetworks.com/autonomous-ai-agent-threat-campaigns/"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent ecosystem",
+   "component": "ARTEX",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "agent",
+    "ai-attacker",
+    "vr-harness"
+   ],
+   "id": "no-CVE",
+   "note": "Theme 27; Decrypt ties ARTEX to a US spy-agency breach [verify]",
+   "severity": "High",
+   "source_name": "Microsoft Security",
+   "technique": "runtime-telemetry",
+   "title": "Microsoft: ARTEX abused by Salt Typhoon, Onyx Sleet, Pearl Sleet, Crystal Typhoon, Storm-0940/-3358",
+   "url": "https://www.microsoft.com/en-us/security/blog/2026/11/25/what-defenders-need-to-know-artex-agentic-ai-framework-threat-actors-abuse/"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Coding agent / IDE",
+   "component": "Kiro Web",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "coding-agent",
+    "agent",
+    "tool-attack"
+   ],
+   "id": "GHSA-qmph-ph4r-7jjr",
+   "note": "CVSS 8.8; fixed 2026-10-30",
+   "severity": "High",
+   "source_name": "GHSA",
+   "technique": "not-disclosed",
+   "title": "Kiro Web remote unauth command exec via content echoed by weaker models",
+   "url": "https://github.com/advisories/GHSA-qmph-ph4r-7jjr"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Coding agent / IDE",
+   "component": "DeepSeek-Reasonix <2.53.0",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "coding-agent",
+    "agent-escape:P2",
+    "tool-attack"
+   ],
+   "id": "GHSA-87w8-5xwj-rrfw",
+   "note": "CVSS 8.8; read-only classifier vs .gitattributes payload",
+   "severity": "High",
+   "source_name": "GHSA",
+   "technique": "not-disclosed",
+   "title": "DeepSeek-Reasonix approval bypass via git textconv driver",
+   "url": "https://github.com/advisories/GHSA-87w8-5xwj-rrfw"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent ecosystem",
+   "component": "AutoGPT 0.6.49-<0.11.0",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "agent-framework",
+    "mcp",
+    "tool-attack"
+   ],
+   "id": "CVE-2026-133462",
+   "note": "CVSS 8.7; confused deputy",
+   "severity": "High",
+   "source_name": "NVD",
+   "technique": "not-disclosed",
+   "title": "AutoGPT MCPToolBlock uses runner's MCP credentials for shared agents",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133462"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "MCP",
+   "component": "WP Secure MCP Server <=1.5.8",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "mcp-server",
+    "mcp"
+   ],
+   "id": "CVE-2026-131688",
+   "note": "CVSS 8.1",
+   "severity": "High",
+   "source_name": "NVD",
+   "technique": "not-disclosed",
+   "title": "Secure MCP Server for WordPress authorization bypass",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-131688"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "MCP",
+   "component": "Electerm <5.9.0",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "mcp-server",
+    "mcp",
+    "tool-attack"
+   ],
+   "id": "CVE-2026-136630",
+   "note": "CVSS 7.7; P3-shaped, no agent containment claim",
+   "severity": "High",
+   "source_name": "NVD",
+   "technique": "not-disclosed",
+   "title": "Electerm MCP Server widget DNS rebinding -> command exec",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-136630"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "MCP",
+   "component": "markdownify-mcp <1.2.0",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "mcp-server",
+    "mcp",
+    "tool-attack"
+   ],
+   "id": "GHSA-mqxc-j2ww-xfvx",
+   "note": "CVSS 7.4; reachable via PI",
+   "severity": "High",
+   "source_name": "GHSA",
+   "technique": "not-disclosed",
+   "title": "markdownify-mcp SSRF via IPv6/DNS URL-check bypass",
+   "url": "https://github.com/advisories/GHSA-mqxc-j2ww-xfvx"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "MCP",
+   "component": "AI Engine <=3.9.4",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "mcp-server",
+    "mcp"
+   ],
+   "id": "CVE-2026-131589",
+   "note": "CVSS 7.2",
+   "severity": "High",
+   "source_name": "NVD",
+   "technique": "not-disclosed",
+   "title": "AI Engine (WordPress) limited arbitrary file upload via MCP url param",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-131589"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent core",
+   "component": "Elastic EASE",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "ai-sec-tooling",
+    "agent",
+    "tool-attack"
+   ],
+   "id": "no-CVE",
+   "note": "Unpatched per PromptArmor; disclosed 2026-08-23; publish date unconfirmed",
+   "severity": "High",
+   "source_name": "PromptArmor",
+   "technique": "prompt-injection-demo",
+   "title": "PromptArmor: Elastic Agentic SOC credential theft via indirect PI",
+   "url": "https://www.promptarmor.com/resources/elastic-agentic-soc-vulnerable-to-credential-theft"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Skills / plugins",
+   "component": "mcp-aevo-server (PyPI)",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "mcp-server",
+    "mcp",
+    "tool-attack"
+   ],
+   "id": "GHSA-g97f-vppp-p428 (writeup)",
+   "note": "Writeup for an already-logged malware GHSA; post6 adds Telegram shell",
+   "severity": "High",
+   "source_name": "Knostic",
+   "technique": "not-disclosed",
+   "title": "Knostic: Aevo trading skill launches credential-stealing MCP server",
+   "url": "https://www.knostic.ai/blog/a-trading-skill-s-setup-pointed-to-a-credential-stealing-mcp-server"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Skills / plugins",
+   "component": "npm/PyPI",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "mcp-server",
+    "agent",
+    "tool-attack"
+   ],
+   "id": "GHSA-4c46-v99r-6h9r et al.",
+   "note": "Malicious package, not a vuln; High aggregate",
+   "severity": "High",
+   "source_name": "GHSA (malware)",
+   "technique": "not-disclosed",
+   "title": "Malicious AI-agent/MCP packages (create-ai-agent-setup, glbl-agent, mcp-*-report, mcp-sysinfo-tools, mcp-diag-7f3a)",
+   "url": "https://github.com/advisories/GHSA-4c46-v99r-6h9r"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "heterogeneous SoC iGPU",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "gpu",
+    "ml-sec",
+    "kernel"
+   ],
+   "id": "no-CVE",
+   "note": "No-CVSS escalation; Theme 24",
+   "severity": "High",
+   "source_name": "arXiv",
+   "technique": "research",
+   "title": "BridgeHammer: CPU-iGPU shared-memory Rowhammer DNN backdoor",
+   "url": "https://arxiv.org/abs/2611.34684v1"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent ecosystem",
+   "component": "ARTEX / Cairn",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "agent",
+    "ai-attacker",
+    "vr-harness"
+   ],
+   "id": "no-CVE",
+   "note": "Defender IOC",
+   "severity": "Low",
+   "source_name": "Wiz",
+   "technique": "runtime-telemetry",
+   "title": "Wiz: ARTEX/Cairn intent IDs leak into victim logs",
+   "url": "https://www.wiz.io/blog/agentic-offensive-frameworks-intent-ids-artex-cairn"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent core",
+   "component": "OpenAI-linked eval swarm",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "agent",
+    "ai-attacker"
+   ],
+   "id": "no-CVE",
+   "note": "Not read (provenance refusal)",
+   "severity": "Low",
+   "source_name": "Cisco Talos",
+   "technique": "research",
+   "title": "Talos: The Great Escape - agentic swarm tradecraft",
+   "url": "https://blog.talosintelligence.com/the-great-escape-tradecraft-insights-from-an-agentic-swarm/"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Coding agent / IDE",
+   "component": "AI coding agents",
+   "date": "2026-11-25",
+   "domain_tags": [
+    "coding-agent",
+    "container"
+   ],
+   "id": "no-CVE",
+   "note": "",
+   "severity": "Low",
+   "source_name": "GitGuardian",
+   "technique": "dynamic-verification",
+   "title": "GitGuardian: agent config secrets in Docker Hub images used in 8 s",
+   "url": "https://blog.gitguardian.com/docker-hub-secrets-ai-agentsuntitled/"
+  },
+  {
+   "ai_discovered": true,
+   "ai_system": "Hacktron AI",
+   "category": "Agent ecosystem",
+   "component": "Hacktron AI",
+   "date": "2026-11-23",
+   "domain_tags": [
+    "vr-harness",
+    "ai-finder"
+   ],
+   "id": "no-CVE",
+   "note": "~$250/100k LOC; AI-assisted aggregate",
+   "severity": "Low",
+   "source_name": "Hacktron AI",
+   "technique": "ai-assisted-scanning",
+   "title": "Hacktron: AI white-box scan finds 22 vulns (10 cross-tenant) in one app",
+   "url": "https://www.hacktron.ai/blog/the-checkbox-pentest"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent core",
+   "component": "Swiss critical infrastructure",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "agent",
+    "ai-attacker"
+   ],
+   "id": "—",
+   "note": "Theme 27; secondary source only, primary not found",
+   "severity": "High",
+   "source_name": "The Hacker News",
+   "technique": "runtime-telemetry",
+   "title": "Switzerland: AI agents used in 4 of 5 confirmed intrusions, 2 CI operators breached",
+   "url": "https://thehackernews.com/2026/11/switzerland-confirms-ai-assisted.html"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Agent ecosystem",
+   "component": "SiYuan 3.7.0-<3.8.11",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "agent",
+    "tool-attack"
+   ],
+   "id": "CVE-2026-137469",
+   "note": "CVSS 7.7",
+   "severity": "High",
+   "source_name": "NVD",
+   "technique": "not-disclosed",
+   "title": "SiYuan AI agent chat panel XSS via indirect prompt injection",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-137469"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "Budibase <4.0.0",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "llm-serving",
+    "cloud-infra"
+   ],
+   "id": "GHSA-4h6r-7xhv-xr72",
+   "note": "CVSS 7.5; sibling GHSA-wj3w-f27c-3rfh 7.2 privesc",
+   "severity": "High",
+   "source_name": "GHSA",
+   "technique": "not-disclosed",
+   "title": "Budibase unauth LiteLLM credential disclosure",
+   "url": "https://github.com/advisories/GHSA-4h6r-7xhv-xr72"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "LMDeploy 0.9.0-0.18.0",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "llm-serving"
+   ],
+   "id": "GHSA-j5p8-pjr7-3whh",
+   "note": "CVSS 7.5",
+   "severity": "High",
+   "source_name": "GHSA",
+   "technique": "not-disclosed",
+   "title": "LMDeploy DistServe proxy unauth memory exhaustion",
+   "url": "https://github.com/advisories/GHSA-j5p8-pjr7-3whh"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "MCP",
+   "component": "tzero-mcp",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "mcp-server",
+    "mcp"
+   ],
+   "id": "GHSA-pm3r-rxg9-cj5j",
+   "note": "No evidence of a legitimate package; throwaway rule",
+   "severity": "High",
+   "source_name": "GHSA (malware)",
+   "technique": "not-disclosed",
+   "title": "Malware in tzero-mcp (malicious package, not a vuln)",
+   "url": "https://github.com/advisories/GHSA-pm3r-rxg9-cj5j"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "AI infra",
+   "component": "vLLM 0.16.0-<0.21.0",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "llm-serving",
+    "vllm",
+    "gpu"
+   ],
+   "id": "GHSA-573j-558j-ff2h",
+   "note": "CVSS 4.8",
+   "severity": "Medium",
+   "source_name": "GHSA",
+   "technique": "not-disclosed",
+   "title": "vLLM cross-user token leak (async scheduling + pipeline parallel)",
+   "url": "https://github.com/advisories/GHSA-573j-558j-ff2h"
+  },
+  {
+   "ai_discovered": false,
+   "ai_system": "",
+   "category": "Coding agent / IDE",
+   "component": "Coder",
+   "date": "2026-11-26",
+   "domain_tags": [
+    "coding-agent",
+    "tool-attack"
+   ],
+   "id": "GHSA-xv6r-m56v-wcv8",
+   "note": "CVSS 4.6; prompt-injected agent can plant a link",
+   "severity": "Medium",
+   "source_name": "GHSA",
+   "technique": "not-disclosed",
+   "title": "Coder agent-supplied uri scheme not validated",
+   "url": "https://github.com/advisories/GHSA-xv6r-m56v-wcv8"
+  }
+ ],
+ "last_updated": "2026-11-27 08:25 EST",
+ "week_end": "2026-12-01",
+ "week_start": "2026-11-24"
+}
